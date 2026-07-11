@@ -16,6 +16,12 @@
   --hair:rgba(14,17,22,.14); --map-bg:#0f1626;
   --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
 }
+*{box-sizing:border-box;margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.45}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px 56px}
+.microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+
 /* map app autocomplete styles */
 .autocomplete { position: relative; }
 .autocomplete input {
@@ -39,22 +45,13 @@
 .sugg-item:hover { background: var(--paper); }
 .sugg-name { font-size: 13px; font-weight: 600; color: var(--ink); }
 .sugg-ward { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* kolkata taxi hint styling */
 .taxi-hint {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: #7a5900;
-  background: #ffeb99;
-  border: 1px solid #ffd13b;
-  border-radius: 6px;
-  padding: 5px 10px;
-  margin: 4px 0 6px 29px; /* aligns perfectly under the walking icon */
-  display: inline-block;
+  font-size: 11.5px; font-weight: 600; color: #7a5900; background: #ffeb99;
+  border: 1px solid #ffd13b; border-radius: 6px; padding: 5px 10px;
+  margin: 4px 0 6px 29px; display: inline-block;
 }
-*{box-sizing:border-box;margin:0}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.45}
-.wrap{max-width:680px;margin:0 auto;padding:0 16px 56px}
-.microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--muted)}
 
 /* masthead */
 header{background:var(--black);color:#fff;border-bottom:4px solid var(--navy)}
@@ -145,30 +142,30 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
 
 <main class="wrap">
   <section class="panel" aria-label="Journey planner">
-   <div class="row">
-  <div class="field">
-    <label for="from-input">From</label>
-    <div class="autocomplete">
-      <input type="text" id="from-input" autocomplete="off" placeholder="Search a stop...">
-      <div id="from-list" class="sugg-list" hidden></div>
+    <div class="row">
+      <div class="field">
+        <label for="from-input">From</label>
+        <div class="autocomplete">
+          <input type="text" id="from-input" autocomplete="off" placeholder="Search a stop...">
+          <div id="from-list" class="sugg-list" hidden></div>
+        </div>
+        <input type="hidden" id="from">
+      </div>
+      
+      <button id="swap" aria-label="Swap from and to">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v14"/><path d="M3 7l4-4 4 4"/><path d="M17 21V7"/><path d="M13 17l4 4 4-4"/></svg>
+      </button>
+      
+      <div class="field">
+        <label for="to-input">To</label>
+        <div class="autocomplete">
+          <input type="text" id="to-input" autocomplete="off" placeholder="Search a stop...">
+          <div id="to-list" class="sugg-list" hidden></div>
+        </div>
+        <input type="hidden" id="to">
+      </div>
+      <button id="go">Find routes</button>
     </div>
-    <input type="hidden" id="from">
-  </div>
-  
-  <button id="swap" aria-label="Swap from and to">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v14"/><path d="M3 7l4-4 4 4"/><path d="M17 21V7"/><path d="M13 17l4 4 4-4"/></svg>
-  </button>
-  
-  <div class="field">
-    <label for="to-input">To</label>
-    <div class="autocomplete">
-      <input type="text" id="to-input" autocomplete="off" placeholder="Search a stop...">
-      <div id="to-list" class="sugg-list" hidden></div>
-    </div>
-    <input type="hidden" id="to">
-  </div>
-  <button id="go">Find routes</button>
-</div>
     <p class="note" id="datainfo">Loading network…</p>
     <p class="note" id="locstatus" hidden></p>
   </section>
@@ -207,85 +204,15 @@ const DEFAULT_NETWORK = {
   },
   "stops": [
     { "id": "howrah",      "name": "Howrah Station",    "ward": "Howrah",     "lat": 22.5839, "lon": 88.3435 },
-    { "id": "hmaidan",     "name": "Howrah Maidan",     "ward": "Howrah",     "lat": 22.5776, "lon": 88.3336 },
-    { "id": "bbd",         "name": "B.B.D. Bagh",       "ward": "Central",    "lat": 22.5697, "lon": 88.3468 },
-    { "id": "fairlie",     "name": "Fairlie Ghat",      "ward": "Central",    "lat": 22.5735, "lon": 88.3459 },
-    { "id": "babughat",    "name": "Babughat",          "ward": "Central",    "lat": 22.5586, "lon": 88.3421 },
-    { "id": "esplanade",   "name": "Esplanade",         "ward": "Central",    "lat": 22.5646, "lon": 88.3520 },
-    { "id": "college",     "name": "College Street",    "ward": "Central",    "lat": 22.5745, "lon": 88.3637 },
-    { "id": "sealdah",     "name": "Sealdah Station",   "ward": "Central",    "lat": 22.5668, "lon": 88.3701 },
-    { "id": "parkst",      "name": "Park Street",       "ward": "Central",    "lat": 22.5546, "lon": 88.3522 },
-    { "id": "rabindra",    "name": "Rabindra Sadan",    "ward": "Central",    "lat": 22.5452, "lon": 88.3462 },
-    { "id": "kalighat",    "name": "Kalighat",          "ward": "South",      "lat": 22.5203, "lon": 88.3463 },
-    { "id": "tolly",       "name": "Tollygunge",        "ward": "South",      "lat": 22.4990, "lon": 88.3452 },
-    { "id": "gariahat",    "name": "Gariahat",          "ward": "South",      "lat": 22.5187, "lon": 88.3658 },
-    { "id": "ballygunge",  "name": "Ballygunge",        "ward": "South",      "lat": 22.5298, "lon": 88.3658 },
-    { "id": "behala",      "name": "Behala Chowrasta",  "ward": "South-West", "lat": 22.4987, "lon": 88.3097 },
-    { "id": "parkcircus",  "name": "Park Circus",       "ward": "East",       "lat": 22.5414, "lon": 88.3689 },
-    { "id": "ruby",        "name": "Ruby Crossing",     "ward": "East",       "lat": 22.5133, "lon": 88.4016 },
-    { "id": "sciencecity", "name": "Science City",      "ward": "East",       "lat": 22.5391, "lon": 88.3957 },
-    { "id": "shyambazar",  "name": "Shyambazar",        "ward": "North",      "lat": 22.6013, "lon": 88.3731 },
-    { "id": "dumdum",      "name": "Dum Dum",           "ward": "North",      "lat": 22.6224, "lon": 88.3892 },
-    { "id": "airport",     "name": "Airport (NSCBI)",   "ward": "North",      "lat": 22.6520, "lon": 88.4450 },
-    { "id": "stadium",     "name": "Salt Lake Stadium", "ward": "Salt Lake",  "lat": 22.5697, "lon": 88.4094 },
-    { "id": "karunamoyee", "name": "Karunamoyee",       "ward": "Salt Lake",  "lat": 22.5804, "lon": 88.4174 },
     { "id": "sectorv",     "name": "Sector V",          "ward": "Salt Lake",  "lat": 22.5715, "lon": 88.4332 }
   ],
-  "edges": [
-    { "from": "dumdum",     "to": "shyambazar",  "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
-    { "from": "shyambazar", "to": "college",     "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
-    { "from": "college",    "to": "esplanade",   "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
-    { "from": "esplanade",  "to": "parkst",      "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 2,  "fare": 4 },
-    { "from": "parkst",     "to": "rabindra",    "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 2,  "fare": 4 },
-    { "from": "rabindra",   "to": "kalighat",    "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
-    { "from": "kalighat",   "to": "tolly",       "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
-    { "from": "hmaidan",    "to": "howrah",      "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 2,  "fare": 5 },
-    { "from": "howrah",     "to": "bbd",         "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
-    { "from": "bbd",        "to": "esplanade",   "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 2,  "fare": 5 },
-    { "from": "esplanade",  "to": "sealdah",     "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
-    { "from": "sealdah",    "to": "stadium",     "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 5,  "fare": 5 },
-    { "from": "stadium",    "to": "karunamoyee", "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
-    { "from": "karunamoyee","to": "sectorv",     "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
-    { "from": "dumdum",     "to": "airport",     "mode": "metro", "line": "Yellow Line","color": "#a6862f", "min": 12, "fare": 10 },
-    { "from": "esplanade",  "to": "parkcircus",  "mode": "tram",  "line": "Tram 25",    "min": 22, "fare": 7 },
-    { "from": "parkcircus", "to": "gariahat",    "mode": "tram",  "line": "Tram 25",    "min": 18, "fare": 7 },
-    { "from": "college",    "to": "esplanade",   "mode": "tram",  "line": "Tram 5",     "min": 16, "fare": 7 },
-    { "from": "shyambazar", "to": "college",     "mode": "tram",  "line": "Tram 5",     "min": 14, "fare": 7 },
-    { "from": "howrah",     "to": "babughat",    "mode": "ferry", "line": "Hooghly Ferry", "min": 14, "fare": 8 },
-    { "from": "howrah",     "to": "fairlie",     "mode": "ferry", "line": "Hooghly Ferry", "min": 8,  "fare": 8 },
-    { "from": "fairlie",    "to": "bbd",         "mode": "walk",  "min": 7,  "fare": 0 },
-    { "from": "babughat",   "to": "esplanade",   "mode": "walk",  "min": 14, "fare": 0 },
-    { "from": "howrah",     "to": "esplanade",   "mode": "bus",   "line": "Bus · Howrah Bridge", "min": 20, "fare": 10 },
-    { "from": "esplanade",  "to": "ballygunge",  "mode": "bus",   "line": "Bus AC-9",   "min": 25, "fare": 12 },
-    { "from": "ballygunge", "to": "gariahat",    "mode": "bus",   "line": "Bus S-5",    "min": 8,  "fare": 8 },
-    { "from": "gariahat",   "to": "ruby",        "mode": "bus",   "line": "Bus VS-2",   "min": 15, "fare": 10 },
-    { "from": "ruby",       "to": "sciencecity", "mode": "bus",   "line": "Bus S-12",   "min": 8,  "fare": 8 },
-    { "from": "sciencecity","to": "parkcircus",  "mode": "bus",   "line": "Bus S-12",   "min": 12, "fare": 10 },
-    { "from": "ruby",       "to": "sectorv",     "mode": "bus",   "line": "Bus S-9A",   "min": 18, "fare": 12 },
-    { "from": "sealdah",    "to": "parkcircus",  "mode": "bus",   "line": "Bus 44",     "min": 15, "fare": 10 },
-    { "from": "shyambazar", "to": "sealdah",     "mode": "bus",   "line": "Bus 30B",    "min": 18, "fare": 10 },
-    { "from": "shyambazar", "to": "dumdum",      "mode": "bus",   "line": "Bus 34C",    "min": 16, "fare": 10 },
-    { "from": "dumdum",     "to": "airport",     "mode": "bus",   "line": "Bus AC-39",  "min": 20, "fare": 8 },
-    { "from": "bbd",        "to": "sectorv",     "mode": "bus",   "line": "Bus S-9A (Bypass)", "min": 48, "fare": 15 },
-    { "from": "esplanade",  "to": "sciencecity", "mode": "bus",   "line": "Bus AC-4",   "min": 22, "fare": 12 },
-    { "from": "karunamoyee","to": "sectorv",     "mode": "auto",  "min": 8,  "fare": 15 },
-    { "from": "kalighat",   "to": "gariahat",    "mode": "auto",  "min": 12, "fare": 15 },
-    { "from": "gariahat",   "to": "ballygunge",  "mode": "auto",  "min": 6,  "fare": 12 },
-    { "from": "sealdah",    "to": "college",     "mode": "auto",  "min": 8,  "fare": 12 },
-    { "from": "dumdum",     "to": "airport",     "mode": "auto",  "min": 15, "fare": 20 },
-    { "from": "parkcircus", "to": "ballygunge",  "mode": "auto",  "min": 8,  "fare": 12 },
-    { "from": "tolly",      "to": "gariahat",    "mode": "auto",  "min": 12, "fare": 15 },
-    { "from": "tolly",      "to": "behala",      "mode": "auto" },
-    { "from": "college",    "to": "sealdah",     "mode": "rickshaw", "line": "Cycle rickshaw",      "min": 12, "fare": 30 },
-    { "from": "babughat",   "to": "bbd",         "mode": "rickshaw", "line": "Hand-pulled rickshaw","min": 8,  "fare": 25 }
-  ]
-}
-;
-// ---- SANJOG interface layer (data comes from network.json) ----
+  "edges": []
+};
 
+// ---- SANJOG interface layer (data comes from network.json) ----
 let NET = null;
-let lastFix = null;                       // {lat, lon, at} cached for a minute
-const prevSel = { from: null, to: null }; // last real stop chosen per picker
+let lastFix = null;
+const prevSel = { from: null, to: null };
 let currentRoutes = [];
 let selectedIdx = 0;
 
@@ -293,27 +220,28 @@ async function loadNetwork() {
   try {
     const r = await fetch("./network.json", { cache: "no-cache" });
     if (r.ok) return { json: await r.json(), src: "network.json" };
-  } catch (e) { /* file:// or offline first-run: fall through */ }
+  } catch (e) { }
   return { json: DEFAULT_NETWORK, src: "built-in sample" };
 }
 
 // ---- custom maps-style autocomplete ---------------------------------------
-
 function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
   const hidden = document.getElementById(hiddenId);
 
   function showSuggestions(query) {
-    let html = `<div class="sugg-item" data-id="${LOC_ID}">
+    // dynamically pull LOC_ID if engine.js defined it, else fallback
+    const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+    
+    let html = `<div class="sugg-item" data-id="${myLocId}">
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
 
     const q = query.toLowerCase();
     let count = 0;
 
-    // sort alphabetically so results are predictable
-    const sortedIds = Object.keys(NET.stops).filter(id => id !== LOC_ID).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
+    const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
 
     for (const id of sortedIds) {
       const stop = NET.stops[id];
@@ -324,13 +252,12 @@ function setupAutocomplete(inputId, listId, hiddenId) {
                  </div>`;
         count++;
       }
-      if (count > 25) break; // limit to top 25 matches for smooth scrolling
+      if (count > 25) break; 
     }
 
     if (count === 0 && q !== "") {
-       html = `<div class="sugg-item"><span class="sugg-ward">No stops found matching "${query}"</span></div>`;
+       html = `<div class="sugg-item"><span class="sugg-ward">No stops found</span></div>`;
     }
-
     list.innerHTML = html;
     list.hidden = false;
   }
@@ -338,15 +265,14 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   input.addEventListener("input", (e) => showSuggestions(e.target.value));
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
 
-  // handle clicking a stop from the list
   list.addEventListener("mousedown", (e) => {
     const item = e.target.closest(".sugg-item");
     if (!item || !item.dataset.id) return;
-
+    const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
     const id = item.dataset.id;
     hidden.value = id;
 
-    if (id === LOC_ID) {
+    if (id === myLocId) {
       input.value = "📍 Locating...";
       handleLocationPick(hiddenId, input);
     } else {
@@ -357,27 +283,29 @@ function setupAutocomplete(inputId, listId, hiddenId) {
     list.hidden = true;
   });
 
-  // hide list when clicking away
   input.addEventListener("blur", () => {
      setTimeout(() => list.hidden = true, 150); 
-     // revert to the last valid selection if they type nonsense and click away
-     if (hidden.value && hidden.value !== LOC_ID && NET.stops[hidden.value]) {
+     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+     if (hidden.value && hidden.value !== myLocId && NET.stops[hidden.value]) {
          input.value = NET.stops[hidden.value].name;
      }
   });
 }
 
 function initSearchFields() {
-  // set default startup locations (falls back to first keys if not found)
-  let fromId = NET.stops["howrah"] ? "howrah" : Object.keys(NET.stops)[1];
-  let toId = NET.stops["sectorv"] ? "sectorv" : Object.keys(NET.stops)[2];
+  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+  const keys = Object.keys(NET.stops).filter(k => k !== myLocId);
+  if (keys.length === 0) return;
+
+  let fromId = NET.stops["howrah"] ? "howrah" : keys[0];
+  let toId = NET.stops["sectorv"] ? "sectorv" : (keys.length > 1 ? keys[1] : keys[0]);
 
   document.getElementById("from").value = fromId;
-  document.getElementById("from-input").value = NET.stops[fromId].name;
+  if (NET.stops[fromId]) document.getElementById("from-input").value = NET.stops[fromId].name;
   prevSel.from = fromId;
 
   document.getElementById("to").value = toId;
-  document.getElementById("to-input").value = NET.stops[toId].name;
+  if (NET.stops[toId]) document.getElementById("to-input").value = NET.stops[toId].name;
   prevSel.to = toId;
 
   setupAutocomplete("from-input", "from-list", "from");
@@ -391,7 +319,6 @@ function buildLegend() {
 }
 
 // ---- location handling -------------------------------------------------
-
 function getFix() {
   return new Promise((resolve, reject) => {
     if (lastFix && Date.now() - lastFix.at < 60000) return resolve(lastFix);
@@ -437,24 +364,13 @@ async function handleLocationPick(which, el) {
   }
 }
 
-function onSelectChange(which) {
-  const el = document.getElementById(which);
-  if (el.value === LOC_ID) { handleLocationPick(which, el); return; }
-  prevSel[which] = el.value;
-  render();
-}
-
 // ---- route cards ---------------------------------------------------------
-
 function legRow(l) {
   const wait = l.wait ? `<div class="leg-sub">incl. ~${l.wait} min wait</div>` : "";
-  
-  // the new logic: intercept long walks
   let suggestion = "";
   if (l.mode === "walk" && l.min > 15) {
     suggestion = `<div class="taxi-hint">Long walk (${l.min} min) — hailing a yellow taxi or rickshaw here is recommended.</div>`;
   }
-
   return `<div class="leg">
       <span class="tile" style="background:${l.color || '#98a0a8'}">${NET.modes[l.mode].icon}</span>
       <span class="linename">${l.line || "Walk"}</span>
@@ -497,11 +413,11 @@ function selectCard(i) {
 }
 
 // ---- schematic map --------------------------------------------------------
-
 function renderMap(route) {
   const box = document.getElementById("map");
   if (!box) return;
 
+  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
   let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180, count = 0;
   for (const id in NET.stops) {
     const s = NET.stops[id];
@@ -528,7 +444,6 @@ function renderMap(route) {
     return [P + (s.lon - minLon) * kx * scale, P + (maxLat - s.lat) * scale];
   };
 
-  // one entry per undirected stop pair; parallel services get offset tracks
   const groups = {};
   for (const a in NET.adj) for (const e of NET.adj[a]) {
     if (a > e.to) continue;
@@ -549,7 +464,7 @@ function renderMap(route) {
     const list = groups[pk], n = list.length;
     const [x1, y1] = pt(list[0].a), [x2, y2] = pt(list[0].b);
     const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
-    const ox = -dy / len, oy = dx / len;                 // perpendicular unit
+    const ox = -dy / len, oy = dx / len;
     list.forEach((e, i) => {
       const off = (i - (n - 1) / 2) * 5;
       const seg = `<line x1="${(x1 + ox * off).toFixed(1)}" y1="${(y1 + oy * off).toFixed(1)}"` +
@@ -562,7 +477,7 @@ function renderMap(route) {
 
   let dots = "", labels = "";
   for (const id in NET.stops) {
-    if (id === LOC_ID || !hasXY(id)) continue;
+    if (id === myLocId || !hasXY(id)) continue;
     const [x, y] = pt(id);
     const hit = routeStops.has(id), on = !route || hit;
     dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hit ? 5 : 4}"` +
@@ -576,8 +491,8 @@ function renderMap(route) {
   }
 
   let me = "";
-  if (NET.stops[LOC_ID] && hasXY(LOC_ID)) {
-    const [x, y] = pt(LOC_ID);
+  if (NET.stops[myLocId] && hasXY(myLocId)) {
+    const [x, y] = pt(myLocId);
     me = `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="none" stroke="#fff" stroke-width="2"/>` +
          `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="#fff"/>` +
          `<text x="${(x + 12).toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="10" font-weight="700" fill="#fff">You</text>`;
@@ -588,13 +503,13 @@ function renderMap(route) {
 }
 
 // ---- main render ----------------------------------------------------------
-
 function render() {
   const from = document.getElementById("from").value;
   const to = document.getElementById("to").value;
   const out = document.getElementById("results");
+  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
-  if (from !== LOC_ID && to !== LOC_ID && NET.stops[LOC_ID]) {
+  if (from !== myLocId && to !== myLocId && NET.stops[myLocId]) {
     clearLocationNode(NET);
     setLocStatus("");
   }
@@ -602,7 +517,7 @@ function render() {
   currentRoutes = []; selectedIdx = 0;
 
   if (from === to) {
-    out.innerHTML = `<p class="msg">${from === LOC_ID
+    out.innerHTML = `<p class="msg">${from === myLocId
       ? "You're already there. Pick a stop for the other end."
       : "Pick two different stops to plan a journey."}</p>`;
     renderMap(null);
@@ -627,9 +542,7 @@ function swapStops() {
   const from = document.getElementById("from"), to = document.getElementById("to");
   const fromIn = document.getElementById("from-input"), toIn = document.getElementById("to-input");
 
-  // swap hidden data
   const t = from.value; from.value = to.value; to.value = t;
-  // swap visual text
   const tName = fromIn.value; fromIn.value = toIn.value; toIn.value = tName;
 
   const p = prevSel.from; prevSel.from = prevSel.to; prevSel.to = p;
@@ -657,6 +570,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   initSearchFields();
   buildLegend();
+  
   document.getElementById("go").addEventListener("click", render);
   document.getElementById("swap").addEventListener("click", swapStops);
   
