@@ -28,6 +28,8 @@ built-in network copy; hosted, it loads `network.json` fresh.)
 2. Settings → Pages → Deploy from a branch → `main`, `/ (root)`.
 3. Your app is live at `https://<user>.github.io/<repo>/`. Users can Install
    it from the browser menu (it's a PWA: works offline after first visit).
+   The 📍 "Use my location" option needs HTTPS and the user's permission —
+   both satisfied on GitHub Pages, but not when opening the file locally.
 
 ## Add your ward's data (the whole point)
 
@@ -36,12 +38,17 @@ Edit **`network.json`** — in the GitHub web editor is fine. Three sections:
 **`stops`** — places where people board or change:
 
 ```json
-{ "id": "behala",  "name": "Behala Chowrasta",  "ward": "South-West" }
+{ "id": "behala", "name": "Behala Chowrasta", "ward": "South-West",
+  "lat": 22.4987, "lon": 88.3097 }
 ```
 
 - `id`: unique, lowercase letters/digits/`_`/`-` only. Never reuse or rename
   an existing id (edges refer to them).
 - `ward` groups stops in the pickers — use your ward/neighbourhood name.
+- `lat`/`lon` (optional, recommended): coordinates. Long-press the spot in
+  Google Maps and copy the numbers. Stops with coordinates power the
+  📍 "Use my location" option, which links a user to their nearest stops by
+  walking time. Provide both or neither.
 
 **`edges`** — direct connections between two stops. Every edge is
 **automatically two-way**; write it once.

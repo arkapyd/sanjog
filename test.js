@@ -36,4 +36,29 @@ for (const [a, b] of [["howrah", "sectorv"], ["esplanade", "gariahat"],
                   `  ${l.minApprox ? "~" : ""}${l.min}m  ${l.fareApprox ? "~" : ""}Rs${l.fare}`);
   }
 }
+// 4. Location feature: a point near Kalighat should link and route
+const { setLocationNode, clearLocationNode, LOC_ID } = require("./engine.js");
+const near = setLocationNode(NET, 22.5210, 88.3480, {});
+if (!near.ok) { console.error("location link failed: " + near.reason); process.exit(1); }
+console.log("\nlocation near Kalighat links to: " +
+  near.links.map(l => `${NET.stops[l.id].name} (${l.min}m walk, ${l.distM}m)`).join(", "));
+const locRoutes = planAll(NET, LOC_ID, "sectorv");
+if (!locRoutes.length || locRoutes[0].legs[0].mode !== "walk") {
+  console.error("expected a journey starting with a walk leg"); process.exit(1);
+}
+console.log(`My location -> Sector V [${locRoutes[0].labels.join(" · ")}]: ` +
+  `~${locRoutes[0].totalMin} min via ` + locRoutes[0].legs.map(l => l.line).join(" > "));
+
+// 5. Far outside the network: should refuse politely (Delhi, ~1300 km away)
+const far = setLocationNode(NET, 28.61, 77.21, {});
+if (far.ok) { console.error("far-away location should have been rejected"); process.exit(1); }
+console.log("far-away check: " + far.reason + " ✓");
+
+// 6. Cleanup restores the network
+clearLocationNode(NET);
+if (NET.stops[LOC_ID] || NET.adj.kalighat.some(e => e.to === LOC_ID)) {
+  console.error("location node not fully removed"); process.exit(1);
+}
+console.log("location node cleanup ✓");
+
 console.log("\nall journeys planned ✓");
