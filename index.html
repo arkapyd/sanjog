@@ -106,6 +106,7 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
       <button id="go">Find routes</button>
     </div>
     <p class="note" id="datainfo">Loading network…</p>
+    <p class="note" id="locstatus" hidden></p>
   </section>
 
   <div id="warn" class="warn" hidden></div>
@@ -121,7 +122,7 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
 <script>
 const DEFAULT_NETWORK = {
   "name": "SANJOG Kolkata sample network",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "updated": "2026-07-11",
   "modes": {
     "metro":    { "label": "Metro",       "icon": "🚇", "color": "#1e56c8", "wait": 3, "defaultMin": 4,  "defaultFare": 5 },
@@ -133,30 +134,30 @@ const DEFAULT_NETWORK = {
     "walk":     { "label": "Walk",        "icon": "🚶", "color": "#8b93a1", "wait": 0, "defaultMin": 8,  "defaultFare": 0 }
   },
   "stops": [
-    { "id": "howrah",      "name": "Howrah Station",    "ward": "Howrah" },
-    { "id": "hmaidan",     "name": "Howrah Maidan",     "ward": "Howrah" },
-    { "id": "bbd",         "name": "B.B.D. Bagh",       "ward": "Central" },
-    { "id": "fairlie",     "name": "Fairlie Ghat",      "ward": "Central" },
-    { "id": "babughat",    "name": "Babughat",          "ward": "Central" },
-    { "id": "esplanade",   "name": "Esplanade",         "ward": "Central" },
-    { "id": "college",     "name": "College Street",    "ward": "Central" },
-    { "id": "sealdah",     "name": "Sealdah Station",   "ward": "Central" },
-    { "id": "parkst",      "name": "Park Street",       "ward": "Central" },
-    { "id": "rabindra",    "name": "Rabindra Sadan",    "ward": "Central" },
-    { "id": "kalighat",    "name": "Kalighat",          "ward": "South" },
-    { "id": "tolly",       "name": "Tollygunge",        "ward": "South" },
-    { "id": "gariahat",    "name": "Gariahat",          "ward": "South" },
-    { "id": "ballygunge",  "name": "Ballygunge",        "ward": "South" },
-    { "id": "behala",      "name": "Behala Chowrasta",  "ward": "South-West" },
-    { "id": "parkcircus",  "name": "Park Circus",       "ward": "East" },
-    { "id": "ruby",        "name": "Ruby Crossing",     "ward": "East" },
-    { "id": "sciencecity", "name": "Science City",      "ward": "East" },
-    { "id": "shyambazar",  "name": "Shyambazar",        "ward": "North" },
-    { "id": "dumdum",      "name": "Dum Dum",           "ward": "North" },
-    { "id": "airport",     "name": "Airport (NSCBI)",   "ward": "North" },
-    { "id": "stadium",     "name": "Salt Lake Stadium", "ward": "Salt Lake" },
-    { "id": "karunamoyee", "name": "Karunamoyee",       "ward": "Salt Lake" },
-    { "id": "sectorv",     "name": "Sector V",          "ward": "Salt Lake" }
+    { "id": "howrah",      "name": "Howrah Station",    "ward": "Howrah",     "lat": 22.5839, "lon": 88.3435 },
+    { "id": "hmaidan",     "name": "Howrah Maidan",     "ward": "Howrah",     "lat": 22.5776, "lon": 88.3336 },
+    { "id": "bbd",         "name": "B.B.D. Bagh",       "ward": "Central",    "lat": 22.5697, "lon": 88.3468 },
+    { "id": "fairlie",     "name": "Fairlie Ghat",      "ward": "Central",    "lat": 22.5735, "lon": 88.3459 },
+    { "id": "babughat",    "name": "Babughat",          "ward": "Central",    "lat": 22.5586, "lon": 88.3421 },
+    { "id": "esplanade",   "name": "Esplanade",         "ward": "Central",    "lat": 22.5646, "lon": 88.3520 },
+    { "id": "college",     "name": "College Street",    "ward": "Central",    "lat": 22.5745, "lon": 88.3637 },
+    { "id": "sealdah",     "name": "Sealdah Station",   "ward": "Central",    "lat": 22.5668, "lon": 88.3701 },
+    { "id": "parkst",      "name": "Park Street",       "ward": "Central",    "lat": 22.5546, "lon": 88.3522 },
+    { "id": "rabindra",    "name": "Rabindra Sadan",    "ward": "Central",    "lat": 22.5452, "lon": 88.3462 },
+    { "id": "kalighat",    "name": "Kalighat",          "ward": "South",      "lat": 22.5203, "lon": 88.3463 },
+    { "id": "tolly",       "name": "Tollygunge",        "ward": "South",      "lat": 22.4990, "lon": 88.3452 },
+    { "id": "gariahat",    "name": "Gariahat",          "ward": "South",      "lat": 22.5187, "lon": 88.3658 },
+    { "id": "ballygunge",  "name": "Ballygunge",        "ward": "South",      "lat": 22.5298, "lon": 88.3658 },
+    { "id": "behala",      "name": "Behala Chowrasta",  "ward": "South-West", "lat": 22.4987, "lon": 88.3097 },
+    { "id": "parkcircus",  "name": "Park Circus",       "ward": "East",       "lat": 22.5414, "lon": 88.3689 },
+    { "id": "ruby",        "name": "Ruby Crossing",     "ward": "East",       "lat": 22.5133, "lon": 88.4016 },
+    { "id": "sciencecity", "name": "Science City",      "ward": "East",       "lat": 22.5391, "lon": 88.3957 },
+    { "id": "shyambazar",  "name": "Shyambazar",        "ward": "North",      "lat": 22.6013, "lon": 88.3731 },
+    { "id": "dumdum",      "name": "Dum Dum",           "ward": "North",      "lat": 22.6224, "lon": 88.3892 },
+    { "id": "airport",     "name": "Airport (NSCBI)",   "ward": "North",      "lat": 22.6520, "lon": 88.4450 },
+    { "id": "stadium",     "name": "Salt Lake Stadium", "ward": "Salt Lake",  "lat": 22.5697, "lon": 88.4094 },
+    { "id": "karunamoyee", "name": "Karunamoyee",       "ward": "Salt Lake",  "lat": 22.5804, "lon": 88.4174 },
+    { "id": "sectorv",     "name": "Sector V",          "ward": "Salt Lake",  "lat": 22.5715, "lon": 88.4332 }
   ],
   "edges": [
     { "from": "dumdum",     "to": "shyambazar",  "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
@@ -211,6 +212,8 @@ const DEFAULT_NETWORK = {
 // ---- SANJOG interface layer (data comes from network.json) ----
 
 let NET = null;
+let lastFix = null;                       // {lat, lon, at} cached for a minute
+const prevSel = { from: null, to: null }; // last real stop chosen per picker
 
 async function loadNetwork() {
   try {
@@ -223,12 +226,13 @@ async function loadNetwork() {
 function fillSelects() {
   const byWard = {};
   for (const id in NET.stops) {
+    if (id === LOC_ID) continue;
     const w = NET.stops[id].ward || "Other";
     (byWard[w] = byWard[w] || []).push(id);
   }
   const wards = Object.keys(byWard).sort((a, b) =>
     a === "Other" ? 1 : b === "Other" ? -1 : a.localeCompare(b));
-  let html = "";
+  let html = `<option value="${LOC_ID}">📍 Use my location</option>`;
   for (const w of wards) {
     const ids = byWard[w].sort((a, b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
     html += `<optgroup label="${w}">` +
@@ -237,11 +241,9 @@ function fillSelects() {
   }
   const from = document.getElementById("from"), to = document.getElementById("to");
   from.innerHTML = html; to.innerHTML = html;
-  const pick = (el, want, fallbackIndex) => {
-    if (NET.stops[want]) el.value = want;
-    else el.selectedIndex = Math.min(fallbackIndex, el.options.length - 1);
-  };
-  pick(from, "howrah", 0); pick(to, "sectorv", 1);
+  from.value = NET.stops["howrah"] ? "howrah" : from.options[1] && (from.options[1].value);
+  to.value = NET.stops["sectorv"] ? "sectorv" : to.options[2] && (to.options[2].value);
+  prevSel.from = from.value; prevSel.to = to.value;
 }
 
 function buildLegend() {
@@ -249,6 +251,62 @@ function buildLegend() {
     `<span class="lg"><span class="dot" style="background:${NET.modes[m].color}"></span>${NET.modes[m].label}</span>`
   ).join("");
 }
+
+// ---- location handling -------------------------------------------------
+
+function getFix() {
+  return new Promise((resolve, reject) => {
+    if (lastFix && Date.now() - lastFix.at < 60000) return resolve(lastFix);
+    if (!("geolocation" in navigator))
+      return reject({ msg: "This browser doesn't offer location." });
+    if (!window.isSecureContext)
+      return reject({ msg: "Location needs HTTPS — it works on your hosted URL, not a local file." });
+    navigator.geolocation.getCurrentPosition(
+      p => { lastFix = { lat: p.coords.latitude, lon: p.coords.longitude, at: Date.now() }; resolve(lastFix); },
+      err => reject({
+        msg: err.code === 1 ? "Location permission denied — allow it in browser settings, or pick a stop."
+           : "Couldn't get a location fix — try again, or pick a stop."
+      }),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+    );
+  });
+}
+
+function setLocStatus(text) {
+  const el = document.getElementById("locstatus");
+  el.hidden = !text;
+  el.textContent = text || "";
+}
+
+async function handleLocationPick(which, el) {
+  setLocStatus("📍 Getting your location…");
+  try {
+    const fix = await getFix();
+    const res = setLocationNode(NET, fix.lat, fix.lon, {});
+    if (!res.ok) {
+      setLocStatus("📍 Can't use location: " + res.reason);
+      el.value = prevSel[which];
+      render();
+      return;
+    }
+    setLocStatus("📍 Linked to nearest stops: " +
+      res.links.map(l => `${NET.stops[l.id].name} (~${l.min} min walk)`).join(", "));
+    render();
+  } catch (err) {
+    setLocStatus("📍 " + err.msg);
+    el.value = prevSel[which];
+    render();
+  }
+}
+
+function onSelectChange(which) {
+  const el = document.getElementById(which);
+  if (el.value === LOC_ID) { handleLocationPick(which, el); return; }
+  prevSel[which] = el.value;
+  render();
+}
+
+// ---- rendering ----------------------------------------------------------
 
 function legRow(l) {
   const wait = l.wait ? `<div class="leg-sub"><span class="wait">incl. ~${l.wait} min wait</span></div>` : "";
@@ -282,7 +340,23 @@ function render() {
   const from = document.getElementById("from").value;
   const to = document.getElementById("to").value;
   const out = document.getElementById("results");
-  if (from === to) { out.innerHTML = `<p class="msg">Pick two different stops to plan a journey.</p>`; return; }
+
+  // tidy up when the virtual location stop is no longer in use
+  if (from !== LOC_ID && to !== LOC_ID && NET.stops[LOC_ID]) {
+    clearLocationNode(NET);
+    setLocStatus("");
+  }
+
+  if (from === to) {
+    out.innerHTML = `<p class="msg">${from === LOC_ID
+      ? "You're already there! Pick a stop for the other end."
+      : "Pick two different stops to plan a journey."}</p>`;
+    return;
+  }
+  if (!NET.stops[from] || !NET.stops[to]) {
+    out.innerHTML = `<p class="msg">Waiting for your location…</p>`;
+    return;
+  }
   const routes = planAll(NET, from, to);
   out.innerHTML = routes.length
     ? routes.map(card).join("")
@@ -292,6 +366,7 @@ function render() {
 function swapStops() {
   const from = document.getElementById("from"), to = document.getElementById("to");
   const t = from.value; from.value = to.value; to.value = t;
+  const p = prevSel.from; prevSel.from = prevSel.to; prevSel.to = p;
   render();
 }
 
@@ -318,8 +393,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   buildLegend();
   document.getElementById("go").addEventListener("click", render);
   document.getElementById("swap").addEventListener("click", swapStops);
-  document.getElementById("from").addEventListener("change", render);
-  document.getElementById("to").addEventListener("change", render);
+  document.getElementById("from").addEventListener("change", () => onSelectChange("from"));
+  document.getElementById("to").addEventListener("change", () => onSelectChange("to"));
   render();
 
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0)
