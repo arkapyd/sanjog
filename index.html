@@ -16,6 +16,29 @@
   --hair:rgba(14,17,22,.14); --map-bg:#0f1626;
   --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
 }
+/* map app autocomplete styles */
+.autocomplete { position: relative; }
+.autocomplete input {
+  width: 100%; padding: 11px 10px; font: inherit; border: 1px solid var(--hair);
+  border-radius: 7px; background: #fff; color: var(--ink);
+}
+.autocomplete input:focus { 
+  outline: 2px solid var(--navy); border-color: var(--navy); 
+}
+.sugg-list {
+  position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+  border: 1px solid var(--navy); border-radius: 7px; margin-top: 4px;
+  max-height: 240px; overflow-y: auto; z-index: 100; 
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.sugg-item {
+  padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--paper);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.sugg-item:last-child { border-bottom: none; }
+.sugg-item:hover { background: var(--paper); }
+.sugg-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.sugg-ward { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .taxi-hint {
   font-size: 11.5px;
   font-weight: 600;
@@ -274,29 +297,93 @@ async function loadNetwork() {
   return { json: DEFAULT_NETWORK, src: "built-in sample" };
 }
 
-function fillSelects() {
-  const byWard = {};
-  for (const id in NET.stops) {
-    if (id === LOC_ID) continue;
-    const w = NET.stops[id].ward || "Other";
-    (byWard[w] = byWard[w] || []).push(id);
+// ---- custom maps-style autocomplete ---------------------------------------
+
+function setupAutocomplete(inputId, listId, hiddenId) {
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  const hidden = document.getElementById(hiddenId);
+
+  function showSuggestions(query) {
+    let html = `<div class="sugg-item" data-id="${LOC_ID}">
+                  <span class="sugg-name">📍 Use my current location</span>
+                </div>`;
+
+    const q = query.toLowerCase();
+    let count = 0;
+
+    // sort alphabetically so results are predictable
+    const sortedIds = Object.keys(NET.stops).filter(id => id !== LOC_ID).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
+
+    for (const id of sortedIds) {
+      const stop = NET.stops[id];
+      if (stop.name.toLowerCase().includes(q)) {
+        html += `<div class="sugg-item" data-id="${id}">
+                   <span class="sugg-name">${stop.name}</span>
+                   <span class="sugg-ward">${stop.ward || "Kolkata Transit"}</span>
+                 </div>`;
+        count++;
+      }
+      if (count > 25) break; // limit to top 25 matches for smooth scrolling
+    }
+
+    if (count === 0 && q !== "") {
+       html = `<div class="sugg-item"><span class="sugg-ward">No stops found matching "${query}"</span></div>`;
+    }
+
+    list.innerHTML = html;
+    list.hidden = false;
   }
-  const wards = Object.keys(byWard).sort((a, b) =>
-    a === "Other" ? 1 : b === "Other" ? -1 : a.localeCompare(b));
-  let html = `<option value="${LOC_ID}">Use my location</option>`;
-  for (const w of wards) {
-    const ids = byWard[w].sort((a, b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
-    html += `<optgroup label="${w}">` +
-            ids.map(id => `<option value="${id}">${NET.stops[id].name}</option>`).join("") +
-            `</optgroup>`;
-  }
-  const from = document.getElementById("from"), to = document.getElementById("to");
-  from.innerHTML = html; to.innerHTML = html;
-  from.value = NET.stops["howrah"] ? "howrah" : from.options[1] && (from.options[1].value);
-  to.value = NET.stops["sectorv"] ? "sectorv" : to.options[2] && (to.options[2].value);
-  prevSel.from = from.value; prevSel.to = to.value;
+
+  input.addEventListener("input", (e) => showSuggestions(e.target.value));
+  input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
+
+  // handle clicking a stop from the list
+  list.addEventListener("mousedown", (e) => {
+    const item = e.target.closest(".sugg-item");
+    if (!item || !item.dataset.id) return;
+
+    const id = item.dataset.id;
+    hidden.value = id;
+
+    if (id === LOC_ID) {
+      input.value = "📍 Locating...";
+      handleLocationPick(hiddenId, input);
+    } else {
+      input.value = NET.stops[id].name;
+      prevSel[hiddenId] = id;
+      render();
+    }
+    list.hidden = true;
+  });
+
+  // hide list when clicking away
+  input.addEventListener("blur", () => {
+     setTimeout(() => list.hidden = true, 150); 
+     // revert to the last valid selection if they type nonsense and click away
+     if (hidden.value && hidden.value !== LOC_ID && NET.stops[hidden.value]) {
+         input.value = NET.stops[hidden.value].name;
+     }
+  });
 }
 
+function initSearchFields() {
+  // set default startup locations (falls back to first keys if not found)
+  let fromId = NET.stops["howrah"] ? "howrah" : Object.keys(NET.stops)[1];
+  let toId = NET.stops["sectorv"] ? "sectorv" : Object.keys(NET.stops)[2];
+
+  document.getElementById("from").value = fromId;
+  document.getElementById("from-input").value = NET.stops[fromId].name;
+  prevSel.from = fromId;
+
+  document.getElementById("to").value = toId;
+  document.getElementById("to-input").value = NET.stops[toId].name;
+  prevSel.to = toId;
+
+  setupAutocomplete("from-input", "from-list", "from");
+  setupAutocomplete("to-input", "to-list", "to");
+}
+  
 function buildLegend() {
   document.getElementById("legend").innerHTML = Object.keys(NET.modes).map(m =>
     `<span class="lg"><span class="dot" style="background:${NET.modes[m].color}"></span>${NET.modes[m].label}</span>`
@@ -538,7 +625,13 @@ function render() {
 
 function swapStops() {
   const from = document.getElementById("from"), to = document.getElementById("to");
+  const fromIn = document.getElementById("from-input"), toIn = document.getElementById("to-input");
+
+  // swap hidden data
   const t = from.value; from.value = to.value; to.value = t;
+  // swap visual text
+  const tName = fromIn.value; fromIn.value = toIn.value; toIn.value = tName;
+
   const p = prevSel.from; prevSel.from = prevSel.to; prevSel.to = p;
   render();
 }
@@ -562,13 +655,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.warn("SANJOG network data issues:\n- " + issues.join("\n- "));
   }
 
-  fillSelects();
+  initSearchFields();
   buildLegend();
   document.getElementById("go").addEventListener("click", render);
   document.getElementById("swap").addEventListener("click", swapStops);
-  document.getElementById("from").addEventListener("change", () => onSelectChange("from"));
-  document.getElementById("to").addEventListener("change", () => onSelectChange("to"));
-
+  
   const results = document.getElementById("results");
   results.addEventListener("click", e => {
     const c = e.target.closest(".card");
