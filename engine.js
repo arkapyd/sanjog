@@ -135,7 +135,7 @@ function plan(NET, src, dst, pref) {
   }
 
   return {
-    legs,
+    legs, path,
     totalMin:  legs.reduce((s, l) => s + l.min + l.wait, 0),
     totalFare: legs.reduce((s, l) => s + l.fare, 0),
     boardings: legs.filter(l => l.mode !== "walk").length,

@@ -28,7 +28,7 @@ built-in network copy; hosted, it loads `network.json` fresh.)
 2. Settings → Pages → Deploy from a branch → `main`, `/ (root)`.
 3. Your app is live at `https://<user>.github.io/<repo>/`. Users can Install
    it from the browser menu (it's a PWA: works offline after first visit).
-   The 📍 "Use my location" option needs HTTPS and the user's permission —
+   The "Use my location" option needs HTTPS and the user's permission —
    both satisfied on GitHub Pages, but not when opening the file locally.
 
 ## Add your ward's data (the whole point)
@@ -47,7 +47,7 @@ Edit **`network.json`** — in the GitHub web editor is fine. Three sections:
 - `ward` groups stops in the pickers — use your ward/neighbourhood name.
 - `lat`/`lon` (optional, recommended): coordinates. Long-press the spot in
   Google Maps and copy the numbers. Stops with coordinates power the
-  📍 "Use my location" option, which links a user to their nearest stops by
+  "Use my location" option, which links a user to their nearest stops by
   walking time. Provide both or neither.
 
 **`edges`** — direct connections between two stops. Every edge is
@@ -66,7 +66,7 @@ Edit **`network.json`** — in the GitHub web editor is fine. Three sections:
 - `color` (optional): hex override, used for metro line colours.
 
 **`modes`** — add a new mode of transport (e.g. toto/e-rickshaw) by copying an
-existing entry and setting `label`, `icon`, `color`, `wait` (typical minutes
+existing entry and setting `label`, `icon` (a 1–2 letter code shown on mode tiles, e.g. "M"), `color`, `wait` (typical minutes
 until one turns up), `defaultMin`, `defaultFare`.
 
 **Rules of thumb**
