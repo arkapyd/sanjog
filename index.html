@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SANJOG · Kolkata, every mode · one journey</title>
+<title>shonjog · kolkata, untangled </title>
 <meta name="description" content="One interface for Kolkata's buses, trams, metro, autos, ferries and rickshaws.">
 <meta name="theme-color" content="#0b0f16">
 <link rel="manifest" href="manifest.webmanifest">
@@ -134,8 +134,8 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
 <body>
 <header>
   <div class="mast">
-    <h1>sanjog<span class="bn">সংযোগ</span></h1>
-    <p class="tag">kolkata untangled</p>
+    <h1>shonjog<span class="bn">সংযোগ</span></h1>
+    <p class="tag">kolkata, untangled</p>
     <p class="ticker">বাস · ট্রাম · মেট্রো · অটো · ফেরি · রিকশা</p>
   </div>
 </header>
@@ -184,13 +184,13 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
 
   <div class="legend" id="legend"></div>
 
-  <footer>SANJOG is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
+  <footer>shonjog is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
 </main>
 
 <script src="engine.js"></script>
 <script>
 const DEFAULT_NETWORK = {
-  "name": "SANJOG Kolkata sample network",
+  "name": "shonjog Kolkata sample network",
   "version": "0.4.0",
   "updated": "2026-07-11",
   "modes": {
@@ -209,7 +209,7 @@ const DEFAULT_NETWORK = {
   "edges": []
 };
 
-// ---- SANJOG interface layer (data comes from network.json) ----
+// ---- shonjog interface layer (data comes from network.json) ----
 let NET = null;
 let lastFix = null;
 const prevSel = { from: null, to: null };
@@ -565,7 +565,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     warn.hidden = false;
     warn.textContent = `Data check — ${issues.length} issue${issues.length > 1 ? "s" : ""} in network data, e.g. ${issues[0]}. ` +
       `${NET.skipped ? NET.skipped + " link(s) skipped. " : ""}Full list in the browser console.`;
-    console.warn("SANJOG network data issues:\n- " + issues.join("\n- "));
+    console.warn("shonjog network data issues:\n- " + issues.join("\n- "));
   }
 
   initSearchFields();
