@@ -1,6 +1,64 @@
 {
   "name": "SANJOG Master Network",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "modes": {
+    "metro": {
+      "label": "Metro",
+      "icon": "M",
+      "color": "#2b5b9e",
+      "wait": 3,
+      "defaultMin": 4,
+      "defaultFare": 5
+    },
+    "tram": {
+      "label": "Tram",
+      "icon": "T",
+      "color": "#7d4a33",
+      "wait": 8,
+      "defaultMin": 18,
+      "defaultFare": 7
+    },
+    "bus": {
+      "label": "Bus",
+      "icon": "B",
+      "color": "#96393c",
+      "wait": 5,
+      "defaultMin": 15,
+      "defaultFare": 10
+    },
+    "ferry": {
+      "label": "Ferry",
+      "icon": "F",
+      "color": "#33687a",
+      "wait": 7,
+      "defaultMin": 12,
+      "defaultFare": 8
+    },
+    "auto": {
+      "label": "Shared auto",
+      "icon": "A",
+      "color": "#a2652d",
+      "wait": 2,
+      "defaultMin": 10,
+      "defaultFare": 12
+    },
+    "rickshaw": {
+      "label": "Rickshaw",
+      "icon": "R",
+      "color": "#5f5680",
+      "wait": 1,
+      "defaultMin": 10,
+      "defaultFare": 25
+    },
+    "walk": {
+      "label": "Walk",
+      "icon": "W",
+      "color": "#98a0a8",
+      "wait": 0,
+      "defaultMin": 8,
+      "defaultFare": 0
+    }
+  },
   "stops": [
     {
       "id": "dahighat",
