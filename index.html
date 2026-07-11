@@ -5,86 +5,98 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SANJOG · Kolkata, every mode · one journey</title>
 <meta name="description" content="One interface for Kolkata's buses, trams, metro, autos, ferries and rickshaws.">
-<meta name="theme-color" content="#0f1b28">
+<meta name="theme-color" content="#0b0f16">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
-  --ink:#182230; --muted:#5b6672; --bg:#edefe9; --surface:#ffffff;
-  --band:#0f1b28; --taxi:#f6c443; --hair:rgba(24,34,48,.16);
-  --display:'Arial Black','Archivo Black',system-ui,sans-serif;
-  --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --ink:#0e1116; --black:#0b0f16; --navy:#23406e; --navy-deep:#182c4d;
+  --paper:#eef0f2; --surface:#ffffff; --muted:#5c6470;
+  --hair:rgba(14,17,22,.14); --map-bg:#0f1626;
+  --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box;margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.45}
-.wrap{max-width:680px;margin:0 auto;padding:0 16px 48px}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.45}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px 56px}
+.microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
 
-/* masthead: a route-board */
-header{background:var(--band);color:#fff;border-bottom:6px solid var(--taxi)}
-.mast{max-width:680px;margin:0 auto;padding:26px 16px 18px}
-.mast h1{font-family:var(--display);font-size:clamp(30px,7vw,44px);
-  letter-spacing:.5px;line-height:1}
-.mast h1 .bn{color:var(--taxi);font-family:var(--body);font-weight:700;
-  font-size:.62em;vertical-align:middle;margin-left:10px}
-.tag{margin-top:8px;font-size:15px;color:#cfd6de}
-.ticker{margin-top:12px;font-size:13px;color:var(--taxi);letter-spacing:.06em}
+/* masthead */
+header{background:var(--black);color:#fff;border-bottom:4px solid var(--navy)}
+.mast{max-width:680px;margin:0 auto;padding:30px 16px 20px}
+.mast h1{font-size:clamp(34px,8vw,52px);font-weight:800;letter-spacing:-.01em;line-height:1}
+.mast h1 .bn{color:#93a0b4;font-weight:500;font-size:.55em;vertical-align:middle;margin-left:12px}
+.tag{margin-top:9px;font-size:15px;color:#aeb6c2}
+.ticker{margin-top:14px;font-size:12.5px;color:#6f7a89;letter-spacing:.08em}
 
 /* planner */
-.panel{background:var(--surface);border:1px solid var(--hair);border-radius:12px;
-  padding:16px;margin-top:-22px;box-shadow:0 8px 22px rgba(15,27,40,.12)}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:16px;margin-top:-22px;box-shadow:0 8px 22px rgba(11,15,22,.10)}
 .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
 .field{flex:1 1 180px}
-label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
-  border-radius:8px;background:#fff;color:var(--ink)}
+  border-radius:7px;background:#fff;color:var(--ink)}
 #swap{flex:0 0 auto;height:44px;width:44px;border:1px solid var(--hair);
-  border-radius:8px;background:#fff;font-size:18px;cursor:pointer}
-#go{flex:1 1 100%;margin-top:2px;padding:12px;border:0;border-radius:8px;
-  background:var(--taxi);color:var(--band);font-family:var(--display);
-  font-size:15px;letter-spacing:.04em;cursor:pointer}
-#go:hover{filter:brightness(.96)}
+  border-radius:7px;background:#fff;color:var(--ink);cursor:pointer;
+  display:flex;align-items:center;justify-content:center}
+#swap:hover{border-color:var(--navy);color:var(--navy)}
+#go{flex:1 1 100%;margin-top:2px;padding:13px;border:0;border-radius:7px;
+  background:var(--navy);color:#fff;font-family:var(--sans);font-size:13px;
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+#go:hover{background:var(--navy-deep)}
 .note{margin:14px 2px 0;font-size:12.5px;color:var(--muted)}
-.warn{margin-top:14px;padding:11px 13px;border:1px solid #e0c25e;border-radius:10px;
-  background:#fdf4d8;font-size:13px;color:#6b5410}
+.warn{margin-top:14px;padding:11px 13px;border:1px solid var(--hair);
+  border-left:3px solid var(--navy);border-radius:8px;background:#fff;
+  font-size:13px;color:var(--ink)}
 
 /* route cards */
 #results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--hair);border-radius:12px;
-  padding:14px 16px;animation:rise .35s ease both}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:14px 16px;animation:rise .35s ease both;cursor:pointer}
+.card.sel{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
-  text-transform:uppercase;border:1px solid var(--hair);border-radius:99px;
-  padding:3px 9px;color:var(--muted)}
-.chip:first-child{background:var(--taxi);border-color:var(--taxi);color:var(--band)}
-.totals{display:flex;align-items:baseline;gap:16px;font-family:var(--mono)}
-.stat{font-size:26px;font-weight:700}
+.chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.chip{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--hair);border-radius:99px;padding:3px 10px;color:var(--muted)}
+.chip:first-child{background:var(--navy);border-color:var(--navy);color:#fff}
+.totals{display:flex;align-items:baseline;gap:16px;font-variant-numeric:tabular-nums}
+.stat{font-size:26px;font-weight:700;letter-spacing:-.01em}
 .stat em{font-style:normal;font-size:13px;font-weight:400;color:var(--muted);margin-left:3px}
 .chg{margin-left:auto;font-size:12.5px;color:var(--muted)}
-.tl{display:flex;gap:2px;height:12px;margin:12px 0 12px}
-.tl span{border-radius:6px;min-width:8px}
-.legs{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--hair);padding-top:11px}
+.tl{display:flex;gap:2px;height:10px;margin:12px 0 12px}
+.tl span{border-radius:2px;min-width:8px}
+.legs{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--hair);padding-top:12px}
 .leg{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:14px}
-.badge{color:#fff;font-family:var(--mono);font-size:11.5px;padding:3px 8px;
-  border-radius:6px;white-space:nowrap}
-.path{flex:1 1 auto}
-.nums{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
-.leg-sub{font-size:11.5px;color:var(--muted);margin:-3px 0 0 4px}
-.wait{font-family:var(--mono)}
+.tile{width:20px;height:20px;border-radius:4px;color:#fff;flex:0 0 auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700}
+.linename{font-weight:600;font-size:13px;white-space:nowrap}
+.path{flex:1 1 auto;color:var(--muted)}
+.nums{font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.leg-sub{font-size:11.5px;color:var(--muted);margin:-4px 0 0 29px}
 .approx{margin-top:10px;font-size:11.5px;color:var(--muted)}
 .msg{padding:14px 4px;color:var(--muted)}
 
+/* network map */
+.maphead{display:flex;justify-content:space-between;align-items:baseline;
+  gap:10px;margin:26px 0 10px}
+.maphint{font-size:12px;color:var(--muted)}
+.mapwrap{background:var(--map-bg);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:10px}
+.mapwrap svg{display:block;width:100%;height:auto;font-family:var(--sans)}
+.mapmsg{color:#8fa0b5;font-size:13px;padding:14px}
+
 /* legend + footer */
-.legend{margin-top:22px;display:flex;flex-wrap:wrap;gap:7px}
+.legend{margin-top:20px;display:flex;flex-wrap:wrap;gap:7px}
 .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);
   border:1px solid var(--hair);border-radius:99px;padding:4px 10px;background:#fff}
 .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
-footer{margin-top:26px;font-size:12px;color:var(--muted)}
+footer{margin-top:28px;font-size:12px;color:var(--muted)}
 
-:focus-visible{outline:3px solid var(--taxi);outline-offset:2px}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.card{animation:none}}
 </style>
 </head>
@@ -92,7 +104,7 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
 <header>
   <div class="mast">
     <h1>SANJOG<span class="bn">সংযোগ</span></h1>
-    <p class="tag">Kolkata, every mode · one journey. Which modes, how long, what it costs.</p>
+    <p class="tag">Kolkata, every mode, one journey. Which modes, how long, what it costs.</p>
     <p class="ticker">বাস · ট্রাম · মেট্রো · অটো · ফেরি · রিকশা</p>
   </div>
 </header>
@@ -101,7 +113,12 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
   <section class="panel" aria-label="Journey planner">
     <div class="row">
       <div class="field"><label for="from">From</label><select id="from"></select></div>
-      <button id="swap" aria-label="Swap from and to">⇅</button>
+      <button id="swap" aria-label="Swap from and to">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 3v14"/><path d="M3 7l4-4 4 4"/><path d="M17 21V7"/><path d="M13 17l4 4 4-4"/>
+        </svg>
+      </button>
       <div class="field"><label for="to">To</label><select id="to"></select></div>
       <button id="go">Find routes</button>
     </div>
@@ -113,6 +130,14 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
 
   <section id="results" aria-live="polite"></section>
 
+  <section aria-label="Network map">
+    <div class="maphead">
+      <span class="microlabel">Network map</span>
+      <span class="maphint">Select a route to trace it</span>
+    </div>
+    <div class="mapwrap" id="map"></div>
+  </section>
+
   <div class="legend" id="legend"></div>
 
   <footer>SANJOG is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
@@ -122,16 +147,16 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
 <script>
 const DEFAULT_NETWORK = {
   "name": "SANJOG Kolkata sample network",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "updated": "2026-07-11",
   "modes": {
-    "metro":    { "label": "Metro",       "icon": "🚇", "color": "#1e56c8", "wait": 3, "defaultMin": 4,  "defaultFare": 5 },
-    "tram":     { "label": "Tram",        "icon": "🚋", "color": "#b3452b", "wait": 8, "defaultMin": 18, "defaultFare": 7 },
-    "bus":      { "label": "Bus",         "icon": "🚌", "color": "#bf3b3b", "wait": 5, "defaultMin": 15, "defaultFare": 10 },
-    "ferry":    { "label": "Ferry",       "icon": "⛴️", "color": "#0f7b8a", "wait": 7, "defaultMin": 12, "defaultFare": 8 },
-    "auto":     { "label": "Shared auto", "icon": "🛺", "color": "#d96c00", "wait": 2, "defaultMin": 10, "defaultFare": 12 },
-    "rickshaw": { "label": "Rickshaw",    "icon": "🚲", "color": "#7b5ea7", "wait": 1, "defaultMin": 10, "defaultFare": 25 },
-    "walk":     { "label": "Walk",        "icon": "🚶", "color": "#8b93a1", "wait": 0, "defaultMin": 8,  "defaultFare": 0 }
+    "metro":    { "label": "Metro",       "icon": "M", "color": "#2b5b9e", "wait": 3, "defaultMin": 4,  "defaultFare": 5 },
+    "tram":     { "label": "Tram",        "icon": "T", "color": "#7d4a33", "wait": 8, "defaultMin": 18, "defaultFare": 7 },
+    "bus":      { "label": "Bus",         "icon": "B", "color": "#96393c", "wait": 5, "defaultMin": 15, "defaultFare": 10 },
+    "ferry":    { "label": "Ferry",       "icon": "F", "color": "#33687a", "wait": 7, "defaultMin": 12, "defaultFare": 8 },
+    "auto":     { "label": "Shared auto", "icon": "A", "color": "#a2652d", "wait": 2, "defaultMin": 10, "defaultFare": 12 },
+    "rickshaw": { "label": "Rickshaw",    "icon": "R", "color": "#5f5680", "wait": 1, "defaultMin": 10, "defaultFare": 25 },
+    "walk":     { "label": "Walk",        "icon": "W", "color": "#98a0a8", "wait": 0, "defaultMin": 8,  "defaultFare": 0 }
   },
   "stops": [
     { "id": "howrah",      "name": "Howrah Station",    "ward": "Howrah",     "lat": 22.5839, "lon": 88.3435 },
@@ -160,21 +185,21 @@ const DEFAULT_NETWORK = {
     { "id": "sectorv",     "name": "Sector V",          "ward": "Salt Lake",  "lat": 22.5715, "lon": 88.4332 }
   ],
   "edges": [
-    { "from": "dumdum",     "to": "shyambazar",  "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
-    { "from": "shyambazar", "to": "college",     "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
-    { "from": "college",    "to": "esplanade",   "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
-    { "from": "esplanade",  "to": "parkst",      "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 2,  "fare": 4 },
-    { "from": "parkst",     "to": "rabindra",    "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 2,  "fare": 4 },
-    { "from": "rabindra",   "to": "kalighat",    "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
-    { "from": "kalighat",   "to": "tolly",       "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
-    { "from": "hmaidan",    "to": "howrah",      "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 2,  "fare": 5 },
-    { "from": "howrah",     "to": "bbd",         "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
-    { "from": "bbd",        "to": "esplanade",   "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 2,  "fare": 5 },
-    { "from": "esplanade",  "to": "sealdah",     "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
-    { "from": "sealdah",    "to": "stadium",     "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 5,  "fare": 5 },
-    { "from": "stadium",    "to": "karunamoyee", "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
-    { "from": "karunamoyee","to": "sectorv",     "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
-    { "from": "dumdum",     "to": "airport",     "mode": "metro", "line": "Yellow Line","color": "#b98f14", "min": 12, "fare": 10 },
+    { "from": "dumdum",     "to": "shyambazar",  "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
+    { "from": "shyambazar", "to": "college",     "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
+    { "from": "college",    "to": "esplanade",   "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
+    { "from": "esplanade",  "to": "parkst",      "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 2,  "fare": 4 },
+    { "from": "parkst",     "to": "rabindra",    "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 2,  "fare": 4 },
+    { "from": "rabindra",   "to": "kalighat",    "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
+    { "from": "kalighat",   "to": "tolly",       "mode": "metro", "line": "Blue Line",  "color": "#2b5b9e", "min": 4,  "fare": 4 },
+    { "from": "hmaidan",    "to": "howrah",      "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 2,  "fare": 5 },
+    { "from": "howrah",     "to": "bbd",         "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
+    { "from": "bbd",        "to": "esplanade",   "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 2,  "fare": 5 },
+    { "from": "esplanade",  "to": "sealdah",     "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
+    { "from": "sealdah",    "to": "stadium",     "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 5,  "fare": 5 },
+    { "from": "stadium",    "to": "karunamoyee", "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
+    { "from": "karunamoyee","to": "sectorv",     "mode": "metro", "line": "Green Line", "color": "#2f7057", "min": 3,  "fare": 5 },
+    { "from": "dumdum",     "to": "airport",     "mode": "metro", "line": "Yellow Line","color": "#a6862f", "min": 12, "fare": 10 },
     { "from": "esplanade",  "to": "parkcircus",  "mode": "tram",  "line": "Tram 25",    "min": 22, "fare": 7 },
     { "from": "parkcircus", "to": "gariahat",    "mode": "tram",  "line": "Tram 25",    "min": 18, "fare": 7 },
     { "from": "college",    "to": "esplanade",   "mode": "tram",  "line": "Tram 5",     "min": 16, "fare": 7 },
@@ -214,6 +239,8 @@ const DEFAULT_NETWORK = {
 let NET = null;
 let lastFix = null;                       // {lat, lon, at} cached for a minute
 const prevSel = { from: null, to: null }; // last real stop chosen per picker
+let currentRoutes = [];
+let selectedIdx = 0;
 
 async function loadNetwork() {
   try {
@@ -232,7 +259,7 @@ function fillSelects() {
   }
   const wards = Object.keys(byWard).sort((a, b) =>
     a === "Other" ? 1 : b === "Other" ? -1 : a.localeCompare(b));
-  let html = `<option value="${LOC_ID}">📍 Use my location</option>`;
+  let html = `<option value="${LOC_ID}">Use my location</option>`;
   for (const w of wards) {
     const ids = byWard[w].sort((a, b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
     html += `<optgroup label="${w}">` +
@@ -279,21 +306,21 @@ function setLocStatus(text) {
 }
 
 async function handleLocationPick(which, el) {
-  setLocStatus("📍 Getting your location…");
+  setLocStatus("Getting your location…");
   try {
     const fix = await getFix();
     const res = setLocationNode(NET, fix.lat, fix.lon, {});
     if (!res.ok) {
-      setLocStatus("📍 Can't use location: " + res.reason);
+      setLocStatus("Can't use location: " + res.reason);
       el.value = prevSel[which];
       render();
       return;
     }
-    setLocStatus("📍 Linked to nearest stops: " +
+    setLocStatus("Linked to nearest stops: " +
       res.links.map(l => `${NET.stops[l.id].name} (~${l.min} min walk)`).join(", "));
     render();
   } catch (err) {
-    setLocStatus("📍 " + err.msg);
+    setLocStatus(err.msg);
     el.value = prevSel[which];
     render();
   }
@@ -306,12 +333,13 @@ function onSelectChange(which) {
   render();
 }
 
-// ---- rendering ----------------------------------------------------------
+// ---- route cards ---------------------------------------------------------
 
 function legRow(l) {
-  const wait = l.wait ? `<div class="leg-sub"><span class="wait">incl. ~${l.wait} min wait</span></div>` : "";
+  const wait = l.wait ? `<div class="leg-sub">incl. ~${l.wait} min wait</div>` : "";
   return `<div class="leg">
-      <span class="badge" style="background:${l.color}">${NET.modes[l.mode].icon} ${l.line}</span>
+      <span class="tile" style="background:${l.color}">${NET.modes[l.mode].icon}</span>
+      <span class="linename">${l.line}</span>
       <span class="path">${NET.stops[l.from].name} → ${NET.stops[l.to].name}</span>
       <span class="nums">${l.minApprox ? "~" : ""}${l.min + l.wait} min · ${l.fare ? (l.fareApprox ? "~₹" : "₹") + l.fare : "free"}</span>
     </div>${wait}`;
@@ -324,7 +352,9 @@ function card(r, i) {
     `<span style="flex:${l.min};background:${l.color}" title="${l.line}"></span>`).join("");
   const approx = (r.approxMin || r.approxFare)
     ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
-  return `<article class="card" style="animation-delay:${i * 70}ms">
+  return `<article class="card${i === selectedIdx ? " sel" : ""}" data-idx="${i}"
+        tabindex="0" role="button" aria-pressed="${i === selectedIdx}"
+        style="animation-delay:${i * 70}ms">
       <div class="chiprow">${chips}</div>
       <div class="totals">
         <span class="stat">${r.approxMin ? "~" : ""}${r.totalMin}<em>min</em></span>
@@ -336,31 +366,143 @@ function card(r, i) {
     </article>`;
 }
 
+function renderCards() {
+  document.getElementById("results").innerHTML =
+    currentRoutes.map(card).join("");
+}
+
+function selectCard(i) {
+  if (!currentRoutes[i]) return;
+  selectedIdx = i;
+  renderCards();
+  renderMap(currentRoutes[i]);
+}
+
+// ---- schematic map --------------------------------------------------------
+
+function renderMap(route) {
+  const box = document.getElementById("map");
+  if (!box) return;
+
+  let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180, count = 0;
+  for (const id in NET.stops) {
+    const s = NET.stops[id];
+    if (typeof s.lat === "number" && typeof s.lon === "number") {
+      count++;
+      if (s.lat < minLat) minLat = s.lat; if (s.lat > maxLat) maxLat = s.lat;
+      if (s.lon < minLon) minLon = s.lon; if (s.lon > maxLon) maxLon = s.lon;
+    }
+  }
+  if (count < 2) {
+    box.innerHTML = `<p class="mapmsg">Add lat/lon to stops in network.json and the map draws itself.</p>`;
+    return;
+  }
+
+  const kx = Math.cos((minLat + maxLat) / 2 * Math.PI / 180);
+  const W = 600, P = 46;
+  const spanX = Math.max((maxLon - minLon) * kx, 1e-9);
+  const spanY = Math.max(maxLat - minLat, 1e-9);
+  const scale = (W - 2 * P) / spanX;
+  const H = Math.round(spanY * scale) + 2 * P;
+  const hasXY = id => { const s = NET.stops[id]; return s && typeof s.lat === "number" && typeof s.lon === "number"; };
+  const pt = id => {
+    const s = NET.stops[id];
+    return [P + (s.lon - minLon) * kx * scale, P + (maxLat - s.lat) * scale];
+  };
+
+  // one entry per undirected stop pair; parallel services get offset tracks
+  const groups = {};
+  for (const a in NET.adj) for (const e of NET.adj[a]) {
+    if (a > e.to) continue;
+    if (!hasXY(a) || !hasXY(e.to)) continue;
+    const pk = a + "~" + e.to;
+    (groups[pk] = groups[pk] || []).push({ key: e.key, color: e.color, a, b: e.to });
+  }
+
+  const onRoute = new Set(), routeStops = new Set();
+  if (route) for (const e of route.path) {
+    const pk = e.from < e.to ? e.from + "~" + e.to : e.to + "~" + e.from;
+    onRoute.add(pk + "::" + e.key);
+    routeStops.add(e.from); routeStops.add(e.to);
+  }
+
+  let dim = "", hot = "";
+  for (const pk in groups) {
+    const list = groups[pk], n = list.length;
+    const [x1, y1] = pt(list[0].a), [x2, y2] = pt(list[0].b);
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+    const ox = -dy / len, oy = dx / len;                 // perpendicular unit
+    list.forEach((e, i) => {
+      const off = (i - (n - 1) / 2) * 5;
+      const seg = `<line x1="${(x1 + ox * off).toFixed(1)}" y1="${(y1 + oy * off).toFixed(1)}"` +
+                  ` x2="${(x2 + ox * off).toFixed(1)}" y2="${(y2 + oy * off).toFixed(1)}"` +
+                  ` stroke="${e.color}" stroke-linecap="round"`;
+      if (route && onRoute.has(pk + "::" + e.key)) hot += seg + ` stroke-width="5"/>`;
+      else dim += seg + ` stroke-width="3" opacity="${route ? 0.18 : 0.9}"/>`;
+    });
+  }
+
+  let dots = "", labels = "";
+  for (const id in NET.stops) {
+    if (id === LOC_ID || !hasXY(id)) continue;
+    const [x, y] = pt(id);
+    const hit = routeStops.has(id), on = !route || hit;
+    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hit ? 5 : 4}"` +
+            ` fill="#fff" stroke="#0f1626" stroke-width="1.6" opacity="${on ? 1 : 0.3}">` +
+            `<title>${NET.stops[id].name}</title></circle>`;
+    const right = x > W - 96;
+    labels += `<text x="${(x + (right ? -8 : 8)).toFixed(1)}" y="${(y + 3.5).toFixed(1)}"` +
+              ` text-anchor="${right ? "end" : "start"}" font-size="9.5"` +
+              ` fill="${hit ? "#dbe4f0" : "#7d8aa0"}" opacity="${on ? 1 : 0.45}"` +
+              ` font-weight="${hit ? 600 : 400}">${NET.stops[id].name}</text>`;
+  }
+
+  let me = "";
+  if (NET.stops[LOC_ID] && hasXY(LOC_ID)) {
+    const [x, y] = pt(LOC_ID);
+    me = `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="none" stroke="#fff" stroke-width="2"/>` +
+         `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="#fff"/>` +
+         `<text x="${(x + 12).toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="10" font-weight="700" fill="#fff">You</text>`;
+  }
+
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Schematic network map"` +
+    ` xmlns="http://www.w3.org/2000/svg">${dim}${hot}${dots}${me}${labels}</svg>`;
+}
+
+// ---- main render ----------------------------------------------------------
+
 function render() {
   const from = document.getElementById("from").value;
   const to = document.getElementById("to").value;
   const out = document.getElementById("results");
 
-  // tidy up when the virtual location stop is no longer in use
   if (from !== LOC_ID && to !== LOC_ID && NET.stops[LOC_ID]) {
     clearLocationNode(NET);
     setLocStatus("");
   }
 
+  currentRoutes = []; selectedIdx = 0;
+
   if (from === to) {
     out.innerHTML = `<p class="msg">${from === LOC_ID
-      ? "You're already there! Pick a stop for the other end."
+      ? "You're already there. Pick a stop for the other end."
       : "Pick two different stops to plan a journey."}</p>`;
+    renderMap(null);
     return;
   }
   if (!NET.stops[from] || !NET.stops[to]) {
     out.innerHTML = `<p class="msg">Waiting for your location…</p>`;
+    renderMap(null);
     return;
   }
-  const routes = planAll(NET, from, to);
-  out.innerHTML = routes.length
-    ? routes.map(card).join("")
-    : `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
+  currentRoutes = planAll(NET, from, to);
+  if (!currentRoutes.length) {
+    out.innerHTML = `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
+    renderMap(null);
+    return;
+  }
+  renderCards();
+  renderMap(currentRoutes[0]);
 }
 
 function swapStops() {
@@ -384,7 +526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const warn = document.getElementById("warn");
   if (issues.length) {
     warn.hidden = false;
-    warn.textContent = `⚠ ${issues.length} issue${issues.length > 1 ? "s" : ""} in network data — e.g. ${issues[0]}. ` +
+    warn.textContent = `Data check — ${issues.length} issue${issues.length > 1 ? "s" : ""} in network data, e.g. ${issues[0]}. ` +
       `${NET.skipped ? NET.skipped + " link(s) skipped. " : ""}Full list in the browser console.`;
     console.warn("SANJOG network data issues:\n- " + issues.join("\n- "));
   }
@@ -395,6 +537,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("swap").addEventListener("click", swapStops);
   document.getElementById("from").addEventListener("change", () => onSelectChange("from"));
   document.getElementById("to").addEventListener("change", () => onSelectChange("to"));
+
+  const results = document.getElementById("results");
+  results.addEventListener("click", e => {
+    const c = e.target.closest(".card");
+    if (c) selectCard(+c.dataset.idx);
+  });
+  results.addEventListener("keydown", e => {
+    const c = e.target.closest(".card");
+    if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); selectCard(+c.dataset.idx); }
+  });
+
   render();
 
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0)
