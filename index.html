@@ -16,6 +16,17 @@
   --hair:rgba(14,17,22,.14); --map-bg:#0f1626;
   --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
 }
+.taxi-hint {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #7a5900;
+  background: #ffeb99;
+  border: 1px solid #ffd13b;
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin: 4px 0 6px 29px; /* aligns perfectly under the walking icon */
+  display: inline-block;
+}
 *{box-sizing:border-box;margin:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.45}
 .wrap{max-width:680px;margin:0 auto;padding:0 16px 56px}
@@ -337,12 +348,19 @@ function onSelectChange(which) {
 
 function legRow(l) {
   const wait = l.wait ? `<div class="leg-sub">incl. ~${l.wait} min wait</div>` : "";
+  
+  // the new logic: intercept long walks
+  let suggestion = "";
+  if (l.mode === "walk" && l.min > 15) {
+    suggestion = `<div class="taxi-hint">Long walk (${l.min} min) — hailing a yellow taxi or rickshaw here is recommended.</div>`;
+  }
+
   return `<div class="leg">
-      <span class="tile" style="background:${l.color}">${NET.modes[l.mode].icon}</span>
-      <span class="linename">${l.line}</span>
+      <span class="tile" style="background:${l.color || '#98a0a8'}">${NET.modes[l.mode].icon}</span>
+      <span class="linename">${l.line || "Walk"}</span>
       <span class="path">${NET.stops[l.from].name} → ${NET.stops[l.to].name}</span>
-      <span class="nums">${l.minApprox ? "~" : ""}${l.min + l.wait} min · ${l.fare ? (l.fareApprox ? "~₹" : "₹") + l.fare : "free"}</span>
-    </div>${wait}`;
+      <span class="nums">${l.minApprox ? "~" : ""}${l.min + (l.wait || 0)} min · ${l.fare ? (l.fareApprox ? "~₹" : "₹") + l.fare : "free"}</span>
+    </div>${wait}${suggestion}`;
 }
 
 function card(r, i) {
