@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SANJOG · Kolkata, every mode · one journey</title>
+<meta name="description" content="One interface for Kolkata's buses, trams, metro, autos, ferries and rickshaws.">
+<meta name="theme-color" content="#0f1b28">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
   --ink:#182230; --muted:#5b6672; --bg:#edefe9; --surface:#ffffff;
   --band:#0f1b28; --taxi:#f6c443; --hair:rgba(24,34,48,.16);
-  --m-blue:#1e56c8; --m-green:#0d8a5f; --m-yellow:#b98f14;
-  --tram:#b3452b; --bus:#bf3b3b; --ferry:#0f7b8a;
-  --auto:#d96c00; --rickshaw:#7b5ea7; --walk:#8b93a1;
   --display:'Arial Black','Archivo Black',system-ui,sans-serif;
   --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
@@ -45,6 +47,8 @@ select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
   font-size:15px;letter-spacing:.04em;cursor:pointer}
 #go:hover{filter:brightness(.96)}
 .note{margin:14px 2px 0;font-size:12.5px;color:var(--muted)}
+.warn{margin-top:14px;padding:11px 13px;border:1px solid #e0c25e;border-radius:10px;
+  background:#fdf4d8;font-size:13px;color:#6b5410}
 
 /* route cards */
 #results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
@@ -70,6 +74,7 @@ select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
 .nums{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
 .leg-sub{font-size:11.5px;color:var(--muted);margin:-3px 0 0 4px}
 .wait{font-family:var(--mono)}
+.approx{margin-top:10px;font-size:11.5px;color:var(--muted)}
 .msg{padding:14px 4px;color:var(--muted)}
 
 /* legend + footer */
@@ -100,284 +105,225 @@ footer{margin-top:26px;font-size:12px;color:var(--muted)}
       <div class="field"><label for="to">To</label><select id="to"></select></div>
       <button id="go">Find routes</button>
     </div>
-    <p class="note">Prototype · sample network of 23 stops across 6 modes. Timings and fares are illustrative, not live.</p>
+    <p class="note" id="datainfo">Loading network…</p>
   </section>
+
+  <div id="warn" class="warn" hidden></div>
 
   <section id="results" aria-live="polite"></section>
 
-  <div class="legend">
-    <span class="lg"><span class="dot" style="background:var(--m-blue)"></span>Metro Blue</span>
-    <span class="lg"><span class="dot" style="background:var(--m-green)"></span>Metro Green</span>
-    <span class="lg"><span class="dot" style="background:var(--m-yellow)"></span>Metro Yellow</span>
-    <span class="lg"><span class="dot" style="background:var(--tram)"></span>Tram</span>
-    <span class="lg"><span class="dot" style="background:var(--bus)"></span>Bus</span>
-    <span class="lg"><span class="dot" style="background:var(--ferry)"></span>Ferry</span>
-    <span class="lg"><span class="dot" style="background:var(--auto)"></span>Shared auto</span>
-    <span class="lg"><span class="dot" style="background:var(--rickshaw)"></span>Rickshaw</span>
-    <span class="lg"><span class="dot" style="background:var(--walk)"></span>Walk</span>
-  </div>
+  <div class="legend" id="legend"></div>
 
-  <footer>SANJOG is a concept demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws.</footer>
+  <footer>SANJOG is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
 </main>
 
+<script src="engine.js"></script>
 <script>
-// ---- SANJOG core: sample network + multi-criteria journey planner ----
-// Sample data only: stops, timings and fares are illustrative, not live.
-
-const STOPS = {
-  howrah: "Howrah Station", hmaidan: "Howrah Maidan", bbd: "B.B.D. Bagh",
-  fairlie: "Fairlie Ghat", babughat: "Babughat", esplanade: "Esplanade",
-  parkst: "Park Street", rabindra: "Rabindra Sadan", kalighat: "Kalighat",
-  tolly: "Tollygunge", gariahat: "Gariahat", ballygunge: "Ballygunge",
-  parkcircus: "Park Circus", ruby: "Ruby Crossing", sciencecity: "Science City",
-  sealdah: "Sealdah Station", college: "College Street", shyambazar: "Shyambazar",
-  dumdum: "Dum Dum", airport: "Airport (NSCBI)", stadium: "Salt Lake Stadium",
-  karunamoyee: "Karunamoyee", sectorv: "Sector V"
-};
-
-// [from, to, mode, line, minutes, fare?] -- all edges are two-way
-const EDGES = [
-  // Metro Blue Line (north-south)
-  ["dumdum","shyambazar","metro","Blue Line",4,4],
-  ["shyambazar","college","metro","Blue Line",4,4],
-  ["college","esplanade","metro","Blue Line",4,4],
-  ["esplanade","parkst","metro","Blue Line",2,4],
-  ["parkst","rabindra","metro","Blue Line",2,4],
-  ["rabindra","kalighat","metro","Blue Line",4,4],
-  ["kalighat","tolly","metro","Blue Line",4,4],
-  // Metro Green Line (east-west, under the Hooghly)
-  ["hmaidan","howrah","metro","Green Line",2,5],
-  ["howrah","bbd","metro","Green Line",3,5],
-  ["bbd","esplanade","metro","Green Line",2,5],
-  ["esplanade","sealdah","metro","Green Line",3,5],
-  ["sealdah","stadium","metro","Green Line",5,5],
-  ["stadium","karunamoyee","metro","Green Line",3,5],
-  ["karunamoyee","sectorv","metro","Green Line",3,5],
-  // Metro Yellow Line (airport link)
-  ["dumdum","airport","metro","Yellow Line",12,10],
-  // Trams
-  ["esplanade","parkcircus","tram","Tram 25",22,7],
-  ["parkcircus","gariahat","tram","Tram 25",18,7],
-  ["college","esplanade","tram","Tram 5",16,7],
-  ["shyambazar","college","tram","Tram 5",14,7],
-  // Hooghly ferries
-  ["howrah","babughat","ferry","Hooghly Ferry",14,8],
-  ["howrah","fairlie","ferry","Hooghly Ferry",8,8],
-  // Walking links
-  ["fairlie","bbd","walk","Walk",7,0],
-  ["babughat","esplanade","walk","Walk",14,0],
-  // Buses
-  ["howrah","esplanade","bus","Bus · Howrah Bridge",20,10],
-  ["esplanade","ballygunge","bus","Bus AC-9",25,12],
-  ["ballygunge","gariahat","bus","Bus S-5",8,8],
-  ["gariahat","ruby","bus","Bus VS-2",15,10],
-  ["ruby","sciencecity","bus","Bus S-12",8,8],
-  ["sciencecity","parkcircus","bus","Bus S-12",12,10],
-  ["ruby","sectorv","bus","Bus S-9A",18,12],
-  ["sealdah","parkcircus","bus","Bus 44",15,10],
-  ["shyambazar","sealdah","bus","Bus 30B",18,10],
-  ["shyambazar","dumdum","bus","Bus 34C",16,10],
-  ["dumdum","airport","bus","Bus AC-39",20,8],
-  ["bbd","sectorv","bus","Bus S-9A (Bypass)",48,15],
-  ["esplanade","sciencecity","bus","Bus AC-4",22,12],
-  // Shared autos (last-mile corridors)
-  ["karunamoyee","sectorv","auto","Shared auto",8,15],
-  ["kalighat","gariahat","auto","Shared auto",12,15],
-  ["gariahat","ballygunge","auto","Shared auto",6,12],
-  ["sealdah","college","auto","Shared auto",8,12],
-  ["dumdum","airport","auto","Shared auto",15,20],
-  ["parkcircus","ballygunge","auto","Shared auto",8,12],
-  ["tolly","gariahat","auto","Shared auto",12,15],
-  // Informal transport
-  ["college","sealdah","rickshaw","Cycle rickshaw",12,30],
-  ["babughat","bbd","rickshaw","Hand-pulled rickshaw",8,25]
-];
-
-// Typical wait before boarding each mode (minutes)
-const WAIT = { metro:3, tram:8, bus:5, ferry:7, auto:2, rickshaw:1, walk:0 };
-
-// Build adjacency list (both directions)
-const ADJ = {};
-for (const id in STOPS) ADJ[id] = [];
-for (const [a,b,mode,line,min,fare] of EDGES) {
-  const key = mode + "|" + line;
-  ADJ[a].push({ to:b, mode, line, min, fare, key });
-  ADJ[b].push({ to:a, mode, line, min, fare, key });
+const DEFAULT_NETWORK = {
+  "name": "SANJOG Kolkata sample network",
+  "version": "0.2.0",
+  "updated": "2026-07-11",
+  "modes": {
+    "metro":    { "label": "Metro",       "icon": "🚇", "color": "#1e56c8", "wait": 3, "defaultMin": 4,  "defaultFare": 5 },
+    "tram":     { "label": "Tram",        "icon": "🚋", "color": "#b3452b", "wait": 8, "defaultMin": 18, "defaultFare": 7 },
+    "bus":      { "label": "Bus",         "icon": "🚌", "color": "#bf3b3b", "wait": 5, "defaultMin": 15, "defaultFare": 10 },
+    "ferry":    { "label": "Ferry",       "icon": "⛴️", "color": "#0f7b8a", "wait": 7, "defaultMin": 12, "defaultFare": 8 },
+    "auto":     { "label": "Shared auto", "icon": "🛺", "color": "#d96c00", "wait": 2, "defaultMin": 10, "defaultFare": 12 },
+    "rickshaw": { "label": "Rickshaw",    "icon": "🚲", "color": "#7b5ea7", "wait": 1, "defaultMin": 10, "defaultFare": 25 },
+    "walk":     { "label": "Walk",        "icon": "🚶", "color": "#8b93a1", "wait": 0, "defaultMin": 8,  "defaultFare": 0 }
+  },
+  "stops": [
+    { "id": "howrah",      "name": "Howrah Station",    "ward": "Howrah" },
+    { "id": "hmaidan",     "name": "Howrah Maidan",     "ward": "Howrah" },
+    { "id": "bbd",         "name": "B.B.D. Bagh",       "ward": "Central" },
+    { "id": "fairlie",     "name": "Fairlie Ghat",      "ward": "Central" },
+    { "id": "babughat",    "name": "Babughat",          "ward": "Central" },
+    { "id": "esplanade",   "name": "Esplanade",         "ward": "Central" },
+    { "id": "college",     "name": "College Street",    "ward": "Central" },
+    { "id": "sealdah",     "name": "Sealdah Station",   "ward": "Central" },
+    { "id": "parkst",      "name": "Park Street",       "ward": "Central" },
+    { "id": "rabindra",    "name": "Rabindra Sadan",    "ward": "Central" },
+    { "id": "kalighat",    "name": "Kalighat",          "ward": "South" },
+    { "id": "tolly",       "name": "Tollygunge",        "ward": "South" },
+    { "id": "gariahat",    "name": "Gariahat",          "ward": "South" },
+    { "id": "ballygunge",  "name": "Ballygunge",        "ward": "South" },
+    { "id": "behala",      "name": "Behala Chowrasta",  "ward": "South-West" },
+    { "id": "parkcircus",  "name": "Park Circus",       "ward": "East" },
+    { "id": "ruby",        "name": "Ruby Crossing",     "ward": "East" },
+    { "id": "sciencecity", "name": "Science City",      "ward": "East" },
+    { "id": "shyambazar",  "name": "Shyambazar",        "ward": "North" },
+    { "id": "dumdum",      "name": "Dum Dum",           "ward": "North" },
+    { "id": "airport",     "name": "Airport (NSCBI)",   "ward": "North" },
+    { "id": "stadium",     "name": "Salt Lake Stadium", "ward": "Salt Lake" },
+    { "id": "karunamoyee", "name": "Karunamoyee",       "ward": "Salt Lake" },
+    { "id": "sectorv",     "name": "Sector V",          "ward": "Salt Lake" }
+  ],
+  "edges": [
+    { "from": "dumdum",     "to": "shyambazar",  "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
+    { "from": "shyambazar", "to": "college",     "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
+    { "from": "college",    "to": "esplanade",   "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
+    { "from": "esplanade",  "to": "parkst",      "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 2,  "fare": 4 },
+    { "from": "parkst",     "to": "rabindra",    "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 2,  "fare": 4 },
+    { "from": "rabindra",   "to": "kalighat",    "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
+    { "from": "kalighat",   "to": "tolly",       "mode": "metro", "line": "Blue Line",  "color": "#1e56c8", "min": 4,  "fare": 4 },
+    { "from": "hmaidan",    "to": "howrah",      "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 2,  "fare": 5 },
+    { "from": "howrah",     "to": "bbd",         "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
+    { "from": "bbd",        "to": "esplanade",   "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 2,  "fare": 5 },
+    { "from": "esplanade",  "to": "sealdah",     "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
+    { "from": "sealdah",    "to": "stadium",     "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 5,  "fare": 5 },
+    { "from": "stadium",    "to": "karunamoyee", "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
+    { "from": "karunamoyee","to": "sectorv",     "mode": "metro", "line": "Green Line", "color": "#0d8a5f", "min": 3,  "fare": 5 },
+    { "from": "dumdum",     "to": "airport",     "mode": "metro", "line": "Yellow Line","color": "#b98f14", "min": 12, "fare": 10 },
+    { "from": "esplanade",  "to": "parkcircus",  "mode": "tram",  "line": "Tram 25",    "min": 22, "fare": 7 },
+    { "from": "parkcircus", "to": "gariahat",    "mode": "tram",  "line": "Tram 25",    "min": 18, "fare": 7 },
+    { "from": "college",    "to": "esplanade",   "mode": "tram",  "line": "Tram 5",     "min": 16, "fare": 7 },
+    { "from": "shyambazar", "to": "college",     "mode": "tram",  "line": "Tram 5",     "min": 14, "fare": 7 },
+    { "from": "howrah",     "to": "babughat",    "mode": "ferry", "line": "Hooghly Ferry", "min": 14, "fare": 8 },
+    { "from": "howrah",     "to": "fairlie",     "mode": "ferry", "line": "Hooghly Ferry", "min": 8,  "fare": 8 },
+    { "from": "fairlie",    "to": "bbd",         "mode": "walk",  "min": 7,  "fare": 0 },
+    { "from": "babughat",   "to": "esplanade",   "mode": "walk",  "min": 14, "fare": 0 },
+    { "from": "howrah",     "to": "esplanade",   "mode": "bus",   "line": "Bus · Howrah Bridge", "min": 20, "fare": 10 },
+    { "from": "esplanade",  "to": "ballygunge",  "mode": "bus",   "line": "Bus AC-9",   "min": 25, "fare": 12 },
+    { "from": "ballygunge", "to": "gariahat",    "mode": "bus",   "line": "Bus S-5",    "min": 8,  "fare": 8 },
+    { "from": "gariahat",   "to": "ruby",        "mode": "bus",   "line": "Bus VS-2",   "min": 15, "fare": 10 },
+    { "from": "ruby",       "to": "sciencecity", "mode": "bus",   "line": "Bus S-12",   "min": 8,  "fare": 8 },
+    { "from": "sciencecity","to": "parkcircus",  "mode": "bus",   "line": "Bus S-12",   "min": 12, "fare": 10 },
+    { "from": "ruby",       "to": "sectorv",     "mode": "bus",   "line": "Bus S-9A",   "min": 18, "fare": 12 },
+    { "from": "sealdah",    "to": "parkcircus",  "mode": "bus",   "line": "Bus 44",     "min": 15, "fare": 10 },
+    { "from": "shyambazar", "to": "sealdah",     "mode": "bus",   "line": "Bus 30B",    "min": 18, "fare": 10 },
+    { "from": "shyambazar", "to": "dumdum",      "mode": "bus",   "line": "Bus 34C",    "min": 16, "fare": 10 },
+    { "from": "dumdum",     "to": "airport",     "mode": "bus",   "line": "Bus AC-39",  "min": 20, "fare": 8 },
+    { "from": "bbd",        "to": "sectorv",     "mode": "bus",   "line": "Bus S-9A (Bypass)", "min": 48, "fare": 15 },
+    { "from": "esplanade",  "to": "sciencecity", "mode": "bus",   "line": "Bus AC-4",   "min": 22, "fare": 12 },
+    { "from": "karunamoyee","to": "sectorv",     "mode": "auto",  "min": 8,  "fare": 15 },
+    { "from": "kalighat",   "to": "gariahat",    "mode": "auto",  "min": 12, "fare": 15 },
+    { "from": "gariahat",   "to": "ballygunge",  "mode": "auto",  "min": 6,  "fare": 12 },
+    { "from": "sealdah",    "to": "college",     "mode": "auto",  "min": 8,  "fare": 12 },
+    { "from": "dumdum",     "to": "airport",     "mode": "auto",  "min": 15, "fare": 20 },
+    { "from": "parkcircus", "to": "ballygunge",  "mode": "auto",  "min": 8,  "fare": 12 },
+    { "from": "tolly",      "to": "gariahat",    "mode": "auto",  "min": 12, "fare": 15 },
+    { "from": "tolly",      "to": "behala",      "mode": "auto" },
+    { "from": "college",    "to": "sealdah",     "mode": "rickshaw", "line": "Cycle rickshaw",      "min": 12, "fare": 30 },
+    { "from": "babughat",   "to": "bbd",         "mode": "rickshaw", "line": "Hand-pulled rickshaw","min": 8,  "fare": 25 }
+  ]
 }
+;
+// ---- SANJOG interface layer (data comes from network.json) ----
 
-// Multi-criteria Dijkstra over states (node, last vehicle boarded).
-// pref: "fastest" | "cheapest" | "easiest"
-function plan(src, dst, pref) {
-  const start = src + "@";
-  const best = { [start]: { t:0, fare:0, board:0, prev:null, edge:null } };
-  const queue = [start];
+let NET = null;
 
-  const score = s => pref === "cheapest" ? s.fare * 10000 + s.t
-                   : pref === "easiest"  ? s.board * 1000000 + s.t
-                   : s.t;
-
-  while (queue.length) {
-    // pop the state with the lowest score (graph is tiny; a sort is fine)
-    queue.sort((x,y) => score(best[x]) - score(best[y]));
-    const state = queue.shift();
-    const [node, lastVeh] = state.split("@");
-    const cur = best[state];
-
-    for (const e of ADJ[node]) {
-      const boarding = e.mode !== "walk" && e.key !== lastVeh;
-      const next = {
-        t: cur.t + e.min + (boarding ? WAIT[e.mode] : 0),
-        fare: cur.fare + e.fare,
-        board: cur.board + (boarding ? 1 : 0),
-        prev: state, edge: e
-      };
-      const nextState = e.to + "@" + (e.mode === "walk" ? lastVeh : e.key);
-      if (!(nextState in best) || score(next) < score(best[nextState])) {
-        best[nextState] = next;
-        if (!queue.includes(nextState)) queue.push(nextState);
-      }
-    }
-  }
-
-  // best state at destination, any last-vehicle
-  let goal = null;
-  for (const s in best) {
-    if (s.split("@")[0] === dst && (!goal || score(best[s]) < score(best[goal]))) goal = s;
-  }
-  if (!goal || goal === start) return null;
-
-  // walk back to collect edges, then group consecutive same-line edges into legs
-  const edges = [];
-  for (let s = goal; best[s].prev; s = best[s].prev) edges.unshift({ from: best[s].prev.split("@")[0], ...best[s].edge });
-
-  const legs = [];
-  for (const e of edges) {
-    const last = legs[legs.length - 1];
-    if (last && last.key === e.key) {
-      last.to = e.to; last.min += e.min; last.fare += e.fare; last.hops += 1;
-    } else {
-      legs.push({ key:e.key, mode:e.mode, line:e.line, from:e.from, to:e.to,
-                  min:e.min, fare:e.fare, hops:1,
-                  wait: e.mode === "walk" ? 0 : WAIT[e.mode] });
-    }
-  }
-
-  const totalMin  = legs.reduce((s,l) => s + l.min + l.wait, 0);
-  const totalFare = legs.reduce((s,l) => s + l.fare, 0);
-  const boardings = legs.filter(l => l.mode !== "walk").length;
-  const sig = legs.map(l => l.key + ">" + l.to).join("~");
-  return { legs, totalMin, totalFare, boardings, sig };
-}
-
-// Run all three preferences, merge duplicates, keep label order
-function planAll(src, dst) {
-  const prefs = [["fastest","Fastest"],["cheapest","Cheapest"],["easiest","Fewest changes"]];
-  const out = [];
-  for (const [pref, label] of prefs) {
-    const r = plan(src, dst, pref);
-    if (!r) continue;
-    const dup = out.find(o => o.sig === r.sig);
-    if (dup) dup.labels.push(label);
-    else out.push({ ...r, labels:[label] });
-  }
-  return out;
-}
-
-// ---- test harness (node only; skipped in the browser) ----
-if (typeof window === "undefined") {
-  const show = (a,b) => {
-    console.log("\n=== " + STOPS[a] + "  ->  " + STOPS[b] + " ===");
-    for (const r of planAll(a,b)) {
-      console.log(`[${r.labels.join(" · ")}]  ${r.totalMin} min  Rs${r.totalFare}  ` +
-                  `${r.boardings - 1 > 0 ? (r.boardings - 1) + " change(s)" : "no changes"}`);
-      for (const l of r.legs)
-        console.log(`   ${l.line.padEnd(22)} ${STOPS[l.from]} -> ${STOPS[l.to]}  ` +
-                    `${l.min}m  Rs${l.fare}${l.wait ? "  (wait ~" + l.wait + "m)" : ""}`);
-    }
-  };
-  show("howrah","sectorv");
-  show("esplanade","gariahat");
-  show("dumdum","airport");
-  show("kalighat","sectorv");
-  show("tolly","airport");
-}
-// ---- SANJOG interface layer ----
-
-const MODE_ICON = { metro:"🚇", tram:"🚋", bus:"🚌", ferry:"⛴️",
-                    auto:"🛺", rickshaw:"🚲", walk:"🚶" };
-
-function colorFor(leg) {
-  if (leg.mode === "metro") {
-    if (leg.line.indexOf("Blue") === 0)  return "var(--m-blue)";
-    if (leg.line.indexOf("Green") === 0) return "var(--m-green)";
-    return "var(--m-yellow)";
-  }
-  return "var(--" + leg.mode + ")";
+async function loadNetwork() {
+  try {
+    const r = await fetch("./network.json", { cache: "no-cache" });
+    if (r.ok) return { json: await r.json(), src: "network.json" };
+  } catch (e) { /* file:// or offline first-run: fall through */ }
+  return { json: DEFAULT_NETWORK, src: "built-in sample" };
 }
 
 function fillSelects() {
-  const ids = Object.keys(STOPS).sort((a,b) => STOPS[a].localeCompare(STOPS[b]));
-  const opts = ids.map(id => `<option value="${id}">${STOPS[id]}</option>`).join("");
-  const from = document.getElementById("from");
-  const to   = document.getElementById("to");
-  from.innerHTML = opts; to.innerHTML = opts;
-  from.value = "howrah"; to.value = "sectorv";
+  const byWard = {};
+  for (const id in NET.stops) {
+    const w = NET.stops[id].ward || "Other";
+    (byWard[w] = byWard[w] || []).push(id);
+  }
+  const wards = Object.keys(byWard).sort((a, b) =>
+    a === "Other" ? 1 : b === "Other" ? -1 : a.localeCompare(b));
+  let html = "";
+  for (const w of wards) {
+    const ids = byWard[w].sort((a, b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
+    html += `<optgroup label="${w}">` +
+            ids.map(id => `<option value="${id}">${NET.stops[id].name}</option>`).join("") +
+            `</optgroup>`;
+  }
+  const from = document.getElementById("from"), to = document.getElementById("to");
+  from.innerHTML = html; to.innerHTML = html;
+  const pick = (el, want, fallbackIndex) => {
+    if (NET.stops[want]) el.value = want;
+    else el.selectedIndex = Math.min(fallbackIndex, el.options.length - 1);
+  };
+  pick(from, "howrah", 0); pick(to, "sectorv", 1);
+}
+
+function buildLegend() {
+  document.getElementById("legend").innerHTML = Object.keys(NET.modes).map(m =>
+    `<span class="lg"><span class="dot" style="background:${NET.modes[m].color}"></span>${NET.modes[m].label}</span>`
+  ).join("");
 }
 
 function legRow(l) {
-  const wait = l.wait ? `<span class="wait">incl. ~${l.wait} min wait</span>` : "";
+  const wait = l.wait ? `<div class="leg-sub"><span class="wait">incl. ~${l.wait} min wait</span></div>` : "";
   return `<div class="leg">
-      <span class="badge" style="background:${colorFor(l)}">${MODE_ICON[l.mode]} ${l.line}</span>
-      <span class="path">${STOPS[l.from]} → ${STOPS[l.to]}</span>
-      <span class="nums">${l.min + l.wait} min · ${l.fare ? "₹" + l.fare : "free"}</span>
-    </div>${wait ? `<div class="leg-sub">${wait}</div>` : ""}`;
+      <span class="badge" style="background:${l.color}">${NET.modes[l.mode].icon} ${l.line}</span>
+      <span class="path">${NET.stops[l.from].name} → ${NET.stops[l.to].name}</span>
+      <span class="nums">${l.minApprox ? "~" : ""}${l.min + l.wait} min · ${l.fare ? (l.fareApprox ? "~₹" : "₹") + l.fare : "free"}</span>
+    </div>${wait}`;
 }
 
 function card(r, i) {
   const changes = r.boardings - 1;
   const chips = r.labels.map(t => `<span class="chip">${t}</span>`).join("");
   const segs = r.legs.map(l =>
-    `<span style="flex:${l.min};background:${colorFor(l)}" title="${l.line}"></span>`).join("");
+    `<span style="flex:${l.min};background:${l.color}" title="${l.line}"></span>`).join("");
+  const approx = (r.approxMin || r.approxFare)
+    ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
   return `<article class="card" style="animation-delay:${i * 70}ms">
       <div class="chiprow">${chips}</div>
       <div class="totals">
-        <span class="stat">${r.totalMin}<em>min</em></span>
-        <span class="stat">₹${r.totalFare}</span>
+        <span class="stat">${r.approxMin ? "~" : ""}${r.totalMin}<em>min</em></span>
+        <span class="stat">${r.approxFare ? "~" : ""}₹${r.totalFare}</span>
         <span class="chg">${changes === 0 ? "no changes" : changes + (changes > 1 ? " changes" : " change")}</span>
       </div>
       <div class="tl">${segs}</div>
-      <div class="legs">${r.legs.map(legRow).join("")}</div>
+      <div class="legs">${r.legs.map(legRow).join("")}</div>${approx}
     </article>`;
 }
 
 function render() {
   const from = document.getElementById("from").value;
-  const to   = document.getElementById("to").value;
-  const out  = document.getElementById("results");
-  if (from === to) {
-    out.innerHTML = `<p class="msg">Pick two different stops to plan a journey.</p>`;
-    return;
-  }
-  const routes = planAll(from, to);
+  const to = document.getElementById("to").value;
+  const out = document.getElementById("results");
+  if (from === to) { out.innerHTML = `<p class="msg">Pick two different stops to plan a journey.</p>`; return; }
+  const routes = planAll(NET, from, to);
   out.innerHTML = routes.length
     ? routes.map(card).join("")
-    : `<p class="msg">No route found between these stops in the sample network.</p>`;
+    : `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
 }
 
 function swapStops() {
-  const from = document.getElementById("from");
-  const to   = document.getElementById("to");
+  const from = document.getElementById("from"), to = document.getElementById("to");
   const t = from.value; from.value = to.value; to.value = t;
   render();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  const { json, src } = await loadNetwork();
+  const issues = validateNetwork(json);
+  NET = buildNetwork(json);
+
+  const stopCount = Object.keys(NET.stops).length;
+  const v = NET.meta.version ? "v" + NET.meta.version + " · " : "";
+  const upd = NET.meta.updated ? " · updated " + NET.meta.updated : "";
+  document.getElementById("datainfo").textContent =
+    `Network ${v}${stopCount} stops · ${NET.links} links${upd} · loaded from ${src}. Timings and fares are indicative.`;
+
+  const warn = document.getElementById("warn");
+  if (issues.length) {
+    warn.hidden = false;
+    warn.textContent = `⚠ ${issues.length} issue${issues.length > 1 ? "s" : ""} in network data — e.g. ${issues[0]}. ` +
+      `${NET.skipped ? NET.skipped + " link(s) skipped. " : ""}Full list in the browser console.`;
+    console.warn("SANJOG network data issues:\n- " + issues.join("\n- "));
+  }
+
   fillSelects();
+  buildLegend();
   document.getElementById("go").addEventListener("click", render);
   document.getElementById("swap").addEventListener("click", swapStops);
   document.getElementById("from").addEventListener("change", render);
   document.getElementById("to").addEventListener("change", render);
-  render(); // bring the default journey to life immediately
+  render();
+
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0)
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
 });
 </script>
 </body>
