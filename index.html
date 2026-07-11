@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SANJOG · Kolkata, every mode · one journey</title>
+<style>
+:root{
+  --ink:#182230; --muted:#5b6672; --bg:#edefe9; --surface:#ffffff;
+  --band:#0f1b28; --taxi:#f6c443; --hair:rgba(24,34,48,.16);
+  --m-blue:#1e56c8; --m-green:#0d8a5f; --m-yellow:#b98f14;
+  --tram:#b3452b; --bus:#bf3b3b; --ferry:#0f7b8a;
+  --auto:#d96c00; --rickshaw:#7b5ea7; --walk:#8b93a1;
+  --display:'Arial Black','Archivo Black',system-ui,sans-serif;
+  --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.45}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px 48px}
+
+/* masthead: a route-board */
+header{background:var(--band);color:#fff;border-bottom:6px solid var(--taxi)}
+.mast{max-width:680px;margin:0 auto;padding:26px 16px 18px}
+.mast h1{font-family:var(--display);font-size:clamp(30px,7vw,44px);
+  letter-spacing:.5px;line-height:1}
+.mast h1 .bn{color:var(--taxi);font-family:var(--body);font-weight:700;
+  font-size:.62em;vertical-align:middle;margin-left:10px}
+.tag{margin-top:8px;font-size:15px;color:#cfd6de}
+.ticker{margin-top:12px;font-size:13px;color:var(--taxi);letter-spacing:.06em}
+
+/* planner */
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:12px;
+  padding:16px;margin-top:-22px;box-shadow:0 8px 22px rgba(15,27,40,.12)}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.field{flex:1 1 180px}
+label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
+  border-radius:8px;background:#fff;color:var(--ink)}
+#swap{flex:0 0 auto;height:44px;width:44px;border:1px solid var(--hair);
+  border-radius:8px;background:#fff;font-size:18px;cursor:pointer}
+#go{flex:1 1 100%;margin-top:2px;padding:12px;border:0;border-radius:8px;
+  background:var(--taxi);color:var(--band);font-family:var(--display);
+  font-size:15px;letter-spacing:.04em;cursor:pointer}
+#go:hover{filter:brightness(.96)}
+.note{margin:14px 2px 0;font-size:12.5px;color:var(--muted)}
+
+/* route cards */
+#results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:12px;
+  padding:14px 16px;animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;border:1px solid var(--hair);border-radius:99px;
+  padding:3px 9px;color:var(--muted)}
+.chip:first-child{background:var(--taxi);border-color:var(--taxi);color:var(--band)}
+.totals{display:flex;align-items:baseline;gap:16px;font-family:var(--mono)}
+.stat{font-size:26px;font-weight:700}
+.stat em{font-style:normal;font-size:13px;font-weight:400;color:var(--muted);margin-left:3px}
+.chg{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.tl{display:flex;gap:2px;height:12px;margin:12px 0 12px}
+.tl span{border-radius:6px;min-width:8px}
+.legs{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--hair);padding-top:11px}
+.leg{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:14px}
+.badge{color:#fff;font-family:var(--mono);font-size:11.5px;padding:3px 8px;
+  border-radius:6px;white-space:nowrap}
+.path{flex:1 1 auto}
+.nums{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.leg-sub{font-size:11.5px;color:var(--muted);margin:-3px 0 0 4px}
+.wait{font-family:var(--mono)}
+.msg{padding:14px 4px;color:var(--muted)}
+
+/* legend + footer */
+.legend{margin-top:22px;display:flex;flex-wrap:wrap;gap:7px}
+.lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);
+  border:1px solid var(--hair);border-radius:99px;padding:4px 10px;background:#fff}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+footer{margin-top:26px;font-size:12px;color:var(--muted)}
+
+:focus-visible{outline:3px solid var(--taxi);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="mast">
+    <h1>SANJOG<span class="bn">সংযোগ</span></h1>
+    <p class="tag">Kolkata, every mode · one journey. Which modes, how long, what it costs.</p>
+    <p class="ticker">বাস · ট্রাম · মেট্রো · অটো · ফেরি · রিকশা</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel" aria-label="Journey planner">
+    <div class="row">
+      <div class="field"><label for="from">From</label><select id="from"></select></div>
+      <button id="swap" aria-label="Swap from and to">⇅</button>
+      <div class="field"><label for="to">To</label><select id="to"></select></div>
+      <button id="go">Find routes</button>
+    </div>
+    <p class="note">Prototype · sample network of 23 stops across 6 modes. Timings and fares are illustrative, not live.</p>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+
+  <div class="legend">
+    <span class="lg"><span class="dot" style="background:var(--m-blue)"></span>Metro Blue</span>
+    <span class="lg"><span class="dot" style="background:var(--m-green)"></span>Metro Green</span>
+    <span class="lg"><span class="dot" style="background:var(--m-yellow)"></span>Metro Yellow</span>
+    <span class="lg"><span class="dot" style="background:var(--tram)"></span>Tram</span>
+    <span class="lg"><span class="dot" style="background:var(--bus)"></span>Bus</span>
+    <span class="lg"><span class="dot" style="background:var(--ferry)"></span>Ferry</span>
+    <span class="lg"><span class="dot" style="background:var(--auto)"></span>Shared auto</span>
+    <span class="lg"><span class="dot" style="background:var(--rickshaw)"></span>Rickshaw</span>
+    <span class="lg"><span class="dot" style="background:var(--walk)"></span>Walk</span>
+  </div>
+
+  <footer>SANJOG is a concept demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws.</footer>
+</main>
+
+<script>
+// ---- SANJOG core: sample network + multi-criteria journey planner ----
+// Sample data only: stops, timings and fares are illustrative, not live.
+
+const STOPS = {
+  howrah: "Howrah Station", hmaidan: "Howrah Maidan", bbd: "B.B.D. Bagh",
+  fairlie: "Fairlie Ghat", babughat: "Babughat", esplanade: "Esplanade",
+  parkst: "Park Street", rabindra: "Rabindra Sadan", kalighat: "Kalighat",
+  tolly: "Tollygunge", gariahat: "Gariahat", ballygunge: "Ballygunge",
+  parkcircus: "Park Circus", ruby: "Ruby Crossing", sciencecity: "Science City",
+  sealdah: "Sealdah Station", college: "College Street", shyambazar: "Shyambazar",
+  dumdum: "Dum Dum", airport: "Airport (NSCBI)", stadium: "Salt Lake Stadium",
+  karunamoyee: "Karunamoyee", sectorv: "Sector V"
+};
+
+// [from, to, mode, line, minutes, fare?] -- all edges are two-way
+const EDGES = [
+  // Metro Blue Line (north-south)
+  ["dumdum","shyambazar","metro","Blue Line",4,4],
+  ["shyambazar","college","metro","Blue Line",4,4],
+  ["college","esplanade","metro","Blue Line",4,4],
+  ["esplanade","parkst","metro","Blue Line",2,4],
+  ["parkst","rabindra","metro","Blue Line",2,4],
+  ["rabindra","kalighat","metro","Blue Line",4,4],
+  ["kalighat","tolly","metro","Blue Line",4,4],
+  // Metro Green Line (east-west, under the Hooghly)
+  ["hmaidan","howrah","metro","Green Line",2,5],
+  ["howrah","bbd","metro","Green Line",3,5],
+  ["bbd","esplanade","metro","Green Line",2,5],
+  ["esplanade","sealdah","metro","Green Line",3,5],
+  ["sealdah","stadium","metro","Green Line",5,5],
+  ["stadium","karunamoyee","metro","Green Line",3,5],
+  ["karunamoyee","sectorv","metro","Green Line",3,5],
+  // Metro Yellow Line (airport link)
+  ["dumdum","airport","metro","Yellow Line",12,10],
+  // Trams
+  ["esplanade","parkcircus","tram","Tram 25",22,7],
+  ["parkcircus","gariahat","tram","Tram 25",18,7],
+  ["college","esplanade","tram","Tram 5",16,7],
+  ["shyambazar","college","tram","Tram 5",14,7],
+  // Hooghly ferries
+  ["howrah","babughat","ferry","Hooghly Ferry",14,8],
+  ["howrah","fairlie","ferry","Hooghly Ferry",8,8],
+  // Walking links
+  ["fairlie","bbd","walk","Walk",7,0],
+  ["babughat","esplanade","walk","Walk",14,0],
+  // Buses
+  ["howrah","esplanade","bus","Bus · Howrah Bridge",20,10],
+  ["esplanade","ballygunge","bus","Bus AC-9",25,12],
+  ["ballygunge","gariahat","bus","Bus S-5",8,8],
+  ["gariahat","ruby","bus","Bus VS-2",15,10],
+  ["ruby","sciencecity","bus","Bus S-12",8,8],
+  ["sciencecity","parkcircus","bus","Bus S-12",12,10],
+  ["ruby","sectorv","bus","Bus S-9A",18,12],
+  ["sealdah","parkcircus","bus","Bus 44",15,10],
+  ["shyambazar","sealdah","bus","Bus 30B",18,10],
+  ["shyambazar","dumdum","bus","Bus 34C",16,10],
+  ["dumdum","airport","bus","Bus AC-39",20,8],
+  ["bbd","sectorv","bus","Bus S-9A (Bypass)",48,15],
+  ["esplanade","sciencecity","bus","Bus AC-4",22,12],
+  // Shared autos (last-mile corridors)
+  ["karunamoyee","sectorv","auto","Shared auto",8,15],
+  ["kalighat","gariahat","auto","Shared auto",12,15],
+  ["gariahat","ballygunge","auto","Shared auto",6,12],
+  ["sealdah","college","auto","Shared auto",8,12],
+  ["dumdum","airport","auto","Shared auto",15,20],
+  ["parkcircus","ballygunge","auto","Shared auto",8,12],
+  ["tolly","gariahat","auto","Shared auto",12,15],
+  // Informal transport
+  ["college","sealdah","rickshaw","Cycle rickshaw",12,30],
+  ["babughat","bbd","rickshaw","Hand-pulled rickshaw",8,25]
+];
+
+// Typical wait before boarding each mode (minutes)
+const WAIT = { metro:3, tram:8, bus:5, ferry:7, auto:2, rickshaw:1, walk:0 };
+
+// Build adjacency list (both directions)
+const ADJ = {};
+for (const id in STOPS) ADJ[id] = [];
+for (const [a,b,mode,line,min,fare] of EDGES) {
+  const key = mode + "|" + line;
+  ADJ[a].push({ to:b, mode, line, min, fare, key });
+  ADJ[b].push({ to:a, mode, line, min, fare, key });
+}
+
+// Multi-criteria Dijkstra over states (node, last vehicle boarded).
+// pref: "fastest" | "cheapest" | "easiest"
+function plan(src, dst, pref) {
+  const start = src + "@";
+  const best = { [start]: { t:0, fare:0, board:0, prev:null, edge:null } };
+  const queue = [start];
+
+  const score = s => pref === "cheapest" ? s.fare * 10000 + s.t
+                   : pref === "easiest"  ? s.board * 1000000 + s.t
+                   : s.t;
+
+  while (queue.length) {
+    // pop the state with the lowest score (graph is tiny; a sort is fine)
+    queue.sort((x,y) => score(best[x]) - score(best[y]));
+    const state = queue.shift();
+    const [node, lastVeh] = state.split("@");
+    const cur = best[state];
+
+    for (const e of ADJ[node]) {
+      const boarding = e.mode !== "walk" && e.key !== lastVeh;
+      const next = {
+        t: cur.t + e.min + (boarding ? WAIT[e.mode] : 0),
+        fare: cur.fare + e.fare,
+        board: cur.board + (boarding ? 1 : 0),
+        prev: state, edge: e
+      };
+      const nextState = e.to + "@" + (e.mode === "walk" ? lastVeh : e.key);
+      if (!(nextState in best) || score(next) < score(best[nextState])) {
+        best[nextState] = next;
+        if (!queue.includes(nextState)) queue.push(nextState);
+      }
+    }
+  }
+
+  // best state at destination, any last-vehicle
+  let goal = null;
+  for (const s in best) {
+    if (s.split("@")[0] === dst && (!goal || score(best[s]) < score(best[goal]))) goal = s;
+  }
+  if (!goal || goal === start) return null;
+
+  // walk back to collect edges, then group consecutive same-line edges into legs
+  const edges = [];
+  for (let s = goal; best[s].prev; s = best[s].prev) edges.unshift({ from: best[s].prev.split("@")[0], ...best[s].edge });
+
+  const legs = [];
+  for (const e of edges) {
+    const last = legs[legs.length - 1];
+    if (last && last.key === e.key) {
+      last.to = e.to; last.min += e.min; last.fare += e.fare; last.hops += 1;
+    } else {
+      legs.push({ key:e.key, mode:e.mode, line:e.line, from:e.from, to:e.to,
+                  min:e.min, fare:e.fare, hops:1,
+                  wait: e.mode === "walk" ? 0 : WAIT[e.mode] });
+    }
+  }
+
+  const totalMin  = legs.reduce((s,l) => s + l.min + l.wait, 0);
+  const totalFare = legs.reduce((s,l) => s + l.fare, 0);
+  const boardings = legs.filter(l => l.mode !== "walk").length;
+  const sig = legs.map(l => l.key + ">" + l.to).join("~");
+  return { legs, totalMin, totalFare, boardings, sig };
+}
+
+// Run all three preferences, merge duplicates, keep label order
+function planAll(src, dst) {
+  const prefs = [["fastest","Fastest"],["cheapest","Cheapest"],["easiest","Fewest changes"]];
+  const out = [];
+  for (const [pref, label] of prefs) {
+    const r = plan(src, dst, pref);
+    if (!r) continue;
+    const dup = out.find(o => o.sig === r.sig);
+    if (dup) dup.labels.push(label);
+    else out.push({ ...r, labels:[label] });
+  }
+  return out;
+}
+
+// ---- test harness (node only; skipped in the browser) ----
+if (typeof window === "undefined") {
+  const show = (a,b) => {
+    console.log("\n=== " + STOPS[a] + "  ->  " + STOPS[b] + " ===");
+    for (const r of planAll(a,b)) {
+      console.log(`[${r.labels.join(" · ")}]  ${r.totalMin} min  Rs${r.totalFare}  ` +
+                  `${r.boardings - 1 > 0 ? (r.boardings - 1) + " change(s)" : "no changes"}`);
+      for (const l of r.legs)
+        console.log(`   ${l.line.padEnd(22)} ${STOPS[l.from]} -> ${STOPS[l.to]}  ` +
+                    `${l.min}m  Rs${l.fare}${l.wait ? "  (wait ~" + l.wait + "m)" : ""}`);
+    }
+  };
+  show("howrah","sectorv");
+  show("esplanade","gariahat");
+  show("dumdum","airport");
+  show("kalighat","sectorv");
+  show("tolly","airport");
+}
+// ---- SANJOG interface layer ----
+
+const MODE_ICON = { metro:"🚇", tram:"🚋", bus:"🚌", ferry:"⛴️",
+                    auto:"🛺", rickshaw:"🚲", walk:"🚶" };
+
+function colorFor(leg) {
+  if (leg.mode === "metro") {
+    if (leg.line.indexOf("Blue") === 0)  return "var(--m-blue)";
+    if (leg.line.indexOf("Green") === 0) return "var(--m-green)";
+    return "var(--m-yellow)";
+  }
+  return "var(--" + leg.mode + ")";
+}
+
+function fillSelects() {
+  const ids = Object.keys(STOPS).sort((a,b) => STOPS[a].localeCompare(STOPS[b]));
+  const opts = ids.map(id => `<option value="${id}">${STOPS[id]}</option>`).join("");
+  const from = document.getElementById("from");
+  const to   = document.getElementById("to");
+  from.innerHTML = opts; to.innerHTML = opts;
+  from.value = "howrah"; to.value = "sectorv";
+}
+
+function legRow(l) {
+  const wait = l.wait ? `<span class="wait">incl. ~${l.wait} min wait</span>` : "";
+  return `<div class="leg">
+      <span class="badge" style="background:${colorFor(l)}">${MODE_ICON[l.mode]} ${l.line}</span>
+      <span class="path">${STOPS[l.from]} → ${STOPS[l.to]}</span>
+      <span class="nums">${l.min + l.wait} min · ${l.fare ? "₹" + l.fare : "free"}</span>
+    </div>${wait ? `<div class="leg-sub">${wait}</div>` : ""}`;
+}
+
+function card(r, i) {
+  const changes = r.boardings - 1;
+  const chips = r.labels.map(t => `<span class="chip">${t}</span>`).join("");
+  const segs = r.legs.map(l =>
+    `<span style="flex:${l.min};background:${colorFor(l)}" title="${l.line}"></span>`).join("");
+  return `<article class="card" style="animation-delay:${i * 70}ms">
+      <div class="chiprow">${chips}</div>
+      <div class="totals">
+        <span class="stat">${r.totalMin}<em>min</em></span>
+        <span class="stat">₹${r.totalFare}</span>
+        <span class="chg">${changes === 0 ? "no changes" : changes + (changes > 1 ? " changes" : " change")}</span>
+      </div>
+      <div class="tl">${segs}</div>
+      <div class="legs">${r.legs.map(legRow).join("")}</div>
+    </article>`;
+}
+
+function render() {
+  const from = document.getElementById("from").value;
+  const to   = document.getElementById("to").value;
+  const out  = document.getElementById("results");
+  if (from === to) {
+    out.innerHTML = `<p class="msg">Pick two different stops to plan a journey.</p>`;
+    return;
+  }
+  const routes = planAll(from, to);
+  out.innerHTML = routes.length
+    ? routes.map(card).join("")
+    : `<p class="msg">No route found between these stops in the sample network.</p>`;
+}
+
+function swapStops() {
+  const from = document.getElementById("from");
+  const to   = document.getElementById("to");
+  const t = from.value; from.value = to.value; to.value = t;
+  render();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  fillSelects();
+  document.getElementById("go").addEventListener("click", render);
+  document.getElementById("swap").addEventListener("click", swapStops);
+  document.getElementById("from").addEventListener("change", render);
+  document.getElementById("to").addEventListener("change", render);
+  render(); // bring the default journey to life immediately
+});
+</script>
+</body>
+</html>
