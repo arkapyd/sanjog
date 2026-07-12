@@ -297,11 +297,38 @@ let selectedIdx = 0;
 
 // ---- typed places (map search) -----------------------------------------
 const PLACE_IDS = { from: "_place_from", to: "_place_to" };
-const GEO_VIEWBOX = "88.10,22.90,88.65,22.30";   // greater Kolkata: lon,lat,lon,lat
-let geoBusy = false;
+const GOOGLE_KEY = "AIzaSyDshZXBoGtvsa1P2yammkPoGZ8fJuI6xIU";
+const KOLKATA_BOUNDS = { low:  { latitude: 22.30, longitude: 88.10 },
+                         high: { latitude: 22.90, longitude: 88.65 } };  // greater Kolkata
+const GEO_VIEWBOX = "88.10,22.90,88.65,22.30";   // same box, Nominatim fallback format
+let geoBusy = false, lastGeoSource = "";
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
-async function geocode(q) {
+async function googlePlaces(q) {
+  const r = await fetch("https://places.googleapis.com/v1/places:searchText", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": GOOGLE_KEY,
+      // fields kept to the Pro SKU: name, address, coordinates — nothing pricier
+      "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location"
+    },
+    body: JSON.stringify({
+      textQuery: q, pageSize: 5, languageCode: "en",
+      locationRestriction: { rectangle: KOLKATA_BOUNDS }
+    })
+  });
+  if (!r.ok) throw new Error("places replied " + r.status);
+  return ((await r.json()).places || []).map(p => ({
+    name: (p.displayName && p.displayName.text) ||
+          String(p.formattedAddress || "").split(",")[0].trim() || "Unnamed place",
+    detail: String(p.formattedAddress || "").split(",").slice(0, 3).join(",").trim(),
+    lat: p.location && p.location.latitude,
+    lon: p.location && p.location.longitude
+  })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+}
+
+async function nominatim(q) {
   const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5" +
               "&countrycodes=in&bounded=1&viewbox=" + GEO_VIEWBOX +
               "&accept-language=en&q=" + encodeURIComponent(q);
@@ -312,6 +339,21 @@ async function geocode(q) {
     detail: String(p.display_name || "").split(",").slice(1, 4).join(",").trim(),
     lat: parseFloat(p.lat), lon: parseFloat(p.lon)
   })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+}
+
+// Google first (better with informal names); OSM if Google is unreachable,
+// unconfigured, over quota, or blocked by key restrictions.
+async function geocode(q) {
+  try {
+    const places = await googlePlaces(q);
+    lastGeoSource = "google";
+    return places;
+  } catch (err) {
+    console.warn("Google Places failed, falling back to OpenStreetMap:", err);
+  }
+  const places = await nominatim(q);
+  lastGeoSource = "osm";
+  return places;
 }
 
 function linkSummary(links) {
@@ -410,7 +452,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
              <span class="sugg-name">&#128205; ${esc(p.name)}</span>
              <span class="sugg-ward" style="text-transform:none;">${esc(p.detail)}</span>
            </div>`).join("") +
-          `<div class="sugg-item sugg-attrib">search \u00a9 OpenStreetMap contributors</div>`
+          `<div class="sugg-item sugg-attrib">${lastGeoSource === "google" ? "powered by Google" : "search \u00a9 OpenStreetMap contributors"}</div>`
         : `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Nothing found for \u201c${esc(q)}\u201d around Kolkata \u2014 try a landmark or add the area name.</span></div>`;
       } catch (err) {
         list.innerHTML = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Map search didn't respond \u2014 check your connection and try again.</span></div>`;
