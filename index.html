@@ -236,12 +236,10 @@ async function loadNetwork() {
 // ---- custom maps-style autocomplete ---------------------------------------
 // global variables to hold google services
 let gMapsService = null;
-let gPlacesService = null;
 
 function initGoogle() {
   if (window.google && google.maps && google.maps.places && !gMapsService) {
     gMapsService = new google.maps.places.AutocompleteService();
-    gPlacesService = new google.maps.places.PlacesService(document.createElement('div'));
   }
 }
 
@@ -415,7 +413,8 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
 
-  list.addEventListener("mousedown", (e) => {
+  // notice the 'async' added right here
+  list.addEventListener("mousedown", async (e) => {
     const item = e.target.closest(".sugg-item");
     if (!item) return;
 
@@ -430,17 +429,25 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       list.hidden = true;
 
       setLocStatus("Fetching exact coordinates...");
-      gPlacesService.getDetails({ placeId: placeId, fields: ['geometry'] }, (place, status) => {
-         if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
-            handleCustomCoordsPick(hiddenId, place.geometry.location.lat(), place.geometry.location.lng(), placeName);
-         } else {
-            setLocStatus("Could not fetch exact location details.");
-         }
-      });
+
+      // the new 2025+ google places API method
+      try {
+        const place = new google.maps.places.Place({ id: placeId });
+        await place.fetchFields({ fields: ['location'] });
+        
+        if (place.location) {
+           handleCustomCoordsPick(hiddenId, place.location.lat(), place.location.lng(), placeName);
+        } else {
+           setLocStatus("Could not fetch exact location details.");
+        }
+      } catch (err) {
+        console.error(err);
+        setLocStatus("Google API Error: " + err.message);
+      }
       return;
     }
 
-    // handle local transit click
+    // handle local transit click (unchanged)
     const id = item.dataset.id;
     if (!id) return;
     hidden.value = id;
