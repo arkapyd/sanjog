@@ -759,6 +759,18 @@ function renderMap(route) {
 }
 
 // ---- main render ----------------------------------------------------------
+// --- helper function to calculate real-world distance in km ---
+function getDistKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+// ---- main render ----------------------------------------------------------
 function render() {
   const from = document.getElementById("from").value;
   const to = document.getElementById("to").value;
@@ -784,12 +796,78 @@ function render() {
     renderMap(null);
     return;
   }
+  
+  // fetch base routes from the engine
   currentRoutes = planAll(NET, from, to);
+  
+  // 1. FIX: aggregate wait times into the total time for all routes
+  currentRoutes.forEach(r => {
+    r.totalMin = r.legs.reduce((sum, leg) => sum + (leg.min || 0) + (leg.wait || 0), 0);
+  });
+
+  // 2. NEW: short distance logic (<= 1.2km generates Walk / Rickshaw overrides)
+  const sFrom = NET.stops[from];
+  const sTo = NET.stops[to];
+  
+  if (sFrom && sFrom.lat && sTo && sTo.lat) {
+    const dist = getDistKm(sFrom.lat, sFrom.lon, sTo.lat, sTo.lon);
+    
+    // if within 1200m (but more than 50m to avoid glitchy 0-min walks)
+    if (dist <= 1.2 && dist > 0.05) { 
+      const walkMin = Math.max(1, Math.round((dist / 5) * 60)); // based on 5 km/h
+      const rickshawMin = Math.max(1, Math.round((dist / 8) * 60)); // based on 8 km/h
+      const rickshawFare = Math.max(20, Math.round(dist * 20)); // baseline ₹20 fare
+      
+      // clean out engine-generated pure walks to prevent duplicate cards
+      currentRoutes = currentRoutes.filter(r => !(r.legs.length === 1 && (r.legs[0].mode === 'walk' || r.legs[0].mode === 'rickshaw')));
+      
+      // inject Rickshaw option
+      currentRoutes.unshift({
+        labels: ["Short Trip", "Rickshaw"],
+        totalMin: rickshawMin + NET.modes.rickshaw.wait,
+        totalFare: rickshawFare,
+        boardings: 1,
+        approxMin: true,
+        approxFare: true,
+        legs: [{
+          from: from, to: to,
+          mode: "rickshaw", line: "Local Rickshaw",
+          min: rickshawMin, wait: NET.modes.rickshaw.wait, fare: rickshawFare,
+          color: NET.modes.rickshaw.color,
+          minApprox: true, fareApprox: true
+        }],
+        path: [{ from, to, mode: 'rickshaw', color: NET.modes.rickshaw.color }] // simple 2-point path for the map
+      });
+
+      // inject Walk option at the very top
+      currentRoutes.unshift({
+        labels: ["Nearby", "Walk"],
+        totalMin: walkMin,
+        totalFare: 0,
+        boardings: 1,
+        approxMin: true,
+        approxFare: false,
+        legs: [{
+          from: from, to: to,
+          mode: "walk", line: "Walk",
+          min: walkMin, wait: 0, fare: 0,
+          color: NET.modes.walk.color,
+          minApprox: true, fareApprox: false
+        }],
+        path: [{ from, to, mode: 'walk', color: NET.modes.walk.color }]
+      });
+    }
+  }
+
   if (!currentRoutes.length) {
     out.innerHTML = `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
     renderMap(null);
     return;
   }
+  
+  // mathematically re-sort all routes so the fastest is always at the top
+  currentRoutes.sort((a, b) => a.totalMin - b.totalMin);
+  
   renderCards();
   renderMap(currentRoutes[0]);
 }
