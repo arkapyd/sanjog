@@ -1,7 +1,23 @@
 {
-  "name": "SANJOG Master Network",
-  "version": "1.1.0",
+  "name": "sanjog master network",
+  "version": "2.0.0",
   "modes": {
+    "metro": {
+      "label": "Metro",
+      "icon": "M",
+      "color": "#2b5b9e",
+      "wait": 3,
+      "defaultMin": 4,
+      "defaultFare": 5
+    },
+    "tram": {
+      "label": "Tram",
+      "icon": "T",
+      "color": "#7d4a33",
+      "wait": 8,
+      "defaultMin": 18,
+      "defaultFare": 7
+    },
     "bus": {
       "label": "Bus",
       "icon": "B",
@@ -9,6 +25,38 @@
       "wait": 5,
       "defaultMin": 15,
       "defaultFare": 10
+    },
+    "ferry": {
+      "label": "Ferry",
+      "icon": "F",
+      "color": "#33687a",
+      "wait": 7,
+      "defaultMin": 12,
+      "defaultFare": 8
+    },
+    "auto": {
+      "label": "Shared auto",
+      "icon": "A",
+      "color": "#a2652d",
+      "wait": 2,
+      "defaultMin": 10,
+      "defaultFare": 12
+    },
+    "rickshaw": {
+      "label": "Rickshaw",
+      "icon": "R",
+      "color": "#5f5680",
+      "wait": 1,
+      "defaultMin": 10,
+      "defaultFare": 25
+    },
+    "train": {
+      "label": "Local Train",
+      "icon": "🚂",
+      "color": "#ff5722",
+      "wait": 10,
+      "defaultMin": 6,
+      "defaultFare": 5
     },
     "walk": {
       "label": "Walk",
@@ -43,7 +91,7 @@
     },
     {
       "id": "newtown",
-      "name": "NewTown",
+      "name": "Newtown",
       "ward": "Newtown",
       "lat": 22.5753931,
       "lon": 88.47979029999999
@@ -57,7 +105,7 @@
     },
     {
       "id": "easternbypass",
-      "name": "Eastern BYpass",
+      "name": "Eastern Bypass",
       "ward": "Kolkata",
       "lat": 22.531059,
       "lon": 88.3958615
@@ -617,7 +665,7 @@
     },
     {
       "id": "deysmedical",
-      "name": "Dey's Medical",
+      "name": "Dey'S Medical",
       "ward": "Fire Brigade Head Quarter",
       "lat": 22.5594029,
       "lon": 88.35206149999999
@@ -1191,21 +1239,21 @@
     },
     {
       "id": "duringofficehoursfrom8",
-      "name": "(During office hours from 8",
+      "name": "(During Office Hours From 8",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
     },
     {
       "id": "30amto10",
-      "name": "30 a.m. to 10",
+      "name": "30 A.M. To 10",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
     },
     {
       "id": "05amstartsfrombarisasilpara",
-      "name": "05 a.m. starts from Barisa Silpara.).",
+      "name": "05 A.M. Starts From Barisa Silpara.).",
       "ward": "Silpara",
       "lat": 22.4761882,
       "lon": 88.3110744
@@ -1450,7 +1498,7 @@
     },
     {
       "id": "ballygunjphari",
-      "name": "Ballygunj phari",
+      "name": "Ballygunj Phari",
       "ward": "Ballygunge",
       "lat": 22.5280352,
       "lon": 88.36590830000002
@@ -1919,7 +1967,7 @@
     },
     {
       "id": "dumdumstmarys",
-      "name": "Dum Dum St. Mary's",
+      "name": "Dum Dum St. Mary'S",
       "ward": "Kolkata",
       "lat": 22.6207903,
       "lon": 88.3910831
@@ -2178,7 +2226,7 @@
     },
     {
       "id": "kasbabosepukur",
-      "name": "Kasba (Bose pukur)",
+      "name": "Kasba (Bose Pukur)",
       "ward": "Bosepukur",
       "lat": 22.517929,
       "lon": 88.38341199999999
@@ -2269,7 +2317,7 @@
     },
     {
       "id": "bbgangulystandcollegest",
-      "name": "B.B. Ganguly St. and College St.",
+      "name": "B.B. Ganguly St. And College St.",
       "ward": "Bowbazar",
       "lat": 22.5696198,
       "lon": 88.36078599999999
@@ -2486,7 +2534,7 @@
     },
     {
       "id": "ballygungephari",
-      "name": "Ballygunge phari.",
+      "name": "Ballygunge Phari.",
       "ward": "Ballygunge",
       "lat": 22.528162,
       "lon": 88.365911
@@ -3361,17 +3409,10 @@
     },
     {
       "id": "brdway",
-      "name": "BRdway",
+      "name": "Brdway",
       "ward": "Sector 3",
       "lat": 22.5620568,
       "lon": 88.4084013
-    },
-    {
-      "id": "h",
-      "name": "H",
-      "ward": "Kolkata",
-      "lat": 22.5743545,
-      "lon": 88.3628734
     },
     {
       "id": "ah",
@@ -3384,13 +3425,6 @@
       "ward": "Block B",
       "lat": 22.6067305,
       "lon": 88.4128167
-    },
-    {
-      "id": "1",
-      "name": "1",
-      "ward": "Kolkata",
-      "lat": 22.5743545,
-      "lon": 88.3628734
     },
     {
       "id": "a1",
@@ -3945,7 +3979,7 @@
     },
     {
       "id": "tollygungeterminus",
-      "name": "Tollygunge terminus",
+      "name": "Tollygunge Terminus",
       "ward": "Fariapukur",
       "lat": 22.6021714,
       "lon": 88.37723369999999
@@ -4064,7 +4098,7 @@
     },
     {
       "id": "uttarpara",
-      "name": "Uttar para",
+      "name": "Uttar Para",
       "ward": "Greater Bakul Bithi",
       "lat": 22.4638488,
       "lon": 88.3196748
@@ -4120,7 +4154,7 @@
     },
     {
       "id": "judgescourtrdanddiamondharbourrd",
-      "name": "Judge's Court Rd and Diamond Harbour Rd",
+      "name": "Judge'S Court Rd And Diamond Harbour Rd",
       "ward": "Alipore",
       "lat": 22.5271298,
       "lon": 88.3260098
@@ -4302,7 +4336,7 @@
     },
     {
       "id": "saltlakeatpresentrunsuptodakshineswar",
-      "name": "Salt Lake (at present runs upto Dakshineswar)",
+      "name": "Salt Lake (At Present Runs Upto Dakshineswar)",
       "ward": "A.E. Block sector 1",
       "lat": 22.5995234,
       "lon": 88.4154384
@@ -4330,7 +4364,7 @@
     },
     {
       "id": "tankno7",
-      "name": "Tank no.7",
+      "name": "Tank No.7",
       "ward": "BH Block",
       "lat": 22.595825,
       "lon": 88.424863
@@ -4477,7 +4511,7 @@
     },
     {
       "id": "duringofficehoursinthemorningandeveningrunsthrougholdcourthousest",
-      "name": "(during office hours in the morning and evening runs through Old Court House St.",
+      "name": "(During Office Hours In The Morning And Evening Runs Through Old Court House St.",
       "ward": "Kolkata",
       "lat": 22.5713797,
       "lon": 88.3502953
@@ -4512,7 +4546,7 @@
     },
     {
       "id": "whengoingtoesplanadeduringofficehoursinthemorningrunsviacollegest",
-      "name": "(when going to Esplanade during office hours in the morning runs via College St.",
+      "name": "(When Going To Esplanade During Office Hours In The Morning Runs Via College St.",
       "ward": "Kolkata",
       "lat": 22.5731147,
       "lon": 88.3623945
@@ -4617,14 +4651,14 @@
     },
     {
       "id": "kbkcblock",
-      "name": "KBKC Block",
+      "name": "Kbkc Block",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
     },
     {
       "id": "citembypasscrossing",
-      "name": "C.I.T. E.M By pass crossing",
+      "name": "C.I.T. E.M By Pass Crossing",
       "ward": "East Topsia",
       "lat": 22.535835,
       "lon": 88.396722
@@ -4666,21 +4700,21 @@
     },
     {
       "id": "dailyfrom8",
-      "name": "Daily from 8",
+      "name": "Daily From 8",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
     },
     {
       "id": "30amto6",
-      "name": "30 a.m. to 6",
+      "name": "30 A.M. To 6",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
     },
     {
       "id": "30pmexceptsundayandholidaynarikeldangamainrd",
-      "name": "30 p.m. except Sunday and holiday. Narikeldanga Main Rd",
+      "name": "30 P.M. Except Sunday And Holiday. Narikeldanga Main Rd",
       "ward": "Kolkata",
       "lat": 22.5744639,
       "lon": 88.3814012
@@ -5191,14 +5225,14 @@
     },
     {
       "id": "saltlakeajblocksector",
-      "name": "Salt Lake (AJ Block Sector",
+      "name": "Salt Lake (Aj Block Sector",
       "ward": "SA Block",
       "lat": 22.5909377,
       "lon": 88.4316335
     },
     {
       "id": "ii",
-      "name": "II)",
+      "name": "Ii)",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
@@ -5219,7 +5253,7 @@
     },
     {
       "id": "blockgpandge",
-      "name": "Block G.P. and G.E.",
+      "name": "Block G.P. And G.E.",
       "ward": "Sakuntala Park",
       "lat": 22.4844647,
       "lon": 88.29943279999999
@@ -5331,7 +5365,7 @@
     },
     {
       "id": "duringofficehoursviabbdbag",
-      "name": "(During office hours via B.B.D. Bag).",
+      "name": "(During Office Hours Via B.B.D. Bag).",
       "ward": "Lal Dighi",
       "lat": 22.571627,
       "lon": 88.3501182
@@ -5373,7 +5407,7 @@
     },
     {
       "id": "viaesplanade",
-      "name": "via Esplanade.",
+      "name": "Via Esplanade.",
       "ward": "Esplanade",
       "lat": 22.5652757,
       "lon": 88.3518608
@@ -5478,7 +5512,7 @@
     },
     {
       "id": "viaburrabazar",
-      "name": "via Burrabazar.",
+      "name": "Via Burrabazar.",
       "ward": "Bara Bazar",
       "lat": 22.5817406,
       "lon": 88.3543972
@@ -5653,7 +5687,7 @@
     },
     {
       "id": "chverdanabazar",
-      "name": "ChVerdana Bazar.",
+      "name": "Chverdana Bazar.",
       "ward": "Naktala",
       "lat": 22.4763236,
       "lon": 88.3593838
@@ -5695,7 +5729,7 @@
     },
     {
       "id": "chverdana",
-      "name": "ChVerdana",
+      "name": "Chverdana",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
@@ -5903,7 +5937,7 @@
     },
     {
       "id": "saltlakekbkc",
-      "name": "Salt Lake (KBKC )",
+      "name": "Salt Lake (Kbkc )",
       "ward": "Mahish Bathan",
       "lat": 22.5799613,
       "lon": 88.4421239
@@ -5959,7 +5993,7 @@
     },
     {
       "id": "iiisaltlake",
-      "name": "III (Salt Lake)",
+      "name": "Iii (Salt Lake)",
       "ward": "Bidhannagar",
       "lat": 22.5796904,
       "lon": 88.41455549999999
@@ -6036,14 +6070,14 @@
     },
     {
       "id": "aftermoulalirunsthroughsnbanerjeerd",
-      "name": "(After Moulali runs through S.N. Banerjee Rd",
+      "name": "(After Moulali Runs Through S.N. Banerjee Rd",
       "ward": "Taltala",
       "lat": 22.5613731,
       "lon": 88.3588257
     },
     {
       "id": "whengoingtoesplanade",
-      "name": "when going to Esplanade).",
+      "name": "When Going To Esplanade).",
       "ward": "Esplanade",
       "lat": 22.5652757,
       "lon": 88.3518608
@@ -6218,7 +6252,7 @@
     },
     {
       "id": "esplanadeduringofficehoursviabbgangulyst",
-      "name": "Esplanade (During Office hours via B.B. Ganguly St.).",
+      "name": "Esplanade (During Office Hours Via B.B. Ganguly St.).",
       "ward": "Esplanade",
       "lat": 22.5649419,
       "lon": 88.35169870000001
@@ -6288,7 +6322,7 @@
     },
     {
       "id": "bhojerhatviabhangar",
-      "name": "Bhojerhat (via Bhangar)",
+      "name": "Bhojerhat (Via Bhangar)",
       "ward": "Kolkata",
       "lat": 22.5739417,
       "lon": 88.5800757
@@ -6400,14 +6434,14 @@
     },
     {
       "id": "citroad",
-      "name": "CIT Road",
+      "name": "Cit Road",
       "ward": "Kolkata",
       "lat": 22.552176,
       "lon": 88.3716118
     },
     {
       "id": "4nobridge",
-      "name": "4 no. bridge",
+      "name": "4 No. Bridge",
       "ward": "4 No. Bridge",
       "lat": 22.5377225,
       "lon": 88.37052120000001
@@ -6505,7 +6539,7 @@
     },
     {
       "id": "viproad",
-      "name": "VIP Road",
+      "name": "Vip Road",
       "ward": "Kolkata",
       "lat": 22.5916737,
       "lon": 88.393713
@@ -6603,7 +6637,7 @@
     },
     {
       "id": "amrd",
-      "name": "AMRD",
+      "name": "Amrd",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
@@ -6694,7 +6728,7 @@
     },
     {
       "id": "no1gate",
-      "name": "No.1 gate",
+      "name": "No.1 Gate",
       "ward": "Dhakuria",
       "lat": 22.500862,
       "lon": 88.3811333
@@ -6820,7 +6854,7 @@
     },
     {
       "id": "everyalternatebuspliesviapaharpurrd",
-      "name": "(Every alternate Bus plies via Paharpur Rd).",
+      "name": "(Every Alternate Bus Plies Via Paharpur Rd).",
       "ward": "Kolkata",
       "lat": 22.5189477,
       "lon": 88.2754671
@@ -6834,7 +6868,7 @@
     },
     {
       "id": "btrdvialalkuthijunction",
-      "name": "B.T. Rd via Lalkuthi Junction.",
+      "name": "B.T. Rd Via Lalkuthi Junction.",
       "ward": "Kolkata",
       "lat": 22.6101541,
       "lon": 88.3763702
@@ -6908,20 +6942,6 @@
       "ward": "West Kamalapur",
       "lat": 22.6407182,
       "lon": 88.4243467
-    },
-    {
-      "id": "2",
-      "name": "2",
-      "ward": "Kolkata",
-      "lat": 22.5743545,
-      "lon": 88.3628734
-    },
-    {
-      "id": "3",
-      "name": "3",
-      "ward": "Kolkata",
-      "lat": 22.5743545,
-      "lon": 88.3628734
     },
     {
       "id": "doltala",
@@ -7049,7 +7069,7 @@
     },
     {
       "id": "crpcamps",
-      "name": "CRP Camps",
+      "name": "Crp Camps",
       "ward": "Entally",
       "lat": 22.5596244,
       "lon": 88.3705014
@@ -7175,7 +7195,7 @@
     },
     {
       "id": "embypassconnector",
-      "name": "E.M. Bypass connector",
+      "name": "E.M. Bypass Connector",
       "ward": "Kolkata",
       "lat": 22.5026178,
       "lon": 88.3918356
@@ -7287,7 +7307,7 @@
     },
     {
       "id": "syedamiraliavenue",
-      "name": "Syed Amir ali Avenue",
+      "name": "Syed Amir Ali Avenue",
       "ward": "Kolkata",
       "lat": 22.5383778,
       "lon": 88.3651849
@@ -7462,7 +7482,7 @@
     },
     {
       "id": "cstckasbadepot",
-      "name": "CSTC Kasba Depot",
+      "name": "Cstc Kasba Depot",
       "ward": "Sector C",
       "lat": 22.5149308,
       "lon": 88.40024
@@ -7504,7 +7524,7 @@
     },
     {
       "id": "rajascmullickroadterminatingatgaria",
-      "name": "Raja S.C. Mullick Road terminating at Garia.",
+      "name": "Raja S.C. Mullick Road Terminating At Garia.",
       "ward": "Kolkata",
       "lat": 22.4902867,
       "lon": 88.3722022
@@ -7532,7 +7552,7 @@
     },
     {
       "id": "7thave",
-      "name": "7th Ave.",
+      "name": "7Th Ave.",
       "ward": "Santoshpur",
       "lat": 22.4961027,
       "lon": 88.401885
@@ -7546,7 +7566,7 @@
     },
     {
       "id": "eb1cblockuptocentralparkbroadwaycrossingthenuptokarunamayee",
-      "name": "EB/1C Block upto Central Park Broadway crossing then upto Karunamayee",
+      "name": "Eb/1C Block Upto Central Park Broadway Crossing Then Upto Karunamayee",
       "ward": "Central Park",
       "lat": 22.5862825,
       "lon": 88.4214022
@@ -7581,21 +7601,21 @@
     },
     {
       "id": "thenfollowroutenos19ie",
-      "name": "then follow Route No.S19. i.e.",
+      "name": "Then Follow Route No.S19. I.E.",
       "ward": "West Chowbaga",
       "lat": 22.5274459,
       "lon": 88.40735579999999
     },
     {
       "id": "throughgbhablock",
-      "name": "through G.B./H.A. Block",
+      "name": "Through G.B./H.A. Block",
       "ward": "HA Block",
       "lat": 22.5755587,
       "lon": 88.4119096
     },
     {
       "id": "6thavenuetobroadway",
-      "name": "6th Avenue to Broadway",
+      "name": "6Th Avenue To Broadway",
       "ward": "Kolkata",
       "lat": 22.5743545,
       "lon": 88.3628734
@@ -7637,7 +7657,7 @@
     },
     {
       "id": "topsiardcrossing",
-      "name": "Topsia Rd crossing",
+      "name": "Topsia Rd Crossing",
       "ward": "Kolkata",
       "lat": 22.535533,
       "lon": 88.3849967
@@ -7763,7 +7783,7 @@
     },
     {
       "id": "banerjeehat",
-      "name": "Banerjee hat",
+      "name": "Banerjee Hat",
       "ward": "Badamtala",
       "lat": 22.498593,
       "lon": 88.248575
@@ -7840,7 +7860,7 @@
     },
     {
       "id": "duringofficehoursgoestoesplanadebbdbag",
-      "name": "(during office hours goes to Esplanade B.B.D. Bag).",
+      "name": "(During Office Hours Goes To Esplanade B.B.D. Bag).",
       "ward": "Esplanade",
       "lat": 22.5652757,
       "lon": 88.3518608
@@ -7984,6 +8004,650 @@
       "ward": "Ganganagar",
       "lat": 22.6754637,
       "lon": 88.45916729999999
+    },
+    {
+      "id": "bidhannagarroad",
+      "name": "Bidhannagar Road",
+      "ward": "Kolkata",
+      "lat": 22.5933383,
+      "lon": 88.3883036
+    },
+    {
+      "id": "dumdum",
+      "name": "Dum Dum",
+      "ward": "Dum Dum",
+      "lat": 22.6420109,
+      "lon": 88.4311688
+    },
+    {
+      "id": "agarpara",
+      "name": "Agarpara",
+      "ward": "Agarpara",
+      "lat": 22.683442,
+      "lon": 88.3931185
+    },
+    {
+      "id": "sodpur",
+      "name": "Sodpur",
+      "ward": "Sodepur",
+      "lat": 22.6992781,
+      "lon": 88.38525969999999
+    },
+    {
+      "id": "khardaha",
+      "name": "Khardaha",
+      "ward": "Khardaha",
+      "lat": 22.7008241,
+      "lon": 88.3748212
+    },
+    {
+      "id": "liluah",
+      "name": "Liluah",
+      "ward": "Liluah",
+      "lat": 22.6253823,
+      "lon": 88.329307
+    },
+    {
+      "id": "konnagar",
+      "name": "Konnagar",
+      "ward": "Cossipore",
+      "lat": 22.572655,
+      "lon": 88.3638989
+    },
+    {
+      "id": "rishra",
+      "name": "Rishra",
+      "ward": "Nandi Bagan",
+      "lat": 22.5096117,
+      "lon": 88.3846976
+    },
+    {
+      "id": "serampore",
+      "name": "Serampore",
+      "ward": "Kolkata",
+      "lat": 22.5743545,
+      "lon": 88.3628734
+    },
+    {
+      "id": "kolkata",
+      "name": "Kolkata",
+      "ward": "Kolkata",
+      "lat": 22.5743545,
+      "lon": 88.3628734
+    },
+    {
+      "id": "tala",
+      "name": "Tala",
+      "ward": "Tala",
+      "lat": 22.6098199,
+      "lon": 88.3861529
+    },
+    {
+      "id": "shobhabazar",
+      "name": "Shobhabazar",
+      "ward": "Shobhabazar",
+      "lat": 22.5981676,
+      "lon": 88.3639986
+    },
+    {
+      "id": "edengardens",
+      "name": "Eden Gardens",
+      "ward": "B.B.D. Bagh",
+      "lat": 22.5645788,
+      "lon": 88.34331480000002
+    },
+    {
+      "id": "prinsepghat",
+      "name": "Prinsep Ghat",
+      "ward": "Maidan",
+      "lat": 22.5552828,
+      "lon": 88.3311699
+    },
+    {
+      "id": "noapara",
+      "name": "Noapara",
+      "ward": "Noapara",
+      "lat": 22.824665,
+      "lon": 88.376133
+    },
+    {
+      "id": "shobhabazarsutanuti",
+      "name": "Shobhabazar Sutanuti",
+      "ward": "Raja Nabakrishna Street",
+      "lat": 22.5960254,
+      "lon": 88.3652848
+    },
+    {
+      "id": "central",
+      "name": "Central",
+      "ward": "Haltu",
+      "lat": 22.5725237,
+      "lon": 88.3582423
+    },
+    {
+      "id": "chandnichowk",
+      "name": "Chandni Chowk",
+      "ward": "Chandni Chawk",
+      "lat": 22.5660637,
+      "lon": 88.3561094
+    },
+    {
+      "id": "maidan",
+      "name": "Maidan",
+      "ward": "Maidan",
+      "lat": 22.550554,
+      "lon": 88.3403818
+    },
+    {
+      "id": "netajibhavan",
+      "name": "Netaji Bhavan",
+      "ward": "Bhowanipore",
+      "lat": 22.5328629,
+      "lon": 88.34575269999999
+    },
+    {
+      "id": "jatindaspark",
+      "name": "Jatin Das Park",
+      "ward": "Bakul Bagan",
+      "lat": 22.524262,
+      "lon": 88.34648899999999
+    },
+    {
+      "id": "rabindrasarobar",
+      "name": "Rabindra Sarobar",
+      "ward": "Dhakuria",
+      "lat": 22.5121451,
+      "lon": 88.3636952
+    },
+    {
+      "id": "mahanayakuttamkumar",
+      "name": "Mahanayak Uttam Kumar",
+      "ward": "Mahanayak Uttam Kumar Metro Station",
+      "lat": 22.4944519,
+      "lon": 88.34515379999999
+    },
+    {
+      "id": "netaji",
+      "name": "Netaji",
+      "ward": "Banerjee Para",
+      "lat": 22.4809362,
+      "lon": 88.3459611
+    },
+    {
+      "id": "masterdasuryasen",
+      "name": "Masterda Surya Sen",
+      "ward": "Naktala",
+      "lat": 22.4734883,
+      "lon": 88.3608039
+    },
+    {
+      "id": "gitanjali",
+      "name": "Gitanjali",
+      "ward": "China Bazar",
+      "lat": 22.5780801,
+      "lon": 88.3512073
+    },
+    {
+      "id": "kavinazrul",
+      "name": "Kavi Nazrul",
+      "ward": "Garia Bazaar",
+      "lat": 22.4642442,
+      "lon": 88.3806582
+    },
+    {
+      "id": "shahidkhudiram",
+      "name": "Shahid Khudiram",
+      "ward": "Sukanta Nagar",
+      "lat": 22.4660094,
+      "lon": 88.3916655
+    },
+    {
+      "id": "kavisubhash",
+      "name": "Kavi Subhash",
+      "ward": "Garagachha",
+      "lat": 22.4721747,
+      "lon": 88.3978668
+    },
+    {
+      "id": "mahakaran",
+      "name": "Mahakaran",
+      "ward": "B.B.D. Bagh",
+      "lat": 22.5724588,
+      "lon": 88.35082709999999
+    },
+    {
+      "id": "citycentre",
+      "name": "City Centre",
+      "ward": "DC Block",
+      "lat": 22.5881164,
+      "lon": 88.4082462
+    },
+    {
+      "id": "centralpark",
+      "name": "Central Park",
+      "ward": "Central Park",
+      "lat": 22.5867597,
+      "lon": 88.4149401
+    },
+    {
+      "id": "saltlakesectorv",
+      "name": "Salt Lake Sector V",
+      "ward": "BN Block",
+      "lat": 22.5802821,
+      "lon": 88.435752
+    },
+    {
+      "id": "behalabazar",
+      "name": "Behala Bazar",
+      "ward": "Jele Para",
+      "lat": 22.500378,
+      "lon": 88.3172706
+    },
+    {
+      "id": "satyajitray",
+      "name": "Satyajit Ray",
+      "ward": "Chak Garia",
+      "lat": 22.484608,
+      "lon": 88.392619
+    },
+    {
+      "id": "jyotirindranandi",
+      "name": "Jyotirindra Nandi",
+      "ward": "Nitai Nagar",
+      "lat": 22.49595,
+      "lon": 88.398611
+    },
+    {
+      "id": "kavisukanta",
+      "name": "Kavi Sukanta",
+      "ward": "Sector H",
+      "lat": 22.505602,
+      "lon": 88.401066
+    },
+    {
+      "id": "hemantamukhopadhyay",
+      "name": "Hemanta Mukhopadhyay",
+      "ward": "Sector I",
+      "lat": 22.514684,
+      "lon": 88.40160399999999
+    },
+    {
+      "id": "suktaracinema",
+      "name": "Suktara Cinema",
+      "ward": "Kadapara",
+      "lat": 22.5716937,
+      "lon": 88.39525669999999
+    },
+    {
+      "id": "subhassarovar",
+      "name": "Subhas Sarovar",
+      "ward": "Subhas Sarobar Park",
+      "lat": 22.5683729,
+      "lon": 88.4006947
+    },
+    {
+      "id": "orient",
+      "name": "Orient",
+      "ward": "AA II",
+      "lat": 22.6228171,
+      "lon": 88.4506119
+    },
+    {
+      "id": "89cinema",
+      "name": "89 Cinema",
+      "ward": "Narkeldanga",
+      "lat": 22.5774326,
+      "lon": 88.3810707
+    },
+    {
+      "id": "swabhumi",
+      "name": "Swabhumi",
+      "ward": "HM Block",
+      "lat": 22.5677627,
+      "lon": 88.41817600000002
+    },
+    {
+      "id": "bypass",
+      "name": "Bypass",
+      "ward": "Mandal Para",
+      "lat": 22.4546873,
+      "lon": 88.395432
+    },
+    {
+      "id": "13notank",
+      "name": "13 No. Tank",
+      "ward": "Sector 3",
+      "lat": 22.5762179,
+      "lon": 88.4096111
+    },
+    {
+      "id": "bijanbhawan",
+      "name": "Bijan Bhawan",
+      "ward": "HA Block",
+      "lat": 22.5740373,
+      "lon": 88.4125158
+    },
+    {
+      "id": "hbisland",
+      "name": "Hb Island",
+      "ward": "IA Block",
+      "lat": 22.5734757,
+      "lon": 88.4135501
+    },
+    {
+      "id": "gdisland",
+      "name": "Gd Island",
+      "ward": "GC Block",
+      "lat": 22.5767391,
+      "lon": 88.41361429999999
+    },
+    {
+      "id": "fdblock",
+      "name": "Fd Block",
+      "ward": "FD Block",
+      "lat": 22.5830181,
+      "lon": 88.4131218
+    },
+    {
+      "id": "netajipark",
+      "name": "Netaji Park",
+      "ward": "Kanungo Park",
+      "lat": 22.4670543,
+      "lon": 88.3711793
+    },
+    {
+      "id": "kalimandir",
+      "name": "Kali Mandir",
+      "ward": "kalimandir",
+      "lat": 22.5397646,
+      "lon": 88.3789344
+    },
+    {
+      "id": "allahabadbank",
+      "name": "Allahabad Bank",
+      "ward": "Kolkata",
+      "lat": 22.5743545,
+      "lon": 88.3628734
+    },
+    {
+      "id": "trikonpark",
+      "name": "Trikon Park",
+      "ward": "Sahanagar",
+      "lat": 22.5134551,
+      "lon": 88.3447357
+    },
+    {
+      "id": "devinenursinghome",
+      "name": "Devine Nursing Home",
+      "ward": "Sura Cross Lane",
+      "lat": 22.5664123,
+      "lon": 88.39333219999999
+    },
+    {
+      "id": "ratnakebin",
+      "name": "Ratna Kebin",
+      "ward": "Baghbazar",
+      "lat": 22.6027998,
+      "lon": 88.36735209999999
+    },
+    {
+      "id": "citmore",
+      "name": "Cit More",
+      "ward": "CIT More",
+      "lat": 22.5611579,
+      "lon": 88.40539319999999
+    },
+    {
+      "id": "idhospital",
+      "name": "Id Hospital",
+      "ward": "Subhas Sarobar Park",
+      "lat": 22.5653049,
+      "lon": 88.39801419999999
+    },
+    {
+      "id": "raginicinema",
+      "name": "Ragini Cinema",
+      "ward": "Subhas Sarobar Park",
+      "lat": 22.5618042,
+      "lon": 88.4063461
+    },
+    {
+      "id": "citbuildingmore",
+      "name": "Cit Building More.",
+      "ward": "LA Block",
+      "lat": 22.5618898,
+      "lon": 88.40838819999999
+    },
+    {
+      "id": "sishuhospital",
+      "name": "Sishu Hospital",
+      "ward": "Phoolbagan",
+      "lat": 22.5737051,
+      "lon": 88.38745689999999
+    },
+    {
+      "id": "railquarter",
+      "name": "Rail Quarter",
+      "ward": "Jadavpur",
+      "lat": 22.495468,
+      "lon": 88.37469159999999
+    },
+    {
+      "id": "sasthitala",
+      "name": "Sasthitala",
+      "ward": "Narkeldanga",
+      "lat": 22.5762577,
+      "lon": 88.3819555
+    },
+    {
+      "id": "narkeldangapostoffice",
+      "name": "Narkeldanga Post Office",
+      "ward": "Raja Bazar",
+      "lat": 22.5763273,
+      "lon": 88.38243349999999
+    },
+    {
+      "id": "rajabazarkhaalpool",
+      "name": "Rajabazar Khaal Pool",
+      "ward": "DM Block",
+      "lat": 22.579407,
+      "lon": 88.4262916
+    },
+    {
+      "id": "tasbirmahalcinema",
+      "name": "Tasbir Mahal Cinema",
+      "ward": "Dum Dum Park",
+      "lat": 22.6090591,
+      "lon": 88.41713759999999
+    },
+    {
+      "id": "sealdahstation",
+      "name": "Sealdah Station.",
+      "ward": "Sealdah",
+      "lat": 22.567792,
+      "lon": 88.37102030000001
+    },
+    {
+      "id": "pantaloons",
+      "name": "Pantaloons",
+      "ward": "Kolkata",
+      "lat": 22.5743545,
+      "lon": 88.3628734
+    },
+    {
+      "id": "vipmarket",
+      "name": "Vip Market",
+      "ward": "Kankurgachi Municipal Market (VIP)",
+      "lat": 22.5753573,
+      "lon": 88.3899916
+    },
+    {
+      "id": "kathgola",
+      "name": "Kathgola",
+      "ward": "Kathgola",
+      "lat": 22.6248627,
+      "lon": 88.3883128
+    },
+    {
+      "id": "railbridge",
+      "name": "Rail Bridge",
+      "ward": "Charu Market",
+      "lat": 22.5074706,
+      "lon": 88.3457337
+    },
+    {
+      "id": "marwaribagan",
+      "name": "Marwari Bagan",
+      "ward": "Bagmari",
+      "lat": 22.581245,
+      "lon": 88.385493
+    },
+    {
+      "id": "bagmaribazar",
+      "name": "Bagmari Bazar",
+      "ward": "Bagmari",
+      "lat": 22.582752,
+      "lon": 88.38173599999999
+    },
+    {
+      "id": "manicktalakhaalpool",
+      "name": "Manicktala Khaal Pool",
+      "ward": "DM Block",
+      "lat": 22.579407,
+      "lon": 88.4262916
+    },
+    {
+      "id": "manicktalapostoffice",
+      "name": "Manicktala Post Office",
+      "ward": "Manicktala",
+      "lat": 22.5841948,
+      "lon": 88.37741539999999
+    },
+    {
+      "id": "bloodbank",
+      "name": "Blood Bank",
+      "ward": "Kolkata",
+      "lat": 22.5743545,
+      "lon": 88.3628734
+    },
+    {
+      "id": "manicktalamore",
+      "name": "Manicktala More",
+      "ward": "Yogi Para",
+      "lat": 22.584698,
+      "lon": 88.37485199999999
+    },
+    {
+      "id": "hedua",
+      "name": "Hedua",
+      "ward": "Hedua",
+      "lat": 22.5885045,
+      "lon": 88.365819
+    },
+    {
+      "id": "rashmanibazar",
+      "name": "Rashmani Bazar",
+      "ward": "Kulia",
+      "lat": 22.5630862,
+      "lon": 88.3944913
+    },
+    {
+      "id": "deshbandhuschool",
+      "name": "Deshbandhu School",
+      "ward": "Subhas Sarobar Park",
+      "lat": 22.5654824,
+      "lon": 88.39060649999999
+    },
+    {
+      "id": "alochaya",
+      "name": "Alochaya",
+      "ward": "Subhas Sarobar Park",
+      "lat": 22.5643682,
+      "lon": 88.3893183
+    },
+    {
+      "id": "sarkarbazar",
+      "name": "Sarkar Bazar",
+      "ward": "Kundu Bagan",
+      "lat": 22.565141,
+      "lon": 88.38508709999999
+    },
+    {
+      "id": "borofkol",
+      "name": "Borof Kol",
+      "ward": "Seal Lane",
+      "lat": 22.5660513,
+      "lon": 88.3775138
+    },
+    {
+      "id": "khalpool",
+      "name": "Khal Pool",
+      "ward": "DM Block",
+      "lat": 22.579407,
+      "lon": 88.4262916
+    },
+    {
+      "id": "salestax",
+      "name": "Sales Tax",
+      "ward": "DF Block",
+      "lat": 22.591206,
+      "lon": 88.41776689999999
+    },
+    {
+      "id": "beliaghatabypass",
+      "name": "Beliaghata Bypass",
+      "ward": "Kolkata",
+      "lat": 22.5643555,
+      "lon": 88.388952
+    },
+    {
+      "id": "saicomplex",
+      "name": "Sai Complex",
+      "ward": "LA Block",
+      "lat": 22.5645895,
+      "lon": 88.4111708
+    },
+    {
+      "id": "colombiaasiahospital",
+      "name": "Colombia Asia Hospital",
+      "ward": "IB Block",
+      "lat": 22.5723555,
+      "lon": 88.4127809
+    },
+    {
+      "id": "ezcc",
+      "name": "Ezcc",
+      "ward": "IB Block",
+      "lat": 22.5730417,
+      "lon": 88.4130649
+    },
+    {
+      "id": "bkpal",
+      "name": "Bk Pal",
+      "ward": "Kolkata",
+      "lat": 22.595283,
+      "lon": 88.3606025
+    },
+    {
+      "id": "gauribari",
+      "name": "Gauri Bari",
+      "ward": "Gouri Bari",
+      "lat": 22.5930952,
+      "lon": 88.3779528
+    },
+    {
+      "id": "rgkarhospital",
+      "name": "Rg Kar Hospital",
+      "ward": "Bidhan Sarani",
+      "lat": 22.603416,
+      "lon": 88.37809999999999
+    },
+    {
+      "id": "fairlieplace",
+      "name": "Fairlie Place",
+      "ward": "Fairley Place",
+      "lat": 22.5764034,
+      "lon": 88.3476117
     }
   ],
   "edges": [
@@ -10148,16 +10812,6 @@
       "fareApprox": true
     },
     {
-      "from": "howrah",
-      "to": "sarsuna",
-      "mode": "bus",
-      "line": "Bus 12C/1",
-      "min": 69,
-      "minApprox": true,
-      "fare": 35,
-      "fareApprox": true
-    },
-    {
       "from": "sarsuna",
       "to": "bakultala",
       "mode": "bus",
@@ -12208,16 +12862,6 @@
       "fareApprox": true
     },
     {
-      "from": "howrah",
-      "to": "domjoor",
-      "mode": "bus",
-      "line": "Bus 16",
-      "min": 94,
-      "minApprox": true,
-      "fare": 45,
-      "fareApprox": true
-    },
-    {
       "from": "sinthimore",
       "to": "bekbagan",
       "mode": "bus",
@@ -13668,16 +14312,6 @@
       "fareApprox": true
     },
     {
-      "from": "dakghar",
-      "to": "bbdbag",
-      "mode": "bus",
-      "line": "Bus 18A",
-      "min": 64,
-      "minApprox": true,
-      "fare": 35,
-      "fareApprox": true
-    },
-    {
       "from": "bbdbag",
       "to": "esplanade",
       "mode": "bus",
@@ -14290,16 +14924,6 @@
     {
       "from": "sealdah",
       "to": "fatehpur",
-      "mode": "bus",
-      "line": "Bus 1-Feb",
-      "min": 49,
-      "minApprox": true,
-      "fare": 30,
-      "fareApprox": true
-    },
-    {
-      "from": "fatehpur",
-      "to": "sealdah",
       "mode": "bus",
       "line": "Bus 1-Feb",
       "min": 49,
@@ -18209,16 +18833,6 @@
     },
     {
       "from": "brdway",
-      "to": "h",
-      "mode": "bus",
-      "line": "Bus 239A",
-      "min": 25,
-      "minApprox": true,
-      "fare": 20,
-      "fareApprox": true
-    },
-    {
-      "from": "h",
       "to": "ah",
       "mode": "bus",
       "line": "Bus 239A"
@@ -18231,23 +18845,7 @@
     },
     {
       "from": "bblock",
-      "to": "1",
-      "mode": "bus",
-      "line": "Bus 239A",
-      "min": 33,
-      "minApprox": true,
-      "fare": 20,
-      "fareApprox": true
-    },
-    {
-      "from": "1",
       "to": "a1",
-      "mode": "bus",
-      "line": "Bus 239A"
-    },
-    {
-      "from": "a1",
-      "to": "bblock",
       "mode": "bus",
       "line": "Bus 239A"
     },
@@ -18839,16 +19437,6 @@
       "min": 1,
       "minApprox": true,
       "fare": 10,
-      "fareApprox": true
-    },
-    {
-      "from": "babughat",
-      "to": "brotocharigram",
-      "mode": "bus",
-      "line": "Bus 247",
-      "min": 71,
-      "minApprox": true,
-      "fare": 35,
       "fareApprox": true
     },
     {
@@ -31804,16 +32392,6 @@
       "fareApprox": true
     },
     {
-      "from": "chonokhali",
-      "to": "canning",
-      "mode": "bus",
-      "line": "Bus 80C",
-      "min": 6,
-      "minApprox": true,
-      "fare": 10,
-      "fareApprox": true
-    },
-    {
       "from": "canning",
       "to": "chobokhali",
       "mode": "bus",
@@ -34934,16 +35512,6 @@
       "fareApprox": true
     },
     {
-      "from": "paharpurrd",
-      "to": "cirgardenreachrd",
-      "mode": "bus",
-      "line": "Bus L19",
-      "min": 4,
-      "minApprox": true,
-      "fare": 10,
-      "fareApprox": true
-    },
-    {
       "from": "cirgardenreachrd",
       "to": "akhrard",
       "mode": "bus",
@@ -35305,32 +35873,12 @@
     },
     {
       "from": "airportgateno1",
-      "to": "2",
-      "mode": "bus",
-      "line": "Bus L20B",
-      "min": 53,
-      "minApprox": true,
-      "fare": 30,
-      "fareApprox": true
-    },
-    {
-      "from": "2",
-      "to": "3",
-      "mode": "bus",
-      "line": "Bus L20B",
-      "min": 1,
-      "minApprox": true,
-      "fare": 10,
-      "fareApprox": true
-    },
-    {
-      "from": "3",
       "to": "birati",
       "mode": "bus",
       "line": "Bus L20B",
-      "min": 62,
+      "min": 13,
       "minApprox": true,
-      "fare": 35,
+      "fare": 15,
       "fareApprox": true
     },
     {
@@ -36198,16 +36746,6 @@
     {
       "from": "bbgangulyst",
       "to": "crave",
-      "mode": "bus",
-      "line": "Bus L3C",
-      "min": 6,
-      "minApprox": true,
-      "fare": 10,
-      "fareApprox": true
-    },
-    {
-      "from": "crave",
-      "to": "bbgangulyst",
       "mode": "bus",
       "line": "Bus L3C",
       "min": 6,
@@ -42353,6 +42891,1696 @@
       "min": 13,
       "minApprox": true,
       "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "sealdah",
+      "to": "parkcircus",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 7,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "parkcircus",
+      "to": "ballygunge",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "ballygunge",
+      "to": "dhakuria",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "dhakuria",
+      "to": "jadavpur",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "jadavpur",
+      "to": "baghajatin",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "baghajatin",
+      "to": "garia",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "garia",
+      "to": "narendrapur",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "narendrapur",
+      "to": "sonarpur",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "sonarpur",
+      "to": "baruipur",
+      "mode": "train",
+      "line": "Sealdah South",
+      "min": 21,
+      "minApprox": true,
+      "fare": 30,
+      "fareApprox": true
+    },
+    {
+      "from": "sealdah",
+      "to": "bidhannagarroad",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "bidhannagarroad",
+      "to": "dumdum",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 14,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "dumdum",
+      "to": "belgharia",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 12,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "belgharia",
+      "to": "agarpara",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "agarpara",
+      "to": "sodpur",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "sodpur",
+      "to": "khardaha",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "khardaha",
+      "to": "titagarh",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 32,
+      "minApprox": true,
+      "fare": 40,
+      "fareApprox": true
+    },
+    {
+      "from": "titagarh",
+      "to": "barrackpore",
+      "mode": "train",
+      "line": "Sealdah Main",
+      "min": 5,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "howrah",
+      "to": "liluah",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 13,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "liluah",
+      "to": "belur",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 5,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "belur",
+      "to": "bally",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "bally",
+      "to": "uttarpara",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 40,
+      "minApprox": true,
+      "fare": 50,
+      "fareApprox": true
+    },
+    {
+      "from": "uttarpara",
+      "to": "hindmotor",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 25,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "hindmotor",
+      "to": "konnagar",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "konnagar",
+      "to": "rishra",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 14,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "rishra",
+      "to": "serampore",
+      "mode": "train",
+      "line": "Howrah Main",
+      "min": 15,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "dumdum",
+      "to": "patipukur",
+      "mode": "train",
+      "line": "Circular",
+      "min": 11,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "patipukur",
+      "to": "kolkata",
+      "mode": "train",
+      "line": "Circular",
+      "min": 9,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "kolkata",
+      "to": "tala",
+      "mode": "train",
+      "line": "Circular",
+      "min": 9,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "tala",
+      "to": "bagbazar",
+      "mode": "train",
+      "line": "Circular",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "bagbazar",
+      "to": "shobhabazar",
+      "mode": "train",
+      "line": "Circular",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "shobhabazar",
+      "to": "burrabazar",
+      "mode": "train",
+      "line": "Circular",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "burrabazar",
+      "to": "bbdbag",
+      "mode": "train",
+      "line": "Circular",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "bbdbag",
+      "to": "edengardens",
+      "mode": "train",
+      "line": "Circular",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "edengardens",
+      "to": "prinsepghat",
+      "mode": "train",
+      "line": "Circular",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "prinsepghat",
+      "to": "majerhat",
+      "mode": "train",
+      "line": "Circular",
+      "min": 8,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "dakshineswar",
+      "to": "baranagar",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "baranagar",
+      "to": "noapara",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 47,
+      "minApprox": true,
+      "fare": 50,
+      "fareApprox": true
+    },
+    {
+      "from": "noapara",
+      "to": "dumdum",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 47,
+      "minApprox": true,
+      "fare": 50,
+      "fareApprox": true
+    },
+    {
+      "from": "dumdum",
+      "to": "belgachia",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 14,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "belgachia",
+      "to": "shyambazar",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "shyambazar",
+      "to": "shobhabazarsutanuti",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "shobhabazarsutanuti",
+      "to": "girishpark",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "girishpark",
+      "to": "mahatmagandhiroad",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 30,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "mahatmagandhiroad",
+      "to": "central",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 26,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "central",
+      "to": "chandnichowk",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "chandnichowk",
+      "to": "esplanade",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "esplanade",
+      "to": "parkstreet",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "parkstreet",
+      "to": "maidan",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "maidan",
+      "to": "rabindrasadan",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "rabindrasadan",
+      "to": "netajibhavan",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "netajibhavan",
+      "to": "jatindaspark",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "jatindaspark",
+      "to": "kalighat",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "kalighat",
+      "to": "rabindrasarobar",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "rabindrasarobar",
+      "to": "mahanayakuttamkumar",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "mahanayakuttamkumar",
+      "to": "netaji",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "netaji",
+      "to": "masterdasuryasen",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "masterdasuryasen",
+      "to": "gitanjali",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 26,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "gitanjali",
+      "to": "kavinazrul",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 29,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "kavinazrul",
+      "to": "shahidkhudiram",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "shahidkhudiram",
+      "to": "kavisubhash",
+      "mode": "metro",
+      "line": "Metro Blue Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "howrahmaidan",
+      "to": "howrahstation",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 8,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "howrahstation",
+      "to": "mahakaran",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "mahakaran",
+      "to": "esplanade",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "esplanade",
+      "to": "sealdah",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 4,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "sealdah",
+      "to": "phoolbagan",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 5,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "phoolbagan",
+      "to": "saltlakestadium",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 5,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "saltlakestadium",
+      "to": "bengalchemical",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 11,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "bengalchemical",
+      "to": "citycentre",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 11,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "citycentre",
+      "to": "centralpark",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "centralpark",
+      "to": "karunamoyee",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 31,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "karunamoyee",
+      "to": "saltlakesectorv",
+      "mode": "metro",
+      "line": "Metro Green Line",
+      "min": 33,
+      "minApprox": true,
+      "fare": 40,
+      "fareApprox": true
+    },
+    {
+      "from": "joka",
+      "to": "thakurpukur",
+      "mode": "metro",
+      "line": "Metro Purple Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "thakurpukur",
+      "to": "sakherbazar",
+      "mode": "metro",
+      "line": "Metro Purple Line",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "sakherbazar",
+      "to": "behalachowrasta",
+      "mode": "metro",
+      "line": "Metro Purple Line",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "behalachowrasta",
+      "to": "behalabazar",
+      "mode": "metro",
+      "line": "Metro Purple Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "behalabazar",
+      "to": "taratala",
+      "mode": "metro",
+      "line": "Metro Purple Line",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "taratala",
+      "to": "majerhat",
+      "mode": "metro",
+      "line": "Metro Purple Line",
+      "min": 5,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "kavisubhash",
+      "to": "satyajitray",
+      "mode": "metro",
+      "line": "Metro Orange Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "satyajitray",
+      "to": "jyotirindranandi",
+      "mode": "metro",
+      "line": "Metro Orange Line",
+      "min": 3,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "jyotirindranandi",
+      "to": "kavisukanta",
+      "mode": "metro",
+      "line": "Metro Orange Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "kavisukanta",
+      "to": "hemantamukhopadhyay",
+      "mode": "metro",
+      "line": "Metro Orange Line",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "phoolbagan",
+      "to": "suktaracinema",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "suktaracinema",
+      "to": "kadapara",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "kadapara",
+      "to": "subhassarovar",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "subhassarovar",
+      "to": "orient",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 31,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "orient",
+      "to": "89cinema",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 34,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "89cinema",
+      "to": "swabhumi",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 15,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "swabhumi",
+      "to": "bypass",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 50,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "bypass",
+      "to": "saltlakestadium",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 50,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "saltlakestadium",
+      "to": "purbachal",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 28,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "purbachal",
+      "to": "13notank",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 31,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "13notank",
+      "to": "bijanbhawan",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "bijanbhawan",
+      "to": "hbisland",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "hbisland",
+      "to": "gdisland",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "gdisland",
+      "to": "fdblock",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "fdblock",
+      "to": "netajipark",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 53,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "netajipark",
+      "to": "centralpark",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 55,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "centralpark",
+      "to": "karunamoyee",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 54,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "phoolbagan",
+      "to": "kalimandir",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 15,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "kalimandir",
+      "to": "allahabadbank",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 16,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "allahabadbank",
+      "to": "trikonpark",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 27,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "trikonpark",
+      "to": "devinenursinghome",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 30,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "devinenursinghome",
+      "to": "ratnakebin",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 19,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "ratnakebin",
+      "to": "citmore",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 24,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "citmore",
+      "to": "idhospital",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "idhospital",
+      "to": "joramandir",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 24,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "joramandir",
+      "to": "raginicinema",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 24,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "raginicinema",
+      "to": "citbuildingmore",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "phoolbagan",
+      "to": "sishuhospital",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "sishuhospital",
+      "to": "chanditala",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 38,
+      "minApprox": true,
+      "fare": 30,
+      "fareApprox": true
+    },
+    {
+      "from": "chanditala",
+      "to": "railquarter",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 15,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "railquarter",
+      "to": "sasthitala",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 35,
+      "minApprox": true,
+      "fare": 30,
+      "fareApprox": true
+    },
+    {
+      "from": "sasthitala",
+      "to": "narkeldangapostoffice",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "narkeldangapostoffice",
+      "to": "rajabazarkhaalpool",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 18,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "rajabazarkhaalpool",
+      "to": "tasbirmahalcinema",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 13,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "tasbirmahalcinema",
+      "to": "sealdahstation",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 26,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "phoolbagan",
+      "to": "pantaloons",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 11,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "pantaloons",
+      "to": "vipmarket",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 11,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "vipmarket",
+      "to": "kathgola",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 21,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "kathgola",
+      "to": "kankurgachi",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 19,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "kankurgachi",
+      "to": "railbridge",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 36,
+      "minApprox": true,
+      "fare": 30,
+      "fareApprox": true
+    },
+    {
+      "from": "railbridge",
+      "to": "marwaribagan",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 36,
+      "minApprox": true,
+      "fare": 30,
+      "fareApprox": true
+    },
+    {
+      "from": "marwaribagan",
+      "to": "bagmaribazar",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "bagmaribazar",
+      "to": "manicktalakhaalpool",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 18,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "manicktalakhaalpool",
+      "to": "manicktalapostoffice",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 20,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "manicktalapostoffice",
+      "to": "bloodbank",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 7,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "bloodbank",
+      "to": "manicktalamore",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 7,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "manicktalamore",
+      "to": "hedua",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "hedua",
+      "to": "girishpark",
+      "mode": "auto",
+      "line": "Auto 59",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "raginicinema",
+      "to": "idhospital",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "idhospital",
+      "to": "citmore",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "citmore",
+      "to": "rashmanibazar",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "rashmanibazar",
+      "to": "deshbandhuschool",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "deshbandhuschool",
+      "to": "alochaya",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "alochaya",
+      "to": "sarkarbazar",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "sarkarbazar",
+      "to": "borofkol",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "borofkol",
+      "to": "khalpool",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 20,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "khalpool",
+      "to": "salestax",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 6,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "salestax",
+      "to": "sealdahstation",
+      "mode": "auto",
+      "line": "Auto 73",
+      "min": 21,
+      "minApprox": true,
+      "fare": 20,
+      "fareApprox": true
+    },
+    {
+      "from": "howrah",
+      "to": "botanicalgarden",
+      "mode": "auto",
+      "line": "Auto 8",
+      "min": 26,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "beliaghatabypass",
+      "to": "saicomplex",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 9,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "saicomplex",
+      "to": "colombiaasiahospital",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "colombiaasiahospital",
+      "to": "ezcc",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "ezcc",
+      "to": "bijanbhawan",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "bijanbhawan",
+      "to": "hbisland",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "hbisland",
+      "to": "gdisland",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 1,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "gdisland",
+      "to": "fdblock",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "fdblock",
+      "to": "netajipark",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 53,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "netajipark",
+      "to": "centralpark",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 55,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "centralpark",
+      "to": "karunamoyee",
+      "mode": "auto",
+      "line": "Auto 93",
+      "min": 54,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "saltlake",
+      "to": "ultadanga",
+      "mode": "auto",
+      "line": "Auto 57",
+      "min": 14,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "chitpur",
+      "to": "ganeshtalkies",
+      "mode": "auto",
+      "line": "Auto 14",
+      "min": 5,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "ganeshtalkies",
+      "to": "ahiritola",
+      "mode": "auto",
+      "line": "Auto 14",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "ahiritola",
+      "to": "bkpal",
+      "mode": "auto",
+      "line": "Auto 14",
+      "min": 2,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "subhassarovar",
+      "to": "swabhumi",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 7,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "saltlakestadium",
+      "to": "karunamoyee",
+      "mode": "auto",
+      "line": "Auto 91",
+      "min": 47,
+      "minApprox": true,
+      "fare": 35,
+      "fareApprox": true
+    },
+    {
+      "from": "trikonpark",
+      "to": "idhospital",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 31,
+      "minApprox": true,
+      "fare": 25,
+      "fareApprox": true
+    },
+    {
+      "from": "raginicinema",
+      "to": "beliaghata",
+      "mode": "auto",
+      "line": "Auto 58",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "chanditala",
+      "to": "rajabazar",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 36,
+      "minApprox": true,
+      "fare": 30,
+      "fareApprox": true
+    },
+    {
+      "from": "rajabazar",
+      "to": "sealdah",
+      "mode": "auto",
+      "line": "Auto 17",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "idhospital",
+      "to": "phoolbagan",
+      "mode": "auto",
+      "line": "Auto 80",
+      "min": 5,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "phoolbagan",
+      "to": "kankurgachi",
+      "mode": "auto",
+      "line": "Auto 80",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "kankurgachi",
+      "to": "bagmari",
+      "mode": "auto",
+      "line": "Auto 80",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "bagmari",
+      "to": "manicktala",
+      "mode": "auto",
+      "line": "Auto 80",
+      "min": 5,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "manicktala",
+      "to": "gauribari",
+      "mode": "auto",
+      "line": "Auto 80",
+      "min": 3,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "gauribari",
+      "to": "rgkarhospital",
+      "mode": "auto",
+      "line": "Auto 80",
+      "min": 4,
+      "minApprox": true,
+      "fare": 10,
+      "fareApprox": true
+    },
+    {
+      "from": "howrah",
+      "to": "fairlieplace",
+      "mode": "ferry",
+      "line": "Ferry Howrah-Fairlie Place",
+      "min": 12,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "howrah",
+      "to": "babughat",
+      "mode": "ferry",
+      "line": "Ferry Howrah-Babughat",
+      "min": 18,
+      "minApprox": true,
+      "fare": 15,
+      "fareApprox": true
+    },
+    {
+      "from": "dakshineswar",
+      "to": "belurmath",
+      "mode": "ferry",
+      "line": "Ferry Dakshineswar-Belur Math",
+      "min": 77,
+      "minApprox": true,
+      "fare": 30,
       "fareApprox": true
     }
   ]
