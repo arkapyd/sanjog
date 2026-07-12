@@ -5,37 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>shonjog · kolkata, untangled </title>
 <meta name="description" content="One interface for Kolkata's buses, trams, metro, autos, ferries and rickshaws.">
-<meta name="theme-color" content="#0b0f16">
+<meta name="theme-color" content="#231a10">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
-  --ink:#0e1116; --black:#0b0f16; --navy:#23406e; --navy-deep:#182c4d;
-  --paper:#eef0f2; --surface:#ffffff; --muted:#5c6470;
-  --hair:rgba(14,17,22,.14); --map-bg:#0f1626;
+  --ink:#2b2014; --header:#231a10;
+  --maroon:#7c3327; --maroon-deep:#5f2419;
+  --accent:#e6a817; --accent-deep:#c9900d;
+  --paper:#f3ead7; --surface:#fbf6ea; --muted:#7a6a52;
+  --hair:rgba(72,54,30,.2); --map-bg:#241b11;
   --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype","Times New Roman",serif;
 }
 *{box-sizing:border-box;margin:0}
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.45}
-.wrap{max-width:680px;margin:0 auto;padding:0 16px 56px}
+body{color:var(--ink);font-family:var(--sans);line-height:1.45;
+  background:
+    radial-gradient(900px 460px at 88% -6%,rgba(150,105,40,.10),transparent 62%),
+    radial-gradient(760px 420px at -8% 34%,rgba(130,90,35,.08),transparent 60%),
+    radial-gradient(680px 380px at 52% 108%,rgba(120,80,30,.10),transparent 60%),
+    var(--paper);
+  background-attachment:fixed}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px 150px;position:relative;z-index:1}
 .microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted)}
+
+/* background sketches — old Kolkata riverside */
+.bg-art{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-art svg{position:absolute;fill:none;stroke:rgba(74,54,28,.13);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.bg-art path,.bg-art circle{vector-effect:non-scaling-stroke}
+.bg-art .fill{fill:rgba(230,168,23,.33);stroke:none}
+.art-bridge{left:50%;transform:translateX(-50%);bottom:0;width:min(1200px,160vw)}
+.art-victoria{right:2%;bottom:118px;width:min(280px,52vw)}
+.art-tram{left:-16px;bottom:18px;width:min(290px,58vw);stroke:rgba(74,54,28,.19)}
+.art-taxi{left:44%;bottom:12px;width:min(230px,44vw);stroke:rgba(74,54,28,.19)}
+@media (max-height:520px){.bg-art{display:none}}
 
 /* map app autocomplete styles */
 .autocomplete { position: relative; }
 .autocomplete input {
   width: 100%; padding: 11px 10px; font: inherit; border: 1px solid var(--hair);
-  border-radius: 7px; background: #fff; color: var(--ink);
+  border-radius: 7px; background: var(--surface); color: var(--ink);
 }
-.autocomplete input:focus { 
-  outline: 2px solid var(--navy); border-color: var(--navy); 
+.autocomplete input:focus {
+  outline: 2px solid var(--maroon); border-color: var(--maroon);
 }
 .sugg-list {
-  position: absolute; top: 100%; left: 0; right: 0; background: #fff;
-  border: 1px solid var(--navy); border-radius: 7px; margin-top: 4px;
-  max-height: 240px; overflow-y: auto; z-index: 100; 
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  position: absolute; top: 100%; left: 0; right: 0; background: var(--surface);
+  border: 1px solid var(--maroon); border-radius: 7px; margin-top: 4px;
+  max-height: 240px; overflow-y: auto; z-index: 100;
+  box-shadow: 0 8px 24px rgba(43,32,20,0.18);
 }
 .sugg-item {
   padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--paper);
@@ -48,51 +69,54 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-heigh
 
 /* kolkata taxi hint styling */
 .taxi-hint {
-  font-size: 11.5px; font-weight: 600; color: #7a5900; background: #ffeb99;
-  border: 1px solid #ffd13b; border-radius: 6px; padding: 5px 10px;
+  font-size: 11.5px; font-weight: 600; color: #6f5106; background: #f6e0a6;
+  border: 1px solid #d9b13c; border-radius: 6px; padding: 5px 10px;
   margin: 4px 0 6px 29px; display: inline-block;
 }
 
 /* masthead */
-header{background:var(--black);color:#fff;border-bottom:4px solid var(--navy)}
+header{background:var(--header);color:#f6efdf;border-bottom:4px solid var(--accent);
+  position:relative;z-index:1}
 .mast{max-width:680px;margin:0 auto;padding:30px 16px 20px}
-.mast h1{font-size:clamp(34px,8vw,52px);font-weight:800;letter-spacing:-.01em;line-height:1}
-.mast h1 .bn{color:#93a0b4;font-weight:500;font-size:.55em;vertical-align:middle;margin-left:12px}
-.tag{margin-top:9px;font-size:15px;color:#aeb6c2}
-.ticker{margin-top:14px;font-size:12.5px;color:#6f7a89;letter-spacing:.08em}
+.mast h1{font-family:var(--serif);font-size:clamp(34px,8vw,52px);font-weight:700;
+  letter-spacing:.01em;line-height:1}
+.mast h1 .bn{color:#cdbb96;font-weight:400;font-size:.55em;vertical-align:middle;margin-left:12px}
+.tag{margin-top:9px;font-family:var(--serif);font-style:italic;font-size:16px;color:#cfc0a1}
+.ticker{margin-top:14px;padding-top:12px;border-top:1px solid rgba(246,239,223,.18);
+  font-size:12.5px;color:#9a8a6b;letter-spacing:.08em}
 
 /* planner */
 .panel{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
-  padding:16px;margin-top:-22px;box-shadow:0 8px 22px rgba(11,15,22,.10)}
+  padding:16px;margin-top:-22px;box-shadow:0 8px 22px rgba(43,32,20,.12)}
 .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
 .field{flex:1 1 180px}
 label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
-  border-radius:7px;background:#fff;color:var(--ink)}
+  border-radius:7px;background:var(--surface);color:var(--ink)}
 #swap{flex:0 0 auto;height:44px;width:44px;border:1px solid var(--hair);
-  border-radius:7px;background:#fff;color:var(--ink);cursor:pointer;
+  border-radius:7px;background:var(--surface);color:var(--ink);cursor:pointer;
   display:flex;align-items:center;justify-content:center}
-#swap:hover{border-color:var(--navy);color:var(--navy)}
+#swap:hover{border-color:var(--maroon);color:var(--maroon)}
 #go{flex:1 1 100%;margin-top:2px;padding:13px;border:0;border-radius:7px;
-  background:var(--navy);color:#fff;font-family:var(--sans);font-size:13px;
+  background:var(--accent);color:var(--ink);font-family:var(--sans);font-size:13px;
   font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
-#go:hover{background:var(--navy-deep)}
+#go:hover{background:var(--accent-deep)}
 .note{margin:14px 2px 0;font-size:12.5px;color:var(--muted)}
 .warn{margin-top:14px;padding:11px 13px;border:1px solid var(--hair);
-  border-left:3px solid var(--navy);border-radius:8px;background:#fff;
+  border-left:3px solid var(--accent);border-radius:8px;background:var(--surface);
   font-size:13px;color:var(--ink)}
 
 /* route cards */
 #results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
 .card{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
   padding:14px 16px;animation:rise .35s ease both;cursor:pointer}
-.card.sel{border-color:var(--navy);box-shadow:0 0 0 1px var(--navy)}
+.card.sel{border-color:var(--maroon);box-shadow:0 0 0 1px var(--maroon)}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
 .chip{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
   border:1px solid var(--hair);border-radius:99px;padding:3px 10px;color:var(--muted)}
-.chip:first-child{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip:first-child{background:var(--maroon);border-color:var(--maroon);color:#fbf6ea}
 .totals{display:flex;align-items:baseline;gap:16px;font-variant-numeric:tabular-nums}
 .stat{font-size:26px;font-weight:700;letter-spacing:-.01em}
 .stat em{font-style:normal;font-size:13px;font-weight:400;color:var(--muted);margin-left:3px}
@@ -115,46 +139,76 @@ select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
 .maphead{display:flex;justify-content:space-between;align-items:baseline;
   gap:10px;margin:26px 0 10px}
 .maphint{font-size:12px;color:var(--muted)}
-/* network map */
-.maphead{display:flex;justify-content:space-between;align-items:baseline;
-  gap:10px;margin:26px 0 10px}
-.maphint{font-size:12px;color:var(--muted)}
-.mapwrap{background:var(--paper);border:1px solid var(--hair);
-  border-radius:10px;padding:0;overflow:hidden;}
-#map{width:100%;height:400px;}
-.mapmsg{color:#8fa0b5;font-size:13px;padding:14px}
+.mapwrap{background:var(--map-bg);border:1px solid rgba(246,239,223,.1);
+  border-radius:10px;padding:10px}
+.mapwrap svg{display:block;width:100%;height:auto;font-family:var(--sans)}
+.mapmsg{color:#b3a488;font-size:13px;padding:14px}
 
 /* legend + footer */
 .legend{margin-top:20px;display:flex;flex-wrap:wrap;gap:7px}
 .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);
-  border:1px solid var(--hair);border-radius:99px;padding:4px 10px;background:#fff}
+  border:1px solid var(--hair);border-radius:99px;padding:4px 10px;background:var(--surface)}
 .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
-footer{margin-top:28px;font-size:12px;color:var(--muted)}
+footer{margin-top:28px;font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--muted)}
 
-:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+:focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.card{animation:none}}
-/* flashing toast popup */
-#toast {
-  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150px);
-  background: var(--navy); color: #fff; padding: 14px 22px; border-radius: 8px;
-  font-size: 13px; font-weight: 500; text-align: center; z-index: 9999;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; pointer-events: none;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  width: max-content; max-width: 90vw; border: 1px solid #4a6fae;
-}
-#toast.show {
-  transform: translateX(-50%) translateY(0); opacity: 1;
-  animation: pulse 1.5s infinite;
-}
-#toast b { color: #ffeb99; font-weight: 700; }
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(35, 64, 110, 0.7); }
-  70% { box-shadow: 0 0 0 12px rgba(35, 64, 110, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(35, 64, 110, 0); }
-}
 </style>
 </head>
 <body>
+<div class="bg-art" aria-hidden="true">
+  <!-- Howrah Bridge -->
+  <svg class="art-bridge" viewBox="0 0 520 180" preserveAspectRatio="xMidYMax meet">
+    <path d="M0 138 H520 M0 146 H520"/>
+    <path d="M135 138 L150 34 L165 138 M141 96 H159 M146 62 H154"/>
+    <path d="M355 138 L370 34 L385 138 M361 96 H379 M366 62 H374"/>
+    <path d="M30 138 Q95 58 150 36 M150 36 Q260 80 370 36 M370 36 Q425 58 490 138"/>
+    <path d="M45 128 L75 96 L105 122 L135 62"/>
+    <path d="M175 60 L205 108 L235 68 L265 108 L295 68 L325 108 L355 60"/>
+    <path d="M385 62 L415 122 L445 96 L475 128"/>
+    <path d="M210 90 V138 M260 82 V138 M310 90 V138"/>
+    <path d="M0 164 q14 -7 28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0"/>
+    <path d="M60 172 q14 -6 28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0 t28 0"/>
+  </svg>
+  <!-- Victoria Memorial -->
+  <svg class="art-victoria" viewBox="0 0 360 220">
+    <path d="M10 200 H350"/>
+    <path d="M40 200 V178 H320 V200 M52 189 H308"/>
+    <path d="M80 178 V122 M280 178 V122 M74 122 H286 M96 122 V108 M264 122 V108 M96 108 H264"/>
+    <path d="M148 108 V84 M212 108 V84 M144 84 H216"/>
+    <path d="M144 84 Q180 22 216 84"/>
+    <path d="M180 52 V34 L189 39 L180 44"/>
+    <path d="M88 122 V104 M112 122 V104 M88 104 Q100 88 112 104 M100 95 V88"/>
+    <path d="M248 122 V104 M272 122 V104 M248 104 Q260 88 272 104 M260 95 V88"/>
+    <path d="M164 178 V150 Q180 134 196 150 V178"/>
+    <path d="M112 178 V158 Q122 148 132 158 V178 M228 178 V158 Q238 148 248 158 V178"/>
+  </svg>
+  <!-- Tram -->
+  <svg class="art-tram" viewBox="0 0 260 170">
+    <path d="M0 16 H260"/>
+    <path d="M148 46 L184 18"/>
+    <circle cx="184" cy="18" r="2.5"/>
+    <path d="M48 140 V54 Q48 46 56 46 H184 Q192 46 192 54 V140 M40 140 H200 M48 58 H192"/>
+    <path d="M60 66 h18 v26 h-18 Z M87 66 h18 v26 h-18 Z M114 66 h18 v26 h-18 Z M141 66 h18 v26 h-18 Z M168 66 h18 v26 h-18 Z"/>
+    <path d="M48 104 H192 M48 112 H192"/>
+    <circle cx="66" cy="124" r="6"/>
+    <circle cx="82" cy="150" r="9"/><circle cx="82" cy="150" r="3"/>
+    <circle cx="158" cy="150" r="9"/><circle cx="158" cy="150" r="3"/>
+    <path d="M6 161 H254"/>
+  </svg>
+  <!-- Ambassador taxi -->
+  <svg class="art-taxi" viewBox="0 0 260 120">
+    <path class="fill" d="M18 92 Q14 72 36 66 L60 62 Q68 40 94 36 H150 Q178 40 186 62 L208 68 Q224 74 222 92 Z"/>
+    <path d="M18 92 Q14 72 36 66 L60 62 Q68 40 94 36 H150 Q178 40 186 62 L208 68 Q224 74 222 92 Z"/>
+    <path d="M70 60 Q76 44 96 42 H146 Q164 46 170 60 Z M122 44 V88 M128 68 h12"/>
+    <path d="M116 24 h22 v10 h-22 Z M122 34 V38 M132 34 V38"/>
+    <circle cx="60" cy="92" r="15"/><circle cx="60" cy="92" r="6"/>
+    <circle cx="178" cy="92" r="15"/><circle cx="178" cy="92" r="6"/>
+    <circle cx="27" cy="73" r="4"/>
+    <path d="M8 97 h34 M202 97 h42"/>
+    <path d="M0 112 H260"/>
+  </svg>
+</div>
 <header>
   <div class="mast">
     <h1>shonjog<span class="bn">সংযোগ</span></h1>
@@ -209,8 +263,7 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
 
   <footer>shonjog is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
 </main>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDshZXBoGtvsa1P2yammkPoGZ8fJuI6xIU&libraries=places"></script>
-<div id="toast"></div>
+
 <script src="engine.js"></script>
 <script>
 const DEFAULT_NETWORK = {
@@ -240,11 +293,6 @@ const prevSel = { from: null, to: null };
 let currentRoutes = [];
 let selectedIdx = 0;
 
-// new google map globals
-let gMap = null;
-let mapLines = [];
-let mapMarkers = [];
-
 async function loadNetwork() {
   try {
     const r = await fetch("./network.json", { cache: "no-cache" });
@@ -254,214 +302,61 @@ async function loadNetwork() {
 }
 
 // ---- custom maps-style autocomplete ---------------------------------------
-// global variables to hold google services
-let gMapsService = null;
-
-function initGoogle() {
-  if (window.google && google.maps && google.maps.places && !gMapsService) {
-    gMapsService = new google.maps.places.AutocompleteService();
-  }
-}
-
-// levenshtein distance for fuzzy matching typos
-function getEditDistance(a, b) {
-  if (a.length === 0) return b.length;
-  if (b.length === 0) return a.length;
-  const matrix = [];
-  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-  for (let j = 0; j <= a.length; j++) {
-    if (!matrix[0]) matrix[0] = [];
-    matrix[0][j] = j;
-  }
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-      }
-    }
-  }
-  return matrix[b.length][a.length];
-}
-
-// strict tier system for scoring matches
-function getMatchScore(query, target) {
-  const q = query.toLowerCase().trim();
-  const t = target.toLowerCase().trim();
-
-  if (q === "") return null;
-
-  // tier 1: exact start
-  if (t.startsWith(q)) return { score: 0, idx: 0, len: q.length };
-
-  // tier 2: word start (e.g. typing "sta" finds "howrah station")
-  const words = t.split(/[\s-]+/);
-  let currentIdx = 0;
-  for (let w of words) {
-    if (w.startsWith(q)) {
-      return { score: 1, idx: t.indexOf(w, currentIdx), len: q.length };
-    }
-    currentIdx += w.length + 1;
-  }
-
-  // tier 3: substring inside a word
-  const subIdx = t.indexOf(q);
-  if (subIdx !== -1) return { score: 2, idx: subIdx, len: q.length };
-
-  // tier 4: fuzzy typo (only if query is 4+ chars to prevent chaos)
-  if (q.length >= 4) {
-    for (let w of words) {
-      const prefix = w.substring(0, q.length);
-      if (prefix.length === q.length && getEditDistance(q, prefix) <= 1) {
-        return { score: 3, idx: t.indexOf(w), len: q.length };
-      }
-    }
-  }
-
-  return null;
-}
-
 function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
   const hidden = document.getElementById(hiddenId);
-  let debounceTimer;
 
   function showSuggestions(query) {
-    initGoogle();
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
     
     let html = `<div class="sugg-item" data-id="${myLocId}">
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
 
-    const q = query.trim().toLowerCase();
-    let localCount = 0;
+    const q = query.toLowerCase();
+    let count = 0;
 
-    if (q !== "") {
-      let results = [];
-      const stopIds = Object.keys(NET.stops).filter(id => id !== myLocId);
+    const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
+
+    for (const id of sortedIds) {
+      const stop = NET.stops[id];
+      const nameLower = stop.name.toLowerCase();
+      const matchIdx = nameLower.indexOf(q);
       
-      for (const id of stopIds) {
-        const stop = NET.stops[id];
-        if (!stop || !stop.name) continue;
+      if (matchIdx !== -1) {
+        // split the string to bold the exact characters the user typed
+        const beforeText = stop.name.substring(0, matchIdx);
+        const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
+        const afterText = stop.name.substring(matchIdx + q.length);
         
-        const match = getMatchScore(q, stop.name);
-        if (match) {
-          results.push({ id, stop, ...match });
-        }
-      }
+        const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
+        const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
+        const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
 
-      results.sort((a, b) => {
-        if (a.score !== b.score) return a.score - b.score;
-        return a.stop.name.localeCompare(b.stop.name);
-      });
-
-      for (const res of results) {
-        const stop = res.stop;
-        let highlightedName = stop.name;
-        if (res.idx !== -1) {
-          const before = stop.name.substring(0, res.idx);
-          const matched = stop.name.substring(res.idx, res.idx + res.len);
-          const after = stop.name.substring(res.idx + res.len);
-          highlightedName = `${before}<b>${matched}</b>${after}`;
-        }
-
-        const locality = stop.ward ? stop.ward : "Kolkata Transit";
-        html += `<div class="sugg-item" data-id="${res.id}">
-                   <span class="sugg-name" style="font-size: 14px;">${highlightedName}</span>
-                   <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
+        html += `<div class="sugg-item" data-id="${id}">
+                   <span class="sugg-name">${highlightedName}${localityHtml}</span>
                  </div>`;
-        localCount++;
-        if (localCount > 8) break; 
+        count++;
       }
+      if (count > 25) break; 
     }
 
-    let displayHtml = html;
-    if (q !== "" && localCount === 0) {
-      if (!window.google || !google.maps || !google.maps.places) {
-        displayHtml += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none; color:#d93838; font-weight:bold;">Google Places API disconnected. Check console.</span></div>`;
-      } else if (q.length <= 2) {
-        displayHtml += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Keep typing to search Google Maps...</span></div>`;
-      } else {
-        displayHtml += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Searching Google Maps...</span></div>`;
-      }
+    if (count === 0 && q !== "") {
+       html = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No stops found</span></div>`;
     }
-    
-    list.innerHTML = displayHtml;
+    list.innerHTML = html;
     list.hidden = false;
-
-    if (q.length > 2 && gMapsService) {
-       const smartQuery = q.includes("kolkata") ? q : q + " kolkata";
-
-       gMapsService.getPlacePredictions({
-         input: smartQuery,
-         locationBias: { radius: 30000, center: { lat: 22.5726, lng: 88.3639 } },
-         componentRestrictions: { country: 'in' }
-       }, (predictions, status) => {
-         
-         if (input.value.trim().toLowerCase() !== q) return;
-
-         if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-           let gHtml = "";
-           predictions.slice(0, 4).forEach(p => {
-             const mainText = p.structured_formatting.main_text;
-             const secText = p.structured_formatting.secondary_text || "";
-             gHtml += `<div class="sugg-item g-place" data-placeid="${p.place_id}" data-name="${mainText}">
-                         <span class="sugg-name" style="font-size: 14px;">🌍 ${mainText}</span>
-                         <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">Google Maps · ${secText}</span>
-                       </div>`;
-           });
-           list.innerHTML = html + gHtml;
-           
-         } else if (localCount === 0) {
-           list.innerHTML = html + `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No transit stops or places found.</span></div>`;
-         }
-       });
-    }
   }
 
-  input.addEventListener("input", (e) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 250);
-  });
-  
+  input.addEventListener("input", (e) => showSuggestions(e.target.value));
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
 
-  list.addEventListener("mousedown", async (e) => {
+  list.addEventListener("mousedown", (e) => {
     const item = e.target.closest(".sugg-item");
-    if (!item) return;
-
+    if (!item || !item.dataset.id) return;
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
-
-    if (item.classList.contains("g-place")) {
-      const placeId = item.dataset.placeid;
-      const placeName = item.dataset.name;
-      input.value = "🌍 " + placeName;
-      hidden.value = myLocId; 
-      list.hidden = true;
-
-      setLocStatus("Fetching exact coordinates...");
-
-      try {
-        const place = new google.maps.places.Place({ id: placeId });
-        await place.fetchFields({ fields: ['location'] });
-        
-        if (place.location) {
-           handleCustomCoordsPick(hiddenId, place.location.lat(), place.location.lng(), placeName);
-        } else {
-           setLocStatus("Could not fetch exact location details.");
-        }
-      } catch (err) {
-        console.error(err);
-        setLocStatus("Google API Error: " + err.message);
-      }
-      return;
-    }
-
     const id = item.dataset.id;
-    if (!id) return;
     hidden.value = id;
 
     if (id === myLocId) {
@@ -476,46 +371,14 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   });
 
   input.addEventListener("blur", () => {
-     setTimeout(() => list.hidden = true, 200); 
+     setTimeout(() => list.hidden = true, 150); 
      const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
      if (hidden.value && hidden.value !== myLocId && NET.stops[hidden.value]) {
          input.value = NET.stops[hidden.value].name;
      }
   });
 }
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.innerHTML = message;
-  toast.classList.add("show");
-  // auto-hide the popup after 5 seconds
-  setTimeout(() => toast.classList.remove("show"), 5000); 
-}
-function handleCustomCoordsPick(which, lat, lon, name) {
-  setLocStatus("Linking to nearest stops...");
-  try {
-    const res = setLocationNode(NET, lat, lon, {});
-    if (!res.ok) {
-      setLocStatus("Can't use location: " + res.reason);
-      document.getElementById(which).value = prevSel[which];
-      render();
-      return;
-    }
-    
-    // grab the name of the absolute closest stop the engine found
-    const nearestStopId = res.links[0].id;
-    const nearestStopName = NET.stops[nearestStopId].name;
-    const walkTime = res.links[0].min;
 
-    // trigger the flashing popup
-    showToast(`📍 Custom location detected.<br>Automatically routing via nearest transit stop:<br><b>${nearestStopName}</b> (${walkTime} min walk)`);
-
-    setLocStatus("Linked " + name + " to nearest stops.");
-    render();
-  } catch (err) {
-    setLocStatus("Error linking location.");
-    render();
-  }
-}
 function initSearchFields() {
   const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
   const keys = Object.keys(NET.stops).filter(k => k !== myLocId);
@@ -637,129 +500,93 @@ function selectCard(i) {
 }
 
 // ---- schematic map --------------------------------------------------------
-// ---- interactive google map ------------------------------------------------
-function initGMap() {
-  if (!gMap && window.google && google.maps) {
-    gMap = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: 22.5726, lng: 88.3639 }, // defaults to kolkata
-      zoom: 12,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: true,
-      gestureHandling: "greedy",
-      styles: [
-        // mutes the default google transit icons so your lines pop out
-        { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-        { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }
-      ]
-    });
-  }
-}
-
 function renderMap(route) {
-  initGMap();
-  if (!gMap) return;
+  const box = document.getElementById("map");
+  if (!box) return;
 
-  // 1. clear the old route drawings
-  mapLines.forEach(l => l.setMap(null));
-  mapMarkers.forEach(m => m.setMap(null));
-  mapLines = [];
-  mapMarkers = [];
-
-  if (!route) {
-    gMap.setCenter({ lat: 22.5726, lng: 88.3639 });
-    gMap.setZoom(11);
+  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+  let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180, count = 0;
+  for (const id in NET.stops) {
+    const s = NET.stops[id];
+    if (typeof s.lat === "number" && typeof s.lon === "number") {
+      count++;
+      if (s.lat < minLat) minLat = s.lat; if (s.lat > maxLat) maxLat = s.lat;
+      if (s.lon < minLon) minLon = s.lon; if (s.lon > maxLon) maxLon = s.lon;
+    }
+  }
+  if (count < 2) {
+    box.innerHTML = `<p class="mapmsg">Add lat/lon to stops in network.json and the map draws itself.</p>`;
     return;
   }
 
-  const bounds = new google.maps.LatLngBounds();
-  const routeStops = new Set();
-  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
-
-  // 2. draw the route lines
-  if (route && route.path) {
-    route.path.forEach(e => {
-      const s1 = NET.stops[e.from];
-      const s2 = NET.stops[e.to];
-      
-      // only draw if both stops have real coordinates
-      if (s1 && s2 && s1.lat && s1.lon && s2.lat && s2.lon) {
-        const p1 = { lat: s1.lat, lng: s1.lon };
-        const p2 = { lat: s2.lat, lng: s2.lon };
-        
-        bounds.extend(p1);
-        bounds.extend(p2);
-        routeStops.add(e.from);
-        routeStops.add(e.to);
-
-        const isWalk = e.mode === 'walk';
-        
-        const line = new google.maps.Polyline({
-          path: [p1, p2],
-          strokeColor: e.color || "#000",
-          strokeOpacity: isWalk ? 0 : 0.9,
-          strokeWeight: 4,
-          // make walking lines dashed, transit lines solid
-          icons: isWalk ? [{
-            icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 },
-            offset: '0',
-            repeat: '15px'
-          }] : [],
-          map: gMap
-        });
-        mapLines.push(line);
-      }
-    });
-  }
-
-  // 3. draw the stop markers
-  routeStops.forEach(id => {
+  const kx = Math.cos((minLat + maxLat) / 2 * Math.PI / 180);
+  const W = 600, P = 46;
+  const spanX = Math.max((maxLon - minLon) * kx, 1e-9);
+  const spanY = Math.max(maxLat - minLat, 1e-9);
+  const scale = (W - 2 * P) / spanX;
+  const H = Math.round(spanY * scale) + 2 * P;
+  const hasXY = id => { const s = NET.stops[id]; return s && typeof s.lat === "number" && typeof s.lon === "number"; };
+  const pt = id => {
     const s = NET.stops[id];
-    if (s && s.lat && s.lon) {
-      const isMe = id === myLocId;
-      
-      const icon = {
-        path: google.maps.SymbolPath.CIRCLE,
-        fillColor: isMe ? '#2b5b9e' : '#ffffff',
-        fillOpacity: 1,
-        strokeColor: isMe ? '#ffffff' : '#0b0f16',
-        strokeWeight: isMe ? 2 : 2.5,
-        scale: isMe ? 7 : 4.5
-      };
+    return [P + (s.lon - minLon) * kx * scale, P + (maxLat - s.lat) * scale];
+  };
 
-      const marker = new google.maps.Marker({
-        position: { lat: s.lat, lng: s.lon },
-        map: gMap,
-        icon: icon,
-        title: isMe ? "Your Location" : s.name,
-        zIndex: isMe ? 100 : 10
-      });
-      mapMarkers.push(marker);
-    }
-  });
+  const groups = {};
+  for (const a in NET.adj) for (const e of NET.adj[a]) {
+    if (a > e.to) continue;
+    if (!hasXY(a) || !hasXY(e.to)) continue;
+    const pk = a + "~" + e.to;
+    (groups[pk] = groups[pk] || []).push({ key: e.key, color: e.color, a, b: e.to });
+  }
 
-  // 4. pan and zoom map to fit the route perfectly
-  if (routeStops.size > 0) {
-    gMap.fitBounds(bounds);
-    
-    // prevent extreme zoom-ins if it is just a short 2-minute walk
-    const listener = google.maps.event.addListener(gMap, "idle", function() { 
-      if (gMap.getZoom() > 16) gMap.setZoom(16); 
-      google.maps.event.removeListener(listener); 
+  const onRoute = new Set(), routeStops = new Set();
+  if (route) for (const e of route.path) {
+    const pk = e.from < e.to ? e.from + "~" + e.to : e.to + "~" + e.from;
+    onRoute.add(pk + "::" + e.key);
+    routeStops.add(e.from); routeStops.add(e.to);
+  }
+
+  let dim = "", hot = "";
+  for (const pk in groups) {
+    const list = groups[pk], n = list.length;
+    const [x1, y1] = pt(list[0].a), [x2, y2] = pt(list[0].b);
+    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+    const ox = -dy / len, oy = dx / len;
+    list.forEach((e, i) => {
+      const off = (i - (n - 1) / 2) * 5;
+      const seg = `<line x1="${(x1 + ox * off).toFixed(1)}" y1="${(y1 + oy * off).toFixed(1)}"` +
+                  ` x2="${(x2 + ox * off).toFixed(1)}" y2="${(y2 + oy * off).toFixed(1)}"` +
+                  ` stroke="${e.color}" stroke-linecap="round"`;
+      if (route && onRoute.has(pk + "::" + e.key)) hot += seg + ` stroke-width="5"/>`;
+      else dim += seg + ` stroke-width="3" opacity="${route ? 0.18 : 0.9}"/>`;
     });
   }
-}
 
-// ---- main render ----------------------------------------------------------
-// --- helper function to calculate real-world distance in km ---
-function getDistKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; 
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  let dots = "", labels = "";
+  for (const id in NET.stops) {
+    if (id === myLocId || !hasXY(id)) continue;
+    const [x, y] = pt(id);
+    const hit = routeStops.has(id), on = !route || hit;
+    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hit ? 5 : 4}"` +
+            ` fill="#fff" stroke="#241b11" stroke-width="1.6" opacity="${on ? 1 : 0.3}">` +
+            `<title>${NET.stops[id].name}</title></circle>`;
+    const right = x > W - 96;
+    labels += `<text x="${(x + (right ? -8 : 8)).toFixed(1)}" y="${(y + 3.5).toFixed(1)}"` +
+              ` text-anchor="${right ? "end" : "start"}" font-size="9.5"` +
+              ` fill="${hit ? "#f2e8d5" : "#a6937a"}" opacity="${on ? 1 : 0.45}"` +
+              ` font-weight="${hit ? 600 : 400}">${NET.stops[id].name}</text>`;
+  }
+
+  let me = "";
+  if (NET.stops[myLocId] && hasXY(myLocId)) {
+    const [x, y] = pt(myLocId);
+    me = `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="none" stroke="#fff" stroke-width="2"/>` +
+         `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="#fff"/>` +
+         `<text x="${(x + 12).toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="10" font-weight="700" fill="#fff">You</text>`;
+  }
+
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Schematic network map"` +
+    ` xmlns="http://www.w3.org/2000/svg">${dim}${hot}${dots}${me}${labels}</svg>`;
 }
 
 // ---- main render ----------------------------------------------------------
@@ -788,78 +615,12 @@ function render() {
     renderMap(null);
     return;
   }
-  
-  // fetch base routes from the engine
   currentRoutes = planAll(NET, from, to);
-  
-  // 1. FIX: aggregate wait times into the total time for all routes
-  currentRoutes.forEach(r => {
-    r.totalMin = r.legs.reduce((sum, leg) => sum + (leg.min || 0) + (leg.wait || 0), 0);
-  });
-
-  // 2. NEW: short distance logic (<= 1.2km generates Walk / Rickshaw overrides)
-  const sFrom = NET.stops[from];
-  const sTo = NET.stops[to];
-  
-  if (sFrom && sFrom.lat && sTo && sTo.lat) {
-    const dist = getDistKm(sFrom.lat, sFrom.lon, sTo.lat, sTo.lon);
-    
-    // if within 1200m (but more than 50m to avoid glitchy 0-min walks)
-    if (dist <= 1.2 && dist > 0.05) { 
-      const walkMin = Math.max(1, Math.round((dist / 5) * 60)); // based on 5 km/h
-      const rickshawMin = Math.max(1, Math.round((dist / 8) * 60)); // based on 8 km/h
-      const rickshawFare = Math.max(20, Math.round(dist * 20)); // baseline ₹20 fare
-      
-      // clean out engine-generated pure walks to prevent duplicate cards
-      currentRoutes = currentRoutes.filter(r => !(r.legs.length === 1 && (r.legs[0].mode === 'walk' || r.legs[0].mode === 'rickshaw')));
-      
-      // inject Rickshaw option
-      currentRoutes.unshift({
-        labels: ["Short Trip", "Rickshaw"],
-        totalMin: rickshawMin + NET.modes.rickshaw.wait,
-        totalFare: rickshawFare,
-        boardings: 1,
-        approxMin: true,
-        approxFare: true,
-        legs: [{
-          from: from, to: to,
-          mode: "rickshaw", line: "Local Rickshaw",
-          min: rickshawMin, wait: NET.modes.rickshaw.wait, fare: rickshawFare,
-          color: NET.modes.rickshaw.color,
-          minApprox: true, fareApprox: true
-        }],
-        path: [{ from, to, mode: 'rickshaw', color: NET.modes.rickshaw.color }] // simple 2-point path for the map
-      });
-
-      // inject Walk option at the very top
-      currentRoutes.unshift({
-        labels: ["Nearby", "Walk"],
-        totalMin: walkMin,
-        totalFare: 0,
-        boardings: 1,
-        approxMin: true,
-        approxFare: false,
-        legs: [{
-          from: from, to: to,
-          mode: "walk", line: "Walk",
-          min: walkMin, wait: 0, fare: 0,
-          color: NET.modes.walk.color,
-          minApprox: true, fareApprox: false
-        }],
-        path: [{ from, to, mode: 'walk', color: NET.modes.walk.color }]
-      });
-    }
-  }
-
   if (!currentRoutes.length) {
     out.innerHTML = `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
     renderMap(null);
     return;
   }
-  
-  // mathematically re-sort all routes so the fastest is always at the top
-  currentRoutes.sort((a, b) => a.totalMin - b.totalMin);
-  
   renderCards();
   renderMap(currentRoutes[0]);
 }
