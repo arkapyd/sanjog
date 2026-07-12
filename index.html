@@ -248,17 +248,20 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       const matchIdx = nameLower.indexOf(q);
       
       if (matchIdx !== -1) {
-        // split the string to bold the exact characters the user typed
+        // split the string to bold exactly what the user typed
         const beforeText = stop.name.substring(0, matchIdx);
         const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
         const afterText = stop.name.substring(matchIdx + q.length);
         
         const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
-        const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
-        const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
+        
+        // grab the neighborhood from google maps. default to 'Kolkata' if it's missing.
+        const locality = stop.ward ? stop.ward : "Kolkata";
 
+        // force a two-line layout: name on top, grey locality on the bottom
         html += `<div class="sugg-item" data-id="${id}">
-                   <span class="sugg-name">${highlightedName}${localityHtml}</span>
+                   <span class="sugg-name" style="font-size: 14px;">${highlightedName}</span>
+                   <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
                  </div>`;
         count++;
       }
