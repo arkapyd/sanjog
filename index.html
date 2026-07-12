@@ -305,18 +305,19 @@ function setupAutocomplete(inputId, listId, hiddenId) {
     initGoogle();
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
     
+    // base HTML (always includes the current location pin)
     let html = `<div class="sugg-item" data-id="${myLocId}">
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
 
-    const q = query.trim();
+    const q = query.trim().toLowerCase();
     let localCount = 0;
 
     if (q !== "") {
       let results = [];
       const stopIds = Object.keys(NET.stops).filter(id => id !== myLocId);
       
-      // score all local stops
+      // score all local stops instantly
       for (const id of stopIds) {
         const stop = NET.stops[id];
         if (!stop || !stop.name) continue;
@@ -354,13 +355,28 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       }
     }
 
-    // append google places API results if user typed enough
+    // ==== THE FIX: Render local results to the screen IMMEDIATELY ====
+    let displayHtml = html;
+    if (q !== "" && localCount === 0 && q.length > 2) {
+      displayHtml += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Searching Google Maps...</span></div>`;
+    } else if (q !== "" && q.length <= 2) {
+      displayHtml += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Keep typing to search Google Maps...</span></div>`;
+    }
+    
+    list.innerHTML = displayHtml;
+    list.hidden = false;
+
+    // ==== THEN fetch Google places async in the background ====
     if (q.length > 2 && gMapsService) {
        gMapsService.getPlacePredictions({
          input: q,
          locationBias: { radius: 30000, center: { lat: 22.5726, lng: 88.3639 } },
          componentRestrictions: { country: 'in' }
        }, (predictions, status) => {
+         
+         // anti-race condition: abort if user kept typing while we waited for Google
+         if (input.value.trim().toLowerCase() !== q) return;
+
          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
            let gHtml = "";
            predictions.slice(0, 4).forEach(p => {
@@ -371,19 +387,16 @@ function setupAutocomplete(inputId, listId, hiddenId) {
                          <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">Google Maps · ${secText}</span>
                        </div>`;
            });
+           
+           // append google results to the clean local base
            list.innerHTML = html + gHtml;
+           
          } else if (localCount === 0) {
+           // ONLY show "no results" if both local and google failed
            list.innerHTML = html + `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No transit stops or places found.</span></div>`;
          }
        });
-    } else {
-       if (localCount === 0 && q !== "") {
-         html += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Keep typing to search Google Maps...</span></div>`;
-       }
-       list.innerHTML = html;
     }
-    
-    list.hidden = false;
   }
 
   input.addEventListener("input", (e) => {
