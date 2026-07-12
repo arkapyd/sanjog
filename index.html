@@ -115,9 +115,13 @@ select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
 .maphead{display:flex;justify-content:space-between;align-items:baseline;
   gap:10px;margin:26px 0 10px}
 .maphint{font-size:12px;color:var(--muted)}
-.mapwrap{background:var(--map-bg);border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;padding:10px}
-.mapwrap svg{display:block;width:100%;height:auto;font-family:var(--sans)}
+/* network map */
+.maphead{display:flex;justify-content:space-between;align-items:baseline;
+  gap:10px;margin:26px 0 10px}
+.maphint{font-size:12px;color:var(--muted)}
+.mapwrap{background:var(--paper);border:1px solid var(--hair);
+  border-radius:10px;padding:0;overflow:hidden;}
+#map{width:100%;height:400px;}
 .mapmsg{color:#8fa0b5;font-size:13px;padding:14px}
 
 /* legend + footer */
@@ -215,6 +219,11 @@ let lastFix = null;
 const prevSel = { from: null, to: null };
 let currentRoutes = [];
 let selectedIdx = 0;
+
+// new google map globals
+let gMap = null;
+let mapLines = [];
+let mapMarkers = [];
 
 async function loadNetwork() {
   try {
@@ -595,93 +604,117 @@ function selectCard(i) {
 }
 
 // ---- schematic map --------------------------------------------------------
-function renderMap(route) {
-  const box = document.getElementById("map");
-  if (!box) return;
-
-  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
-  let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180, count = 0;
-  for (const id in NET.stops) {
-    const s = NET.stops[id];
-    if (typeof s.lat === "number" && typeof s.lon === "number") {
-      count++;
-      if (s.lat < minLat) minLat = s.lat; if (s.lat > maxLat) maxLat = s.lat;
-      if (s.lon < minLon) minLon = s.lon; if (s.lon > maxLon) maxLon = s.lon;
-    }
+// ---- interactive google map ------------------------------------------------
+function initGMap() {
+  if (!gMap && window.google && google.maps) {
+    gMap = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 22.5726, lng: 88.3639 }, // defaults to kolkata
+      zoom: 12,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+      gestureHandling: "greedy",
+      styles: [
+        // mutes the default google transit icons so your lines pop out
+        { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+        { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }
+      ]
+    });
   }
-  if (count < 2) {
-    box.innerHTML = `<p class="mapmsg">Add lat/lon to stops in network.json and the map draws itself.</p>`;
+}
+
+function renderMap(route) {
+  initGMap();
+  if (!gMap) return;
+
+  // 1. clear the old route drawings
+  mapLines.forEach(l => l.setMap(null));
+  mapMarkers.forEach(m => m.setMap(null));
+  mapLines = [];
+  mapMarkers = [];
+
+  if (!route) {
+    gMap.setCenter({ lat: 22.5726, lng: 88.3639 });
+    gMap.setZoom(11);
     return;
   }
 
-  const kx = Math.cos((minLat + maxLat) / 2 * Math.PI / 180);
-  const W = 600, P = 46;
-  const spanX = Math.max((maxLon - minLon) * kx, 1e-9);
-  const spanY = Math.max(maxLat - minLat, 1e-9);
-  const scale = (W - 2 * P) / spanX;
-  const H = Math.round(spanY * scale) + 2 * P;
-  const hasXY = id => { const s = NET.stops[id]; return s && typeof s.lat === "number" && typeof s.lon === "number"; };
-  const pt = id => {
-    const s = NET.stops[id];
-    return [P + (s.lon - minLon) * kx * scale, P + (maxLat - s.lat) * scale];
-  };
+  const bounds = new google.maps.LatLngBounds();
+  const routeStops = new Set();
+  const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
-  const groups = {};
-  for (const a in NET.adj) for (const e of NET.adj[a]) {
-    if (a > e.to) continue;
-    if (!hasXY(a) || !hasXY(e.to)) continue;
-    const pk = a + "~" + e.to;
-    (groups[pk] = groups[pk] || []).push({ key: e.key, color: e.color, a, b: e.to });
-  }
+  // 2. draw the route lines
+  if (route && route.path) {
+    route.path.forEach(e => {
+      const s1 = NET.stops[e.from];
+      const s2 = NET.stops[e.to];
+      
+      // only draw if both stops have real coordinates
+      if (s1 && s2 && s1.lat && s1.lon && s2.lat && s2.lon) {
+        const p1 = { lat: s1.lat, lng: s1.lon };
+        const p2 = { lat: s2.lat, lng: s2.lon };
+        
+        bounds.extend(p1);
+        bounds.extend(p2);
+        routeStops.add(e.from);
+        routeStops.add(e.to);
 
-  const onRoute = new Set(), routeStops = new Set();
-  if (route) for (const e of route.path) {
-    const pk = e.from < e.to ? e.from + "~" + e.to : e.to + "~" + e.from;
-    onRoute.add(pk + "::" + e.key);
-    routeStops.add(e.from); routeStops.add(e.to);
-  }
-
-  let dim = "", hot = "";
-  for (const pk in groups) {
-    const list = groups[pk], n = list.length;
-    const [x1, y1] = pt(list[0].a), [x2, y2] = pt(list[0].b);
-    const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
-    const ox = -dy / len, oy = dx / len;
-    list.forEach((e, i) => {
-      const off = (i - (n - 1) / 2) * 5;
-      const seg = `<line x1="${(x1 + ox * off).toFixed(1)}" y1="${(y1 + oy * off).toFixed(1)}"` +
-                  ` x2="${(x2 + ox * off).toFixed(1)}" y2="${(y2 + oy * off).toFixed(1)}"` +
-                  ` stroke="${e.color}" stroke-linecap="round"`;
-      if (route && onRoute.has(pk + "::" + e.key)) hot += seg + ` stroke-width="5"/>`;
-      else dim += seg + ` stroke-width="3" opacity="${route ? 0.18 : 0.9}"/>`;
+        const isWalk = e.mode === 'walk';
+        
+        const line = new google.maps.Polyline({
+          path: [p1, p2],
+          strokeColor: e.color || "#000",
+          strokeOpacity: isWalk ? 0 : 0.9,
+          strokeWeight: 4,
+          // make walking lines dashed, transit lines solid
+          icons: isWalk ? [{
+            icon: { path: 'M 0,-1 0,1', strokeOpacity: 1, scale: 3 },
+            offset: '0',
+            repeat: '15px'
+          }] : [],
+          map: gMap
+        });
+        mapLines.push(line);
+      }
     });
   }
 
-  let dots = "", labels = "";
-  for (const id in NET.stops) {
-    if (id === myLocId || !hasXY(id)) continue;
-    const [x, y] = pt(id);
-    const hit = routeStops.has(id), on = !route || hit;
-    dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${hit ? 5 : 4}"` +
-            ` fill="#fff" stroke="#0f1626" stroke-width="1.6" opacity="${on ? 1 : 0.3}">` +
-            `<title>${NET.stops[id].name}</title></circle>`;
-    const right = x > W - 96;
-    labels += `<text x="${(x + (right ? -8 : 8)).toFixed(1)}" y="${(y + 3.5).toFixed(1)}"` +
-              ` text-anchor="${right ? "end" : "start"}" font-size="9.5"` +
-              ` fill="${hit ? "#dbe4f0" : "#7d8aa0"}" opacity="${on ? 1 : 0.45}"` +
-              ` font-weight="${hit ? 600 : 400}">${NET.stops[id].name}</text>`;
-  }
+  // 3. draw the stop markers
+  routeStops.forEach(id => {
+    const s = NET.stops[id];
+    if (s && s.lat && s.lon) {
+      const isMe = id === myLocId;
+      
+      const icon = {
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: isMe ? '#2b5b9e' : '#ffffff',
+        fillOpacity: 1,
+        strokeColor: isMe ? '#ffffff' : '#0b0f16',
+        strokeWeight: isMe ? 2 : 2.5,
+        scale: isMe ? 7 : 4.5
+      };
 
-  let me = "";
-  if (NET.stops[myLocId] && hasXY(myLocId)) {
-    const [x, y] = pt(myLocId);
-    me = `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="none" stroke="#fff" stroke-width="2"/>` +
-         `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4" fill="#fff"/>` +
-         `<text x="${(x + 12).toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="10" font-weight="700" fill="#fff">You</text>`;
-  }
+      const marker = new google.maps.Marker({
+        position: { lat: s.lat, lng: s.lon },
+        map: gMap,
+        icon: icon,
+        title: isMe ? "Your Location" : s.name,
+        zIndex: isMe ? 100 : 10
+      });
+      mapMarkers.push(marker);
+    }
+  });
 
-  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Schematic network map"` +
-    ` xmlns="http://www.w3.org/2000/svg">${dim}${hot}${dots}${me}${labels}</svg>`;
+  // 4. pan and zoom map to fit the route perfectly
+  if (routeStops.size > 0) {
+    gMap.fitBounds(bounds);
+    
+    // prevent extreme zoom-ins if it is just a short 2-minute walk
+    const listener = google.maps.event.addListener(gMap, "idle", function() { 
+      if (gMap.getZoom() > 16) gMap.setZoom(16); 
+      google.maps.event.removeListener(listener); 
+    });
+  }
 }
 
 // ---- main render ----------------------------------------------------------
