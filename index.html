@@ -236,6 +236,25 @@ function initGoogle() {
   }
 }
 
+// levenshtein distance for fuzzy matching typos
+function getEditDistance(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  const matrix = [];
+  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+
 function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
@@ -250,48 +269,107 @@ function setupAutocomplete(inputId, listId, hiddenId) {
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
 
-    const q = query.toLowerCase();
+    const q = query.toLowerCase().trim();
     let localCount = 0;
 
-    // 1. search your local transit json first
-    const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
-
-    for (const id of sortedIds) {
-      const stop = NET.stops[id];
-      const nameLower = stop.name.toLowerCase();
-      const matchIdx = nameLower.indexOf(q);
+    if (q !== "") {
+      let results = [];
+      const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId);
       
-      if (matchIdx !== -1) {
-        const beforeText = stop.name.substring(0, matchIdx);
-        const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
-        const afterText = stop.name.substring(matchIdx + q.length);
-        
-        const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
-        const locality = stop.ward ? stop.ward : "Kolkata";
+      // dynamic autocorrect allowance based on typing length
+      let maxTypos = 0;
+      if (q.length >= 3 && q.length <= 5) maxTypos = 1;
+      if (q.length > 5 && q.length <= 8) maxTypos = 2;
+      if (q.length > 8) maxTypos = 3;
 
-        html += `<div class="sugg-item" data-id="${id}">
+      for (const id of sortedIds) {
+        const stop = NET.stops[id];
+        const t = stop.name.toLowerCase();
+        
+        let score = 999;
+        let matchIdx = -1;
+        let matchLen = q.length;
+
+        if (t.includes(q)) {
+          // perfect substring match
+          score = 0;
+          matchIdx = t.indexOf(q);
+        } else {
+          // check for typos against the whole string
+          if (getEditDistance(q, t) <= maxTypos) {
+              score = getEditDistance(q, t);
+              matchIdx = 0;
+              matchLen = t.length;
+          }
+          // check for typos at the beginning of each word (e.g. "sant" catching "santragachi")
+          const words = t.split(/[\s-]+/);
+          for (let w of words) {
+             const prefix = w.substring(0, q.length);
+             const dist = getEditDistance(q, prefix);
+             if (dist <= maxTypos && dist < score) {
+                 score = dist;
+                 matchIdx = t.indexOf(w);
+                 matchLen = prefix.length;
+             }
+          }
+        }
+
+        if (score < 999) {
+          results.push({ id, stop, score, matchIdx, matchLen });
+        }
+      }
+
+      // sort by exact matches first, then alphabetically
+      results.sort((a, b) => {
+        if (a.score !== b.score) return a.score - b.score;
+        return a.stop.name.localeCompare(b.stop.name);
+      });
+
+      for (const res of results) {
+        const stop = res.stop;
+        let highlightedName = stop.name;
+        if (res.matchIdx !== -1) {
+          const before = stop.name.substring(0, res.matchIdx);
+          const matched = stop.name.substring(res.matchIdx, res.matchIdx + res.matchLen);
+          const after = stop.name.substring(res.matchIdx + res.matchLen);
+          highlightedName = `${before}<b>${matched}</b>${after}`;
+        }
+
+        const locality = stop.ward ? stop.ward : "Kolkata";
+        html += `<div class="sugg-item" data-id="${res.id}">
                    <span class="sugg-name" style="font-size: 14px;">${highlightedName}</span>
                    <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
                  </div>`;
         localCount++;
+        if (localCount > 8) break; 
       }
-      if (localCount > 8) break; 
+    } else {
+      // if query is empty, show default alphabetical list
+      const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
+      for (const id of sortedIds) {
+        const stop = NET.stops[id];
+        const locality = stop.ward ? stop.ward : "Kolkata";
+        html += `<div class="sugg-item" data-id="${id}">
+                   <span class="sugg-name" style="font-size: 14px;">${stop.name}</span>
+                   <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
+                 </div>`;
+        localCount++;
+        if (localCount > 8) break;
+      }
     }
 
-    // 2. if they keep typing, fetch real-world places from google
+    // if they keep typing, fetch real-world places from google
     if (q.length > 2 && gMapsService) {
        gMapsService.getPlacePredictions({
          input: query,
-         locationBias: { radius: 30000, center: { lat: 22.5726, lng: 88.3639 } }, // strict bias to kolkata
+         locationBias: { radius: 30000, center: { lat: 22.5726, lng: 88.3639 } },
          componentRestrictions: { country: 'in' }
        }, (predictions, status) => {
          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
            let gHtml = "";
-           // only show top 4 google results to keep ui clean
            predictions.slice(0, 4).forEach(p => {
              const mainText = p.structured_formatting.main_text;
              const secText = p.structured_formatting.secondary_text || "";
-             // added a magnifying glass so users know it's a map search, not a transit stop
              gHtml += `<div class="sugg-item g-place" data-placeid="${p.place_id}" data-name="${mainText}">
                          <span class="sugg-name" style="font-size: 14px;">🔍 ${mainText}</span>
                          <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${secText}</span>
@@ -312,7 +390,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
     list.hidden = false;
   }
 
-  // debounce prevents the api from firing on every single keystroke, saving your free tier limit
   input.addEventListener("input", (e) => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => showSuggestions(e.target.value), 300);
@@ -326,7 +403,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
 
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
-    // if user clicks a google place
     if (item.classList.contains("g-place")) {
       const placeId = item.dataset.placeid;
       const placeName = item.dataset.name;
@@ -345,7 +421,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       return;
     }
 
-    // if user clicks a local transit stop or gps
     const id = item.dataset.id;
     if (!id) return;
     hidden.value = id;
@@ -388,7 +463,6 @@ function handleCustomCoordsPick(which, lat, lon, name) {
     render();
   }
 }
-
 function initSearchFields() {
   const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
   const keys = Object.keys(NET.stops).filter(k => k !== myLocId);
