@@ -1,7 +1,7 @@
 // SANJOG service worker
-const CACHE = "sanjog-v7";
+const CACHE = "sanjog-v8";
 const SHELL = ["./", "./index.html", "./engine.js", "./network.json",
-               "./manifest.webmanifest",
+               "./manifest.webmanifest", "./bg-howrah-sketch.jpg",
                "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
 
 self.addEventListener("install", e => {
