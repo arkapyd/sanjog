@@ -242,7 +242,10 @@ function getEditDistance(a, b) {
   if (b.length === 0) return a.length;
   const matrix = [];
   for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  for (let j = 0; j <= a.length; j++) {
+    if (!matrix[0]) matrix[0] = [];
+    matrix[0][j] = j;
+  }
   for (let i = 1; i <= b.length; i++) {
     for (let j = 1; j <= a.length; j++) {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
@@ -253,6 +256,43 @@ function getEditDistance(a, b) {
     }
   }
   return matrix[b.length][a.length];
+}
+
+// strict tier system for scoring matches
+function getMatchScore(query, target) {
+  const q = query.toLowerCase().trim();
+  const t = target.toLowerCase().trim();
+
+  if (q === "") return null;
+
+  // tier 1: exact start
+  if (t.startsWith(q)) return { score: 0, idx: 0, len: q.length };
+
+  // tier 2: word start (e.g. typing "sta" finds "howrah station")
+  const words = t.split(/[\s-]+/);
+  let currentIdx = 0;
+  for (let w of words) {
+    if (w.startsWith(q)) {
+      return { score: 1, idx: t.indexOf(w, currentIdx), len: q.length };
+    }
+    currentIdx += w.length + 1;
+  }
+
+  // tier 3: substring inside a word
+  const subIdx = t.indexOf(q);
+  if (subIdx !== -1) return { score: 2, idx: subIdx, len: q.length };
+
+  // tier 4: fuzzy typo (only if query is 4+ chars to prevent chaos)
+  if (q.length >= 4) {
+    for (let w of words) {
+      const prefix = w.substring(0, q.length);
+      if (prefix.length === q.length && getEditDistance(q, prefix) <= 1) {
+        return { score: 3, idx: t.indexOf(w), len: q.length };
+      }
+    }
+  }
+
+  return null;
 }
 
 function setupAutocomplete(inputId, listId, hiddenId) {
@@ -269,73 +309,42 @@ function setupAutocomplete(inputId, listId, hiddenId) {
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
 
-    const q = query.toLowerCase().trim();
+    const q = query.trim();
     let localCount = 0;
 
     if (q !== "") {
       let results = [];
-      const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId);
+      const stopIds = Object.keys(NET.stops).filter(id => id !== myLocId);
       
-      // dynamic autocorrect allowance based on typing length
-      let maxTypos = 0;
-      if (q.length >= 3 && q.length <= 5) maxTypos = 1;
-      if (q.length > 5 && q.length <= 8) maxTypos = 2;
-      if (q.length > 8) maxTypos = 3;
-
-      for (const id of sortedIds) {
+      // score all local stops
+      for (const id of stopIds) {
         const stop = NET.stops[id];
-        const t = stop.name.toLowerCase();
+        if (!stop || !stop.name) continue;
         
-        let score = 999;
-        let matchIdx = -1;
-        let matchLen = q.length;
-
-        if (t.includes(q)) {
-          // perfect substring match
-          score = 0;
-          matchIdx = t.indexOf(q);
-        } else {
-          // check for typos against the whole string
-          if (getEditDistance(q, t) <= maxTypos) {
-              score = getEditDistance(q, t);
-              matchIdx = 0;
-              matchLen = t.length;
-          }
-          // check for typos at the beginning of each word (e.g. "sant" catching "santragachi")
-          const words = t.split(/[\s-]+/);
-          for (let w of words) {
-             const prefix = w.substring(0, q.length);
-             const dist = getEditDistance(q, prefix);
-             if (dist <= maxTypos && dist < score) {
-                 score = dist;
-                 matchIdx = t.indexOf(w);
-                 matchLen = prefix.length;
-             }
-          }
-        }
-
-        if (score < 999) {
-          results.push({ id, stop, score, matchIdx, matchLen });
+        const match = getMatchScore(q, stop.name);
+        if (match) {
+          results.push({ id, stop, ...match });
         }
       }
 
-      // sort by exact matches first, then alphabetically
+      // sort by tier score, then alphabetically
       results.sort((a, b) => {
         if (a.score !== b.score) return a.score - b.score;
         return a.stop.name.localeCompare(b.stop.name);
       });
 
+      // render the top local results
       for (const res of results) {
         const stop = res.stop;
         let highlightedName = stop.name;
-        if (res.matchIdx !== -1) {
-          const before = stop.name.substring(0, res.matchIdx);
-          const matched = stop.name.substring(res.matchIdx, res.matchIdx + res.matchLen);
-          const after = stop.name.substring(res.matchIdx + res.matchLen);
+        if (res.idx !== -1) {
+          const before = stop.name.substring(0, res.idx);
+          const matched = stop.name.substring(res.idx, res.idx + res.len);
+          const after = stop.name.substring(res.idx + res.len);
           highlightedName = `${before}<b>${matched}</b>${after}`;
         }
 
-        const locality = stop.ward ? stop.ward : "Kolkata";
+        const locality = stop.ward ? stop.ward : "Kolkata Transit";
         html += `<div class="sugg-item" data-id="${res.id}">
                    <span class="sugg-name" style="font-size: 14px;">${highlightedName}</span>
                    <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
@@ -343,25 +352,12 @@ function setupAutocomplete(inputId, listId, hiddenId) {
         localCount++;
         if (localCount > 8) break; 
       }
-    } else {
-      // if query is empty, show default alphabetical list
-      const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
-      for (const id of sortedIds) {
-        const stop = NET.stops[id];
-        const locality = stop.ward ? stop.ward : "Kolkata";
-        html += `<div class="sugg-item" data-id="${id}">
-                   <span class="sugg-name" style="font-size: 14px;">${stop.name}</span>
-                   <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
-                 </div>`;
-        localCount++;
-        if (localCount > 8) break;
-      }
     }
 
-    // if they keep typing, fetch real-world places from google
+    // append google places API results if user typed enough
     if (q.length > 2 && gMapsService) {
        gMapsService.getPlacePredictions({
-         input: query,
+         input: q,
          locationBias: { radius: 30000, center: { lat: 22.5726, lng: 88.3639 } },
          componentRestrictions: { country: 'in' }
        }, (predictions, status) => {
@@ -371,13 +367,13 @@ function setupAutocomplete(inputId, listId, hiddenId) {
              const mainText = p.structured_formatting.main_text;
              const secText = p.structured_formatting.secondary_text || "";
              gHtml += `<div class="sugg-item g-place" data-placeid="${p.place_id}" data-name="${mainText}">
-                         <span class="sugg-name" style="font-size: 14px;">🔍 ${mainText}</span>
-                         <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${secText}</span>
+                         <span class="sugg-name" style="font-size: 14px;">🌍 ${mainText}</span>
+                         <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">Google Maps · ${secText}</span>
                        </div>`;
            });
            list.innerHTML = html + gHtml;
          } else if (localCount === 0) {
-           list.innerHTML = html + `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No stops found</span></div>`;
+           list.innerHTML = html + `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No transit stops or places found.</span></div>`;
          }
        });
     } else {
@@ -392,7 +388,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
 
   input.addEventListener("input", (e) => {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 300);
+    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 250);
   });
   
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
@@ -403,14 +399,15 @@ function setupAutocomplete(inputId, listId, hiddenId) {
 
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
+    // handle google place click
     if (item.classList.contains("g-place")) {
       const placeId = item.dataset.placeid;
       const placeName = item.dataset.name;
-      input.value = "📍 " + placeName;
+      input.value = "🌍 " + placeName;
       hidden.value = myLocId; 
       list.hidden = true;
 
-      setLocStatus("Fetching location from Google...");
+      setLocStatus("Fetching exact coordinates...");
       gPlacesService.getDetails({ placeId: placeId, fields: ['geometry'] }, (place, status) => {
          if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
             handleCustomCoordsPick(hiddenId, place.geometry.location.lat(), place.geometry.location.lng(), placeName);
@@ -421,6 +418,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       return;
     }
 
+    // handle local transit click
     const id = item.dataset.id;
     if (!id) return;
     hidden.value = id;
