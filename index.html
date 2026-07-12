@@ -186,7 +186,7 @@ footer{margin-top:28px;font-size:12px;color:var(--muted)}
 
   <footer>shonjog is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
 </main>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY_HERE&libraries=places"></script>
 <script src="engine.js"></script>
 <script>
 const DEFAULT_NETWORK = {
@@ -225,12 +225,25 @@ async function loadNetwork() {
 }
 
 // ---- custom maps-style autocomplete ---------------------------------------
+// global variables to hold google services
+let gMapsService = null;
+let gPlacesService = null;
+
+function initGoogle() {
+  if (window.google && google.maps && google.maps.places && !gMapsService) {
+    gMapsService = new google.maps.places.AutocompleteService();
+    gPlacesService = new google.maps.places.PlacesService(document.createElement('div'));
+  }
+}
+
 function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
   const hidden = document.getElementById(hiddenId);
+  let debounceTimer;
 
   function showSuggestions(query) {
+    initGoogle();
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
     
     let html = `<div class="sugg-item" data-id="${myLocId}">
@@ -238,8 +251,9 @@ function setupAutocomplete(inputId, listId, hiddenId) {
                 </div>`;
 
     const q = query.toLowerCase();
-    let count = 0;
+    let localCount = 0;
 
+    // 1. search your local transit json first
     const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
 
     for (const id of sortedIds) {
@@ -248,41 +262,92 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       const matchIdx = nameLower.indexOf(q);
       
       if (matchIdx !== -1) {
-        // split the string to bold exactly what the user typed
         const beforeText = stop.name.substring(0, matchIdx);
         const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
         const afterText = stop.name.substring(matchIdx + q.length);
         
         const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
-        
-        // grab the neighborhood from google maps. default to 'Kolkata' if it's missing.
         const locality = stop.ward ? stop.ward : "Kolkata";
 
-        // force a two-line layout: name on top, grey locality on the bottom
         html += `<div class="sugg-item" data-id="${id}">
                    <span class="sugg-name" style="font-size: 14px;">${highlightedName}</span>
                    <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${locality}</span>
                  </div>`;
-        count++;
+        localCount++;
       }
-      if (count > 25) break; 
+      if (localCount > 8) break; 
     }
 
-    if (count === 0 && q !== "") {
-       html = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No stops found</span></div>`;
+    // 2. if they keep typing, fetch real-world places from google
+    if (q.length > 2 && gMapsService) {
+       gMapsService.getPlacePredictions({
+         input: query,
+         locationBias: { radius: 30000, center: { lat: 22.5726, lng: 88.3639 } }, // strict bias to kolkata
+         componentRestrictions: { country: 'in' }
+       }, (predictions, status) => {
+         if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+           let gHtml = "";
+           // only show top 4 google results to keep ui clean
+           predictions.slice(0, 4).forEach(p => {
+             const mainText = p.structured_formatting.main_text;
+             const secText = p.structured_formatting.secondary_text || "";
+             // added a magnifying glass so users know it's a map search, not a transit stop
+             gHtml += `<div class="sugg-item g-place" data-placeid="${p.place_id}" data-name="${mainText}">
+                         <span class="sugg-name" style="font-size: 14px;">🔍 ${mainText}</span>
+                         <span class="sugg-ward" style="text-transform: capitalize; letter-spacing: 0; font-size: 12px; margin-top: 2px;">${secText}</span>
+                       </div>`;
+           });
+           list.innerHTML = html + gHtml;
+         } else if (localCount === 0) {
+           list.innerHTML = html + `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No stops found</span></div>`;
+         }
+       });
+    } else {
+       if (localCount === 0 && q !== "") {
+         html += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Keep typing to search Google Maps...</span></div>`;
+       }
+       list.innerHTML = html;
     }
-    list.innerHTML = html;
+    
     list.hidden = false;
   }
 
-  input.addEventListener("input", (e) => showSuggestions(e.target.value));
+  // debounce prevents the api from firing on every single keystroke, saving your free tier limit
+  input.addEventListener("input", (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 300);
+  });
+  
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
 
   list.addEventListener("mousedown", (e) => {
     const item = e.target.closest(".sugg-item");
-    if (!item || !item.dataset.id) return;
+    if (!item) return;
+
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+
+    // if user clicks a google place
+    if (item.classList.contains("g-place")) {
+      const placeId = item.dataset.placeid;
+      const placeName = item.dataset.name;
+      input.value = "📍 " + placeName;
+      hidden.value = myLocId; 
+      list.hidden = true;
+
+      setLocStatus("Fetching location from Google...");
+      gPlacesService.getDetails({ placeId: placeId, fields: ['geometry'] }, (place, status) => {
+         if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
+            handleCustomCoordsPick(hiddenId, place.geometry.location.lat(), place.geometry.location.lng(), placeName);
+         } else {
+            setLocStatus("Could not fetch exact location details.");
+         }
+      });
+      return;
+    }
+
+    // if user clicks a local transit stop or gps
     const id = item.dataset.id;
+    if (!id) return;
     hidden.value = id;
 
     if (id === myLocId) {
@@ -297,12 +362,31 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   });
 
   input.addEventListener("blur", () => {
-     setTimeout(() => list.hidden = true, 150); 
+     setTimeout(() => list.hidden = true, 200); 
      const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
      if (hidden.value && hidden.value !== myLocId && NET.stops[hidden.value]) {
          input.value = NET.stops[hidden.value].name;
      }
   });
+}
+
+function handleCustomCoordsPick(which, lat, lon, name) {
+  setLocStatus("Linking to nearest stops...");
+  try {
+    const res = setLocationNode(NET, lat, lon, {});
+    if (!res.ok) {
+      setLocStatus("Can't use location: " + res.reason);
+      document.getElementById(which).value = prevSel[which];
+      render();
+      return;
+    }
+    setLocStatus("Linked " + name + " to nearest stops: " +
+      res.links.map(l => `${NET.stops[l.id].name} (~${l.min} min walk)`).join(", "));
+    render();
+  } catch (err) {
+    setLocStatus("Error linking location.");
+    render();
+  }
 }
 
 function initSearchFields() {
