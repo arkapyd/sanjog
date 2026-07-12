@@ -682,6 +682,18 @@ function renderMap(route) {
     });
   }
 
+  // legs that exist only for this journey (e.g. a direct rickshaw) have no
+  // drawn network edge — show them dashed so the route is visible end to end
+  if (route) for (const e of route.path) {
+    const pk = e.from < e.to ? e.from + "~" + e.to : e.to + "~" + e.from;
+    const drawn = (groups[pk] || []).some(g => g.key === e.key);
+    if (!drawn && hasXY(e.from) && hasXY(e.to)) {
+      const [x1, y1] = pt(e.from), [x2, y2] = pt(e.to);
+      hot += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"` +
+             ` stroke="${e.color}" stroke-width="5" stroke-linecap="round" stroke-dasharray="7 6"/>`;
+    }
+  }
+
   let dots = "", labels = "";
   for (const id in NET.stops) {
     if (id === myLocId || !hasXY(id)) continue;

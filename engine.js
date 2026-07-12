@@ -147,14 +147,20 @@ function plan(NET, src, dst, pref) {
 
 function planAll(NET, src, dst) {
   const prefs = [["fastest", "Fastest"], ["cheapest", "Cheapest"], ["easiest", "Fewest changes"]];
+  const direct = directRickshaw(NET, src, dst);
   const out = [];
   for (const [pref, label] of prefs) {
-    const r = plan(NET, src, dst, pref);
+    let r = plan(NET, src, dst, pref);
+    if (direct && (!r || betterFor(pref, direct, r))) r = direct;
     if (!r) continue;
     const dup = out.find(o => o.sig === r.sig);
     if (dup) dup.labels.push(label);
     else out.push({ ...r, labels: [label] });
   }
+  // within range but beaten on every preference: still worth suggesting —
+  // nobody juggles three vehicles for a hop a rickshaw covers in one.
+  if (direct && !out.some(o => o.sig === direct.sig))
+    out.push({ ...direct, labels: ["Rickshaw direct"] });
   return out;
 }
 
@@ -165,10 +171,50 @@ function planAll(NET, src, dst) {
 // injection: the planner itself needs no changes.
 
 const LOC_ID = "_myloc";
-const WALK_M_PER_MIN = 75;    // ~4.5 km/h
-const RICK_M_PER_MIN = 130;   // ~7.8 km/h — cycle-rickshaw pace
-const RICKSHAW_MAX_M = 1200;  // offer a rickshaw for gaps below this
-const ROUTE_FACTOR = 1.3;     // straight-line -> street distance fudge
+const WALK_M_PER_MIN = 75;     // ~4.5 km/h
+const RICK_M_PER_MIN = 130;    // ~7.8 km/h — cycle-rickshaw pace
+const RICKSHAW_MAX_M = 3000;   // rickshaws act as short taxis: up to ~3 km of street
+const RICKSHAW_MIN_FARE = 25;  // floor — what a ~200 m hop costs
+const RICKSHAW_PER_KM = 40;    // Rs per km of street distance -> ~Rs120 for a 3 km ride
+const ROUTE_FACTOR = 1.3;      // straight-line -> street distance fudge
+
+function rickshawFare(streetM) {
+  return Math.max(RICKSHAW_MIN_FARE, Math.round(streetM / 1000 * RICKSHAW_PER_KM));
+}
+
+// A rickshaw hailed door to door — Kolkata's short-hop taxi. Returns a
+// route-shaped candidate for planAll to weigh against transit, or null
+// when the ride would exceed RICKSHAW_MAX_M of street distance.
+function directRickshaw(NET, src, dst) {
+  const md = NET.modes.rickshaw, a = NET.stops[src], b = NET.stops[dst];
+  if (!md || !a || !b) return null;
+  if (typeof a.lat !== "number" || typeof a.lon !== "number" ||
+      typeof b.lat !== "number" || typeof b.lon !== "number") return null;
+  const streetM = haversineMeters(a.lat, a.lon, b.lat, b.lon) * ROUTE_FACTOR;
+  if (streetM > RICKSHAW_MAX_M) return null;
+  const min = Math.max(2, Math.round(streetM / RICK_M_PER_MIN));
+  const fare = rickshawFare(streetM);
+  const leg = { key: "rickshaw|" + md.label, mode: "rickshaw", line: md.label,
+                color: md.color, from: src, to: dst, min, fare,
+                minApprox: true, fareApprox: true, wait: md.wait };
+  return {
+    legs: [leg],
+    path: [{ from: src, to: dst, mode: "rickshaw", line: md.label, color: md.color,
+             min, fare, minApprox: true, fareApprox: true, key: leg.key }],
+    totalMin: min + md.wait, totalFare: fare, boardings: 1,
+    approxMin: true, approxFare: true,
+    sig: leg.key + ">" + dst
+  };
+}
+
+// Is candidate a better answer than b for this preference?
+function betterFor(pref, a, b) {
+  if (pref === "cheapest") return a.totalFare < b.totalFare ||
+                                  (a.totalFare === b.totalFare && a.totalMin < b.totalMin);
+  if (pref === "easiest")  return a.boardings < b.boardings ||
+                                  (a.boardings === b.boardings && a.totalMin < b.totalMin);
+  return a.totalMin < b.totalMin;
+}
 
 function haversineMeters(aLat, aLon, bLat, bLon) {
   const R = 6371000, toRad = d => d * Math.PI / 180;
@@ -227,10 +273,11 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
 
     // short hop: also offer a rickshaw for the same gap, planner picks
     let rickMin = null;
-    if (NET.modes.rickshaw && c.d <= rickshawMaxM) {
+    const streetM = c.d * ROUTE_FACTOR;
+    if (NET.modes.rickshaw && streetM <= rickshawMaxM) {
       const md = NET.modes.rickshaw;
-      rickMin = Math.max(2, Math.round(c.d * ROUTE_FACTOR / RICK_M_PER_MIN));
-      const fare = Math.max(md.defaultFare, Math.round(c.d * ROUTE_FACTOR / 1000 * 25));
+      rickMin = Math.max(2, Math.round(streetM / RICK_M_PER_MIN));
+      const fare = rickshawFare(streetM);
       const rick = { mode: "rickshaw", line: md.label, color: md.color,
                      min: rickMin, fare, minApprox: true, fareApprox: true,
                      key: "rickshaw|" + md.label };
@@ -248,4 +295,5 @@ function setLocationNode(NET, lat, lon, opts = {}) {
 
 if (typeof module !== "undefined" && module.exports)
   module.exports = { validateNetwork, buildNetwork, plan, planAll, haversineMeters,
+                     directRickshaw, rickshawFare,
                      setPlaceNode, clearPlaceNode, setLocationNode, clearLocationNode, LOC_ID };
