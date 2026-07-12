@@ -1,5 +1,5 @@
 // SANJOG service worker
-const CACHE = "sanjog-v4";
+const CACHE = "sanjog-v5";
 const SHELL = ["./", "./index.html", "./engine.js", "./network.json",
                "./manifest.webmanifest",
                "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
@@ -19,6 +19,7 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
+  if (url.origin !== location.origin) return;   // map search etc: browser handles it, never cached
 
   // network.json: always try the network first so fresh ward data wins,
   // fall back to the cached copy when offline.

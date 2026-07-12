@@ -66,6 +66,8 @@ body{color:var(--ink);font-family:var(--sans);line-height:1.45;
 .sugg-item:hover { background: var(--paper); }
 .sugg-name { font-size: 13px; font-weight: 600; color: var(--ink); }
 .sugg-ward { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.sugg-geo { border-top: 1px dashed var(--hair); }
+.sugg-attrib { font-size: 10px; color: var(--muted); cursor: default; text-align: right; padding: 6px 12px; }
 
 /* kolkata taxi hint styling */
 .taxi-hint {
@@ -293,6 +295,32 @@ const prevSel = { from: null, to: null };
 let currentRoutes = [];
 let selectedIdx = 0;
 
+// ---- typed places (map search) -----------------------------------------
+const PLACE_IDS = { from: "_place_from", to: "_place_to" };
+const GEO_VIEWBOX = "88.10,22.90,88.65,22.30";   // greater Kolkata: lon,lat,lon,lat
+let geoBusy = false;
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+async function geocode(q) {
+  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5" +
+              "&countrycodes=in&bounded=1&viewbox=" + GEO_VIEWBOX +
+              "&accept-language=en&q=" + encodeURIComponent(q);
+  const r = await fetch(url, { headers: { "Accept": "application/json" } });
+  if (!r.ok) throw new Error("geocoder replied " + r.status);
+  return (await r.json()).map(p => ({
+    name: p.name || String(p.display_name || "").split(",")[0].trim() || "Unnamed place",
+    detail: String(p.display_name || "").split(",").slice(1, 4).join(",").trim(),
+    lat: parseFloat(p.lat), lon: parseFloat(p.lon)
+  })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+}
+
+function linkSummary(links) {
+  return links.map(l =>
+    `${NET.stops[l.id].name} (~${l.walkMin != null ? l.walkMin : l.min} min walk` +
+    (l.rickMin ? ` / ~${l.rickMin} min rickshaw` : "") + ")"
+  ).join(", ");
+}
+
 async function loadNetwork() {
   try {
     const r = await fetch("./network.json", { cache: "no-cache" });
@@ -345,17 +373,68 @@ function setupAutocomplete(inputId, listId, hiddenId) {
     if (count === 0 && q !== "") {
        html = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No stops found</span></div>`;
     }
+    if (q.trim().length >= 3) {
+      html += `<div class="sugg-item sugg-geo" data-geo="1">
+                 <span class="sugg-name">&#128269; Search the map for \u201c${esc(input.value)}\u201d</span>
+                 <span class="sugg-ward" style="text-transform:none;">addresses, landmarks, anywhere in Kolkata</span>
+               </div>`;
+    }
     list.innerHTML = html;
     list.hidden = false;
   }
 
   input.addEventListener("input", (e) => showSuggestions(e.target.value));
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const geoRow = list.querySelector("[data-geo]");
+    if (geoRow && !list.hidden) geoRow.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+  });
 
-  list.addEventListener("mousedown", (e) => {
+  list.addEventListener("mousedown", async (e) => {
     const item = e.target.closest(".sugg-item");
-    if (!item || !item.dataset.id) return;
+    if (!item) return;
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+
+    if (item.dataset.geo) {                     // "Search the map" row
+      e.preventDefault();                       // keep focus so the list stays open
+      if (geoBusy) return;
+      geoBusy = true;
+      const q = input.value.trim();
+      list.innerHTML = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Searching the map\u2026</span></div>`;
+      try {
+        const places = await geocode(q);
+        list.innerHTML = places.length ? places.map(p =>
+          `<div class="sugg-item" data-place="1" data-lat="${p.lat}" data-lon="${p.lon}" data-name="${esc(p.name)}">
+             <span class="sugg-name">&#128205; ${esc(p.name)}</span>
+             <span class="sugg-ward" style="text-transform:none;">${esc(p.detail)}</span>
+           </div>`).join("") +
+          `<div class="sugg-item sugg-attrib">search \u00a9 OpenStreetMap contributors</div>`
+        : `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Nothing found for \u201c${esc(q)}\u201d around Kolkata \u2014 try a landmark or add the area name.</span></div>`;
+      } catch (err) {
+        list.innerHTML = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Map search didn't respond \u2014 check your connection and try again.</span></div>`;
+      }
+      geoBusy = false;
+      list.hidden = false;
+      return;
+    }
+
+    if (item.dataset.place) {                   // a geocoded map result
+      const pid = PLACE_IDS[hiddenId];
+      const res = setPlaceNode(NET, pid, item.dataset.name,
+                               parseFloat(item.dataset.lat), parseFloat(item.dataset.lon), {});
+      list.hidden = true;
+      if (!res.ok) { setLocStatus("Can't route there: " + res.reason); return; }
+      hidden.value = pid;
+      input.value = item.dataset.name;
+      prevSel[hiddenId] = pid;
+      setLocStatus(`\u201c${item.dataset.name}\u201d linked to: ` + linkSummary(res.links));
+      render();
+      return;
+    }
+
+    if (!item.dataset.id) return;               // plain rows: messages, attribution
     const id = item.dataset.id;
     hidden.value = id;
 
@@ -441,8 +520,7 @@ async function handleLocationPick(which, el) {
       render();
       return;
     }
-    setLocStatus("Linked to nearest stops: " +
-      res.links.map(l => `${NET.stops[l.id].name} (~${l.min} min walk)`).join(", "));
+    setLocStatus("Linked to nearest stops: " + linkSummary(res.links));
     render();
   } catch (err) {
     setLocStatus(err.msg);
@@ -596,10 +674,13 @@ function render() {
   const out = document.getElementById("results");
   const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
-  if (from !== myLocId && to !== myLocId && NET.stops[myLocId]) {
-    clearLocationNode(NET);
-    setLocStatus("");
+  let stale = false;
+  if (from !== myLocId && to !== myLocId && NET.stops[myLocId]) { clearLocationNode(NET); stale = true; }
+  for (const side in PLACE_IDS) {
+    const pid = PLACE_IDS[side];
+    if (from !== pid && to !== pid && NET.stops[pid]) { clearPlaceNode(NET, pid); stale = true; }
   }
+  if (stale) setLocStatus("");
 
   currentRoutes = []; selectedIdx = 0;
 

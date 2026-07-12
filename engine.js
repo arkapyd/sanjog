@@ -158,13 +158,16 @@ function planAll(NET, src, dst) {
   return out;
 }
 
-// ---- "My location" support -------------------------------------------
-// The user's position becomes a temporary stop ("_myloc") joined to the
-// nearest coordinate-bearing stops by walking links. Pure data injection:
-// the planner itself needs no changes.
+// ---- Virtual place support ---------------------------------------------
+// "My location" and typed map places become temporary stops joined to
+// nearby coordinate-bearing stops by walk links — plus rickshaw links for
+// hops under RICKSHAW_MAX_M, so the planner can weigh both. Pure data
+// injection: the planner itself needs no changes.
 
 const LOC_ID = "_myloc";
 const WALK_M_PER_MIN = 75;    // ~4.5 km/h
+const RICK_M_PER_MIN = 130;   // ~7.8 km/h — cycle-rickshaw pace
+const RICKSHAW_MAX_M = 1200;  // offer a rickshaw for gaps below this
 const ROUTE_FACTOR = 1.3;     // straight-line -> street distance fudge
 
 function haversineMeters(aLat, aLon, bLat, bLon) {
@@ -175,53 +178,74 @@ function haversineMeters(aLat, aLon, bLat, bLon) {
   return 2 * R * Math.asin(Math.sqrt(s));
 }
 
-function clearLocationNode(NET) {
-  if (!NET.stops[LOC_ID]) return;
-  delete NET.stops[LOC_ID];
-  delete NET.adj[LOC_ID];
-  for (const id in NET.adj) NET.adj[id] = NET.adj[id].filter(e => e.to !== LOC_ID);
+function clearPlaceNode(NET, id) {
+  if (!NET.stops[id]) return;
+  delete NET.stops[id];
+  delete NET.adj[id];
+  for (const sid in NET.adj) NET.adj[sid] = NET.adj[sid].filter(e => e.to !== id);
 }
 
-function setLocationNode(NET, lat, lon, opts = {}) {
-  const maxLinks    = opts.maxLinks    || 3;      // link to up to this many stops
-  const linkRadiusM = opts.linkRadiusM || 2500;   // within this radius
-  const giveUpM     = opts.giveUpM     || 30000;  // beyond this: not our city
+function clearLocationNode(NET) { clearPlaceNode(NET, LOC_ID); }
 
-  clearLocationNode(NET);
+function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
+  const maxLinks     = opts.maxLinks     || 3;      // link to up to this many stops
+  const linkRadiusM  = opts.linkRadiusM  || 2500;   // within this radius
+  const giveUpM      = opts.giveUpM      || 30000;  // beyond this: not our city
+  const rickshawMaxM = opts.rickshawMaxM || RICKSHAW_MAX_M;
+
+  clearPlaceNode(NET, id);
   if (!NET.modes.walk)
-    return { ok: false, reason: 'this network defines no "walk" mode, which location linking needs.' };
+    return { ok: false, reason: 'this network defines no "walk" mode, which place linking needs.' };
 
   const cands = [];
-  for (const id in NET.stops) {
-    const s = NET.stops[id];
+  for (const sid in NET.stops) {
+    if (sid[0] === "_") continue;                   // never chain virtual nodes together
+    const s = NET.stops[sid];
     if (typeof s.lat === "number" && typeof s.lon === "number")
-      cands.push({ id, d: haversineMeters(lat, lon, s.lat, s.lon) });
+      cands.push({ id: sid, d: haversineMeters(lat, lon, s.lat, s.lon) });
   }
   if (!cands.length)
     return { ok: false, reason: "no stops in this network have coordinates yet." };
 
   cands.sort((a, b) => a.d - b.d);
   if (cands[0].d > giveUpM)
-    return { ok: false, reason: `you're about ${Math.round(cands[0].d / 1000)} km from the mapped network ` +
+    return { ok: false, reason: `that's about ${Math.round(cands[0].d / 1000)} km from the mapped network ` +
                                 `(nearest stop: ${NET.stops[cands[0].id].name}).` };
 
   let picked = cands.filter(c => c.d <= linkRadiusM).slice(0, maxLinks);
   if (!picked.length) picked = [cands[0]];   // far-ish but reachable: link the nearest
 
-  NET.stops[LOC_ID] = { name: "My location", ward: "", lat, lon };
-  NET.adj[LOC_ID] = [];
+  NET.stops[id] = { name, ward: "", lat, lon };
+  NET.adj[id] = [];
   const links = [];
   for (const c of picked) {
-    const min = Math.max(1, Math.round(c.d * ROUTE_FACTOR / WALK_M_PER_MIN));
-    const edge = { mode: "walk", line: "Walk", color: NET.modes.walk.color,
-                   min, fare: 0, minApprox: true, fareApprox: false, key: "walk|Walk" };
-    NET.adj[LOC_ID].push({ to: c.id, ...edge });
-    NET.adj[c.id].push({ to: LOC_ID, ...edge });
-    links.push({ id: c.id, min, distM: Math.round(c.d) });
+    const walkMin = Math.max(1, Math.round(c.d * ROUTE_FACTOR / WALK_M_PER_MIN));
+    const walk = { mode: "walk", line: "Walk", color: NET.modes.walk.color,
+                   min: walkMin, fare: 0, minApprox: true, fareApprox: false, key: "walk|Walk" };
+    NET.adj[id].push({ to: c.id, ...walk });
+    NET.adj[c.id].push({ to: id, ...walk });
+
+    // short hop: also offer a rickshaw for the same gap, planner picks
+    let rickMin = null;
+    if (NET.modes.rickshaw && c.d <= rickshawMaxM) {
+      const md = NET.modes.rickshaw;
+      rickMin = Math.max(2, Math.round(c.d * ROUTE_FACTOR / RICK_M_PER_MIN));
+      const fare = Math.max(md.defaultFare, Math.round(c.d * ROUTE_FACTOR / 1000 * 25));
+      const rick = { mode: "rickshaw", line: md.label, color: md.color,
+                     min: rickMin, fare, minApprox: true, fareApprox: true,
+                     key: "rickshaw|" + md.label };
+      NET.adj[id].push({ to: c.id, ...rick });
+      NET.adj[c.id].push({ to: id, ...rick });
+    }
+    links.push({ id: c.id, min: walkMin, walkMin, rickMin, distM: Math.round(c.d) });
   }
   return { ok: true, links };
 }
 
+function setLocationNode(NET, lat, lon, opts = {}) {
+  return setPlaceNode(NET, LOC_ID, "My location", lat, lon, opts);
+}
+
 if (typeof module !== "undefined" && module.exports)
-  module.exports = { validateNetwork, buildNetwork, plan, planAll,
-                     haversineMeters, setLocationNode, clearLocationNode, LOC_ID };
+  module.exports = { validateNetwork, buildNetwork, plan, planAll, haversineMeters,
+                     setPlaceNode, clearPlaceNode, setLocationNode, clearLocationNode, LOC_ID };
