@@ -332,7 +332,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
     initGoogle();
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
     
-    // base HTML (always includes the current location pin)
     let html = `<div class="sugg-item" data-id="${myLocId}">
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
@@ -344,7 +343,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       let results = [];
       const stopIds = Object.keys(NET.stops).filter(id => id !== myLocId);
       
-      // score all local stops instantly
       for (const id of stopIds) {
         const stop = NET.stops[id];
         if (!stop || !stop.name) continue;
@@ -355,13 +353,11 @@ function setupAutocomplete(inputId, listId, hiddenId) {
         }
       }
 
-      // sort by tier score, then alphabetically
       results.sort((a, b) => {
         if (a.score !== b.score) return a.score - b.score;
         return a.stop.name.localeCompare(b.stop.name);
       });
 
-      // render the top local results
       for (const res of results) {
         const stop = res.stop;
         let highlightedName = stop.name;
@@ -382,7 +378,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       }
     }
 
-    // ==== THE FIX: Render local results to the screen IMMEDIATELY ====
     let displayHtml = html;
     if (q !== "" && localCount === 0) {
       if (!window.google || !google.maps || !google.maps.places) {
@@ -425,6 +420,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
          }
        });
     }
+  }
 
   input.addEventListener("input", (e) => {
     clearTimeout(debounceTimer);
@@ -433,14 +429,12 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
 
-  // notice the 'async' added right here
   list.addEventListener("mousedown", async (e) => {
     const item = e.target.closest(".sugg-item");
     if (!item) return;
 
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
-    // handle google place click
     if (item.classList.contains("g-place")) {
       const placeId = item.dataset.placeid;
       const placeName = item.dataset.name;
@@ -450,7 +444,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
 
       setLocStatus("Fetching exact coordinates...");
 
-      // the new 2025+ google places API method
       try {
         const place = new google.maps.places.Place({ id: placeId });
         await place.fetchFields({ fields: ['location'] });
@@ -467,7 +460,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       return;
     }
 
-    // handle local transit click (unchanged)
     const id = item.dataset.id;
     if (!id) return;
     hidden.value = id;
@@ -490,7 +482,6 @@ function setupAutocomplete(inputId, listId, hiddenId) {
          input.value = NET.stops[hidden.value].name;
      }
   });
-}
 }
 function showToast(message) {
   const toast = document.getElementById("toast");
