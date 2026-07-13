@@ -65,6 +65,28 @@ body{color:var(--ink);font-family:var(--sans);line-height:1.45;
 .sugg-geo { border-top: 1px dashed var(--hair); }
 .sugg-attrib { font-size: 10px; color: var(--muted); cursor: default; text-align: right; padding: 6px 12px; }
 
+/* dark mode theme */
+html.dark {
+  --paper: #13100d; --surface: #1e1915; --ink: #ebdcc9; --muted: #8e806c;
+  --glass: rgba(30, 25, 21, 0.85); --hair: rgba(235, 220, 201, 0.15); --map-bg: #090706;
+}
+html.dark body { background-blend-mode: overlay; }
+body { transition: background-color 0.3s ease, color 0.3s ease; }
+.theme-btn { padding: 6px 12px; font-size: 14px; background: transparent; border: 1px solid var(--hair); border-radius: 99px; cursor: pointer; color: var(--ink); }
+
+/* sticky scroll pill */
+#sticky-pill {
+  position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
+  padding: 8px 18px; border-radius: 99px; border: 1px solid var(--hair);
+  z-index: 999; font-size: 12.5px; font-weight: 600; box-shadow: var(--shadow);
+  transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
+}
+#sticky-pill.visible { top: 16px; }
+
+/* sorters */
+.sorters { display: flex; gap: 8px; margin: 0 4px 16px; }
+.sorters .scut.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+
 /* kolkata taxi hint styling */
 .taxi-hint {
   font-size: 11.5px; font-weight: 600; color: #6f5106; background: #f6e0a6;
@@ -210,9 +232,28 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
   .card{animation:none}
   *{transition:none!important}
 }
+  @media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #16120e; 
+    --surface: #211b15; 
+    --ink: #e8dcc8;
+    --muted: #91826a; 
+    --glass: rgba(33, 27, 21, 0.85);
+    --hair: rgba(232, 220, 200, 0.1); 
+    --map-bg: #0d0a08;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+  /* Darken the background sketch image so it doesn't blind the user */
+  body {
+    background-color: var(--paper);
+    background-blend-mode: overlay;
+  }
+}
 </style>
 </head>
 <body>
+<div id="sticky-pill" class="glass">📍 From → To</div>
+
 <header>
   <div class="mast">
     <div>
@@ -221,6 +262,7 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
     </div>
     <div class="mastside">
       <p class="ticker">বাস · ট্রাম · মেট্রো<br>অটো · ফেরি · রিকশা</p>
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">🌙</button>
       <button id="install" class="pill" hidden>Install app</button>
     </div>
   </div>
@@ -266,6 +308,13 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
     <button id="pin" class="gbtn" aria-pressed="false">☆ Pin</button>
     <button id="share" class="gbtn">Share</button>
   </div>
+  
+  <div id="sorters" class="sorters" hidden>
+    <button class="scut active" data-sort="fast"> Fastest</button>
+    <button class="scut" data-sort="cheap">Cheapest</button>
+    <button class="scut" data-sort="walk">Least Walk</button>
+  </div>
+
   <section id="results" aria-live="polite"></section>
 
   <section aria-label="Network map">
@@ -602,7 +651,10 @@ function setupAutocomplete(inputId, listId, hiddenId) {
     list.hidden = false;
   }
 
-  input.addEventListener("input", (e) => showSuggestions(e.target.value));
+  input.addEventListener("input", (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 200); // 200ms debounce
+  });
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
   input.addEventListener("keydown", (e) => {
     if (e.key !== "Enter") return;
@@ -779,7 +831,21 @@ function card(r, i) {
   const approx = (r.approxMin || r.approxFare)
     ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
   const eta = arriveAt(r.totalMin);
+
+  // Late night bus warning
+  const hr = new Date().getHours();
+  const isNight = hr >= 22 || hr <= 4;
+  const hasBus = r.legs.some(l => l.mode === "bus");
+  const nightWarn = (isNight && hasBus) 
+    ? `<div class="taxi-hint" style="background:var(--maroon-deep); color:#fff; border:none; margin-bottom:8px;">⚠️ Buses are highly infrequent at this hour. Expect delays.</div>` 
+    : "";
+
   return `<article class="card glass${i === selectedIdx ? " sel" : ""}" data-idx="${i}"
+        tabindex="0" role="button" aria-pressed="${i === selectedIdx}"
+        style="animation-delay:${i * 70}ms">
+      <div class="chiprow">${chips}<span class="chev">▾</span></div>
+      ${nightWarn}
+      <div class="totals">
         tabindex="0" role="button" aria-pressed="${i === selectedIdx}"
         style="animation-delay:${i * 70}ms">
       <div class="chiprow">${chips}<span class="chev">▾</span></div>
@@ -952,6 +1018,8 @@ function render() {
   renderCards();
   renderMap(currentRoutes[0]);
   reshead.hidden = false;
+  document.getElementById("sorters").hidden = false;
+  document.getElementById("sticky-pill").innerHTML = `📍 ${NET.stops[from].name} &nbsp;→&nbsp; 🏁 ${NET.stops[to].name}`;
   refreshPinButton();
 
   const pair = currentPair();
@@ -1010,6 +1078,55 @@ document.addEventListener("DOMContentLoaded", async () => {
       `${NET.skipped ? NET.skipped + " link(s) skipped. " : ""}Full list in the browser console.`;
     console.warn("shonjog network data issues:\n- " + issues.join("\n- "));
   }
+
+  // --- Theme Initializer ---
+  const isDark = localStorage.getItem("theme") === "dark";
+  if (isDark) document.documentElement.classList.add("dark");
+  document.getElementById("theme-toggle").textContent = isDark ? "☀️" : "🌙";
+
+  document.getElementById("theme-toggle").addEventListener("click", (e) => {
+    const isNowDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isNowDark ? "dark" : "light");
+    e.target.textContent = isNowDark ? "☀️" : "🌙";
+  });
+
+  // --- Sticky Scroll Pill ---
+  window.addEventListener("scroll", () => {
+    const pill = document.getElementById("sticky-pill");
+    if (window.scrollY > 280 && currentRoutes.length > 0) {
+      pill.classList.add("visible");
+    } else {
+      pill.classList.remove("visible");
+    }
+  });
+
+  // --- Sorter Logic ---
+  let currentSort = "fast";
+  const sorterBox = document.getElementById("sorters");
+  
+  sorterBox.addEventListener("click", e => {
+    if (!e.target.dataset.sort) return;
+    
+    // Update active button CSS
+    sorterBox.querySelectorAll(".scut").forEach(btn => btn.classList.remove("active"));
+    e.target.classList.add("active");
+    
+    currentSort = e.target.dataset.sort;
+    
+    // Mathematically sort the generated routes
+    if (currentSort === "cheap") {
+       currentRoutes.sort((a,b) => a.totalFare - b.totalFare || a.totalMin - b.totalMin);
+    } else if (currentSort === "walk") {
+       const getWalk = r => r.legs.filter(l => l.mode === 'walk').reduce((sum, l) => sum + l.min, 0);
+       currentRoutes.sort((a,b) => getWalk(a) - getWalk(b) || a.totalMin - b.totalMin);
+    } else {
+       currentRoutes.sort((a,b) => a.totalMin - b.totalMin); // default fast
+    }
+    
+    selectedIdx = 0; // reset selection to the top card
+    renderCards();
+    renderMap(currentRoutes[0]);
+  });
 
   initSearchFields();
   buildLegend();
