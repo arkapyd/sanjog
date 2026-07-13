@@ -13,14 +13,15 @@
 <meta property="og:title" content="shonjog · kolkata, untangled">
 <meta property="og:description" content="One interface for Kolkata's buses, trams, metro, autos, ferries and rickshaws.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://arkapyd.github.io//">
+<meta property="og:url" content="https://arkapyd.github.io/sanjog/">
 <meta property="og:image" content="https://arkapyd.github.io/sanjog/social-preview.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://arkapyd.github.io/sanjog/social-preview.png">
-<script data-goatcounter="https://arkasanjog.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
+
+<script data-goatcounter="https://arkasanjog.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
 <style>
-:root{
+:root {
   --ink:#2b2014; --header:#231a10;
   --maroon:#7c3327; --maroon-deep:#5f2419;
   --accent:#e6a817; --accent-deep:#c9900d;
@@ -31,20 +32,21 @@
   --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
   --serif:Georgia,"Iowan Old Style","Palatino Linotype","Times New Roman",serif;
 }
-*{box-sizing:border-box;margin:0}
-body{color:var(--ink);font-family:var(--sans);line-height:1.45;
+* { box-sizing:border-box; margin:0; }
+body {
+  color:var(--ink); font-family:var(--sans); line-height:1.45;
   background:
     radial-gradient(900px 460px at 88% -6%,rgba(150,105,40,.10),transparent 62%),
     radial-gradient(760px 420px at -8% 34%,rgba(130,90,35,.08),transparent 60%),
     radial-gradient(680px 380px at 52% 108%,rgba(120,80,30,.10),transparent 60%),
     url("bg-howrah-sketch.jpg") center / cover no-repeat,
     var(--paper);
-  background-attachment:fixed}
+  background-attachment:fixed;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
 .wrap{max-width:960px;margin:0 auto;padding:0 14px 44px;position:relative;z-index:1}
-.microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--muted)}
-.glass{background:var(--glass);-webkit-backdrop-filter:blur(9px) saturate(1.05);
-  backdrop-filter:blur(9px) saturate(1.05)}
+.microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(9px) saturate(1.05);backdrop-filter:blur(9px) saturate(1.05)}
 
 /* map app autocomplete styles */
 .autocomplete { position: relative; }
@@ -81,7 +83,6 @@ html.dark {
   --glass: rgba(30, 25, 21, 0.85); --hair: rgba(235, 220, 201, 0.15); --map-bg: #090706;
 }
 html.dark body { background-blend-mode: overlay; }
-body { transition: background-color 0.3s ease, color 0.3s ease; }
 
 /* fix garish white browser-default buttons */
 .gbtn, .scut, .theme-btn { 
@@ -105,114 +106,81 @@ html.dark #sticky-pill { background: #f3ead7; color: #2b2014; border-color: #d9c
 
 /* sorters */
 .sorters { display: flex; gap: 8px; margin: 0 4px 16px; }
+
 /* kolkata taxi hint styling */
 .taxi-hint {
-  font-size: 11.5px; font-weight: 600; color: #6f5106; background: #f6e0a6;
+  font-size: 11.5px; font-weight: 600; color: #6f5106;
+  background: #f6e0a6;
   border: 1px solid #d9b13c; border-radius: 8px; padding: 5px 10px;
   margin: 4px 0 6px 30px; display: inline-block;
 }
 
 /* masthead */
-header{background:var(--header);color:#f6efdf;border-bottom:4px solid var(--accent);
-  position:relative;z-index:2}
-.mast{max-width:960px;margin:0 auto;padding:20px 14px 14px;
-  display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.mast h1{font-family:var(--serif);font-size:clamp(30px,6vw,44px);font-weight:700;
-  letter-spacing:.01em;line-height:1}
+header{background:var(--header);color:#f6efdf;border-bottom:4px solid var(--accent);position:relative;z-index:2}
+.mast{max-width:960px;margin:0 auto;padding:20px 14px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.mast h1{font-family:var(--serif);font-size:clamp(30px,6vw,44px);font-weight:700;letter-spacing:.01em;line-height:1}
 .mast h1 .bn{color:#cdbb96;font-weight:400;font-size:.55em;vertical-align:middle;margin-left:10px}
 .tag{margin-top:6px;font-family:var(--serif);font-style:italic;font-size:15px;color:#cfc0a1}
 .mastside{display:flex;align-items:center;gap:10px;padding-bottom:4px}
 .ticker{font-size:12px;color:#9a8a6b;letter-spacing:.08em;text-align:right}
-.pill{border:1px solid rgba(246,239,223,.4);color:#f6efdf;background:transparent;
-  border-radius:99px;padding:8px 15px;font:inherit;font-size:11.5px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;
-  transition:background .15s ease,color .15s ease}
+.pill{border:1px solid rgba(246,239,223,.4);color:#f6efdf;background:transparent;border-radius:99px;padding:8px 15px;font:inherit;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:background .15s ease,color .15s ease}
 .pill:hover{background:var(--accent);border-color:var(--accent);color:var(--ink)}
-.offline{background:var(--maroon-deep);color:#f6efdf;text-align:center;
-  font-size:12px;letter-spacing:.04em;padding:6px 12px;position:relative;z-index:2}
+.offline{background:var(--maroon-deep);color:#f6efdf;text-align:center;font-size:12px;letter-spacing:.04em;padding:6px 12px;position:relative;z-index:2}
 
 /* nav ribbon */
 .tabs{max-width:960px;margin:0 auto;padding:0 14px;display:flex;gap:4px}
-.tab{appearance:none;background:none;border:0;color:#cdbb96;font:inherit;font-size:12px;
-  font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;
-  padding:10px 14px 12px;text-decoration:none;border-bottom:3px solid transparent;
-  transition:color .15s ease,border-color .15s ease}
+.tab{appearance:none;background:none;border:0;color:#cdbb96;font:inherit;font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;padding:10px 14px 12px;text-decoration:none;border-bottom:3px solid transparent;transition:color .15s ease,border-color .15s ease}
 .tab:hover{color:#f6efdf}
 .tab.active{color:#f6efdf;border-bottom-color:var(--accent)}
 
 /* about / careers content */
-.content{border:1px solid var(--hair);border-radius:16px;padding:26px 24px;
-  margin-top:18px;box-shadow:var(--shadow)}
+.content{border:1px solid var(--hair);border-radius:16px;padding:26px 24px;margin-top:18px;box-shadow:var(--shadow)}
 .content h2{font-family:var(--serif);font-size:28px;margin-bottom:6px}
 .content h3{font-family:var(--serif);font-size:18px;margin:20px 0 4px}
 .content p{margin:10px 0;font-size:14.5px;max-width:70ch}
 .content .fineprint{font-size:12px;color:var(--muted);font-style:italic;margin-top:18px}
 
 /* planner */
-.panel{border:1px solid var(--hair);border-radius:16px;
-  padding:14px;margin-top:16px;box-shadow:var(--shadow);position:relative;z-index:3}
+.panel{border:1px solid var(--hair);border-radius:16px;padding:14px;margin-top:16px;box-shadow:var(--shadow);position:relative;z-index:3}
 .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
 .field{flex:1 1 200px;min-width:0}
-label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.13em;
-  text-transform:uppercase;color:var(--muted);margin:0 2px 6px}
-#swap{flex:0 0 auto;height:46px;width:46px;border:1px solid var(--hair);
-  border-radius:11px;background:var(--surface);color:var(--ink);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .15s ease,border-color .15s ease,color .15s ease}
+label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 2px 6px}
+#swap{flex:0 0 auto;height:46px;width:46px;border:1px solid var(--hair);border-radius:11px;background:var(--surface);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease,border-color .15s ease,color .15s ease}
 #swap:hover{border-color:var(--maroon);color:var(--maroon)}
 #swap:active{transform:rotate(180deg)}
-#go{flex:1 1 100%;height:46px;padding:0 24px;border:0;border-radius:11px;
-  background:var(--accent);color:var(--ink);font-family:var(--sans);font-size:13px;
-  font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;
-  box-shadow:0 4px 14px rgba(230,168,23,.35);
-  transition:background .15s ease,transform .1s ease,box-shadow .15s ease}
+#go{flex:1 1 100%;height:46px;padding:0 24px;border:0;border-radius:11px;background:var(--accent);color:var(--ink);font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 14px rgba(230,168,23,.35);transition:background .15s ease,transform .1s ease,box-shadow .15s ease}
 #go:hover{background:var(--accent-deep)}
 #go:active{transform:scale(.985)}
-@media (min-width:760px){
-  .row{flex-wrap:nowrap}
-  #go{flex:0 0 auto}
-}
+@media (min-width:760px){.row{flex-wrap:nowrap}#go{flex:0 0 auto}}
 .note{margin:12px 3px 0;font-size:12px;color:var(--muted)}
-.warn{margin-top:14px;padding:11px 13px;border:1px solid var(--hair);
-  border-left:3px solid var(--accent);border-radius:10px;background:var(--glass);
-  font-size:13px;color:var(--ink)}
+.warn{margin-top:14px;padding:11px 13px;border:1px solid var(--hair);border-left:3px solid var(--accent);border-radius:10px;background:var(--glass);font-size:13px;color:var(--ink)}
 
 /* shortcuts: pinned + recent journeys */
 .shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.scut{display:inline-flex;align-items:center;gap:7px;max-width:100%;
-  border:1px solid var(--hair);border-radius:99px;padding:7px 7px 7px 12px;
-  font-size:12.5px;color:var(--ink);cursor:pointer;box-shadow:0 2px 8px rgba(43,32,20,.08);
-  transition:border-color .15s ease,transform .1s ease}
+.scut{display:inline-flex;align-items:center;gap:7px;max-width:100%;border:1px solid var(--hair);border-radius:99px;padding:7px 7px 7px 12px;font-size:12.5px;color:var(--ink);cursor:pointer;box-shadow:0 2px 8px rgba(43,32,20,.08);transition:border-color .15s ease,transform .1s ease}
 .scut:hover{border-color:var(--maroon)}
 .scut:active{transform:scale(.98)}
 .scut .ic{color:var(--maroon);font-size:11px}
 .scut .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:52vw}
-.scut .x{width:18px;height:18px;border-radius:99px;display:inline-flex;align-items:center;
-  justify-content:center;color:var(--muted);font-size:13px;line-height:1}
+.scut .x{width:18px;height:18px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;line-height:1}
 .scut .x:hover{background:var(--paper);color:var(--maroon)}
 
 /* results header: share + pin */
 .reshead{display:flex;align-items:center;gap:8px;margin:22px 3px 10px}
 .reshead .microlabel{margin-right:auto}
-.gbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hair);
-  border-radius:99px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;
-  color:var(--ink);cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.gbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hair);border-radius:99px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;transition:border-color .15s ease,background .15s ease}
 .gbtn:hover{border-color:var(--maroon);color:var(--maroon)}
 .gbtn.on{background:var(--maroon);border-color:var(--maroon);color:#fbf6ea}
 
 /* route cards */
 #results{display:grid;grid-template-columns:1fr;gap:12px}
 @media (min-width:720px){#results{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}}
-.card{border:1px solid var(--hair);border-radius:16px;
-  padding:14px 16px;animation:rise .35s ease both;cursor:pointer;
-  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
-  align-self:start}
+.card{border:1px solid var(--hair);border-radius:16px;padding:14px 16px;animation:rise .35s ease both;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;align-self:start}
 .card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
 .card.sel{border-color:var(--maroon);box-shadow:0 0 0 1px var(--maroon),var(--shadow)}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;align-items:center}
-.chip{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  border:1px solid var(--hair);border-radius:99px;padding:3px 10px;color:var(--muted)}
+.chip{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--hair);border-radius:99px;padding:3px 10px;color:var(--muted)}
 .chip:first-child{background:var(--maroon);border-color:var(--maroon);color:#fbf6ea}
 .chev{margin-left:auto;color:var(--muted);transition:transform .25s ease;font-size:12px}
 .card.sel .chev{transform:rotate(180deg)}
@@ -226,12 +194,9 @@ label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.13em;
 .details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
 .card.sel .details{grid-template-rows:1fr}
 .details>div{overflow:hidden}
-.legs{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--hair);
-  padding-top:12px;margin-top:12px}
+.legs{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--hair);padding-top:12px;margin-top:12px}
 .leg{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:13.5px}
-.tile{width:22px;height:22px;border-radius:7px;color:#fff;flex:0 0 auto;
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700}
+.tile{width:22px;height:22px;border-radius:7px;color:#fff;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
 .linename{font-weight:600;font-size:13px;white-space:nowrap}
 .path{flex:1 1 auto;color:var(--muted)}
 .nums{font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -240,52 +205,25 @@ label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.13em;
 .msg{padding:14px 4px;color:var(--muted)}
 
 /* network map */
-.maphead{display:flex;justify-content:space-between;align-items:baseline;
-  gap:10px;margin:24px 3px 10px}
+.maphead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:24px 3px 10px}
 .maphint{font-size:12px;color:var(--muted)}
-.mapwrap{background:var(--map-bg);border:1px solid rgba(246,239,223,.1);
-  border-radius:16px;padding:6px;box-shadow:var(--shadow);position:relative}
+.mapwrap{background:var(--map-bg);border:1px solid rgba(246,239,223,.1);border-radius:16px;padding:6px;box-shadow:var(--shadow);position:relative}
 #map{height:min(460px,58vh);border-radius:12px;overflow:hidden}
-.mapmsg{color:#b3a488;font-size:13px;line-height:1.55;padding:24px;position:absolute;inset:6px;
-  display:flex;align-items:center;justify-content:center;text-align:center;margin:0}
+.mapmsg{color:#b3a488;font-size:13px;line-height:1.55;padding:24px;position:absolute;inset:6px;display:flex;align-items:center;justify-content:center;text-align:center;margin:0}
 .mapmsg::before{content:"";position:absolute;inset:0;background:var(--map-bg);z-index:-1;border-radius:12px}
 
 /* legend + footer */
 .legend{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
-.lg{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);
-  border:1px solid var(--hair);border-radius:99px;padding:4px 11px;background:var(--glass)}
+.lg{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);border:1px solid var(--hair);border-radius:99px;padding:4px 11px;background:var(--glass)}
 .dot{width:9px;height:9px;border-radius:3px;display:inline-block}
 footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--muted)}
 
 /* toast */
-#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
-  background:var(--header);color:#f6efdf;padding:10px 18px;border-radius:99px;
-  font-size:13px;opacity:0;pointer-events:none;z-index:200;white-space:nowrap;
-  box-shadow:0 8px 24px rgba(0,0,0,.3);transition:opacity .25s ease,transform .25s ease}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);background:var(--header);color:#f6efdf;padding:10px 18px;border-radius:99px;font-size:13px;opacity:0;pointer-events:none;z-index:200;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:opacity .25s ease,transform .25s ease}
 #toast.show{opacity:1;transform:translateX(-50%)}
 
 :focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){
-  .card{animation:none}
-  *{transition:none!important}
-}
-  @media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #16120e; 
-    --surface: #211b15; 
-    --ink: #e8dcc8;
-    --muted: #91826a; 
-    --glass: rgba(33, 27, 21, 0.85);
-    --hair: rgba(232, 220, 200, 0.1); 
-    --map-bg: #0d0a08;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  }
-  /* Darken the background sketch image so it doesn't blind the user */
-  body {
-    background-color: var(--paper);
-    background-blend-mode: overlay;
-  }
-}
+@media (prefers-reduced-motion:reduce){.card{animation:none}*{transition:none!important}}
 </style>
 </head>
 <body>
@@ -343,7 +281,6 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
   </section>
 
   <div id="shortcuts" class="shortcuts" aria-label="Pinned and recent journeys"></div>
-
   <div id="warn" class="warn" hidden></div>
 
   <div id="reshead" class="reshead" hidden>
@@ -353,9 +290,9 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
   </div>
   
   <div id="sorters" class="sorters" hidden>
-    <button class="scut active" data-sort="fast"> Fastest</button>
-    <button class="scut" data-sort="cheap">Cheapest</button>
-    <button class="scut" data-sort="walk">Least Walk</button>
+    <button class="scut active" data-sort="fast">⚡ Fastest</button>
+    <button class="scut" data-sort="cheap">🪙 Cheapest</button>
+    <button class="scut" data-sort="walk">🚶 Least Walk</button>
   </div>
 
   <section id="results" aria-live="polite"></section>
@@ -379,44 +316,14 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
 <main class="wrap view" id="view-about" hidden>
   <article class="content glass">
     <h2>About us</h2>
-    <p>Shonjog (সংযোগ — "connection") is a community-built journey planner for Kolkata.
-    It answers one question the city asks a thousand times a day: <em>from here to there,
-    which mix of metro, bus, tram, ferry, auto, local train, rickshaw and plain walking
-    actually makes sense — and roughly what will it cost?</em></p>
-    <p>Nobody owns the knowledge of how this city moves; it lives with the people who ride
-    it. So all of Shonjog's network knowledge sits in a single open data file that anyone
-    can edit — a ward at a time, a bus route at a time. Timings and fares are indicative,
-    marked with a ~ where they're typical estimates rather than measured fact, because
-    that's the honest state of the data.</p>
-    <p>The app itself is a small, fast web app that installs to your phone and keeps
-    working offline once you've visited. Address search is powered by Google; the network
-    itself is powered by neighbours.</p>
-    <p class="fineprint">Shonjog is an independent community project. It is not affiliated
-    with WBTC, Metro Railway, Indian Railways or any transport operator. [Edit this page:
-    add your story, your team, your contact.]</p>
+    <p>Shonjog (সংযোগ — "connection") is a community-built journey planner for Kolkata.</p>
   </article>
 </main>
 
 <main class="wrap view" id="view-careers" hidden>
   <article class="content glass">
     <h2>Careers</h2>
-    <p>Shonjog is community-built, which means our "openings" are ways to leave your mark
-    on how a city of fifteen million gets around. These are volunteer roles today —
-    the pay is gratitude, a credit line, and better commutes for everyone.</p>
-    <h3>Ward Data Captain</h3>
-    <p>Own the map of your para. Add stops, connect routes, keep timings honest. If you
-    can long-press a spot in Google Maps and copy two numbers, you're qualified.</p>
-    <h3>Fare &amp; Timing Auditor</h3>
-    <p>Ride the routes you already ride — but write down what they cost and how long they
-    took, so a ~ estimate becomes a fact.</p>
-    <h3>Frontend Contributor</h3>
-    <p>The whole app is one HTML file and one routing engine. If you know a little
-    JavaScript, there's a good-first-issue with your name on it.</p>
-    <h3>Bengali Localisation</h3>
-    <p>Help the interface speak the city's first language properly, not just in the
-    masthead.</p>
-    <p class="fineprint">Interested? [Edit this page: add your contact — email, Telegram
-    group, GitHub repo link.]</p>
+    <p>Shonjog is community-built, which means our "openings" are ways to leave your mark on how a city of fifteen million gets around.</p>
   </article>
 </main>
 
@@ -424,6 +331,9 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
 
 <script src="engine.js"></script>
 <script>
+// ==========================================
+// 1. MAIN APP SCRIPT (VANILLA JS)
+// ==========================================
 const DEFAULT_NETWORK = {
   "name": "Shonjog Kolkata sample network",
   "version": "0.4.0",
@@ -444,155 +354,84 @@ const DEFAULT_NETWORK = {
   "edges": []
 };
 
-// ---- shonjog interface layer (data comes from network.json) ----
 let NET = null;
 let lastFix = null;
 const prevSel = { from: null, to: null };
 let currentRoutes = [];
 let selectedIdx = 0;
 
-// ---- typed places (map search) -----------------------------------------
 const PLACE_IDS = { from: "_place_from", to: "_place_to" };
-const GOOGLE_KEY = "AIzaSyDshZXBoGtvsa1P2yammkPoGZ8fJuI6xIU";
-const KOLKATA_BOUNDS = { low:  { latitude: 22.30, longitude: 88.10 },
-                         high: { latitude: 22.90, longitude: 88.65 } };  // greater Kolkata
-const GEO_VIEWBOX = "88.10,22.90,88.65,22.30";   // same box, Nominatim fallback format
+const GOOGLE_KEY = "AIzaSyAYSTlGhWgak3ZuEkjwi_bnfkfa1uYqpy8";
+const KOLKATA_BOUNDS = { low:  { latitude: 22.30, longitude: 88.10 }, high: { latitude: 22.90, longitude: 88.65 } };
+const GEO_VIEWBOX = "88.10,22.90,88.65,22.30";
 let geoBusy = false, lastGeoSource = "";
-let gAutoRetryAt = 0;   // after a live-autocomplete failure, retry from this time
-const uuid = () => (crypto.randomUUID ? crypto.randomUUID()
-  : "xxxx-xxxx-4xxx-yxxx".replace(/[xy]/g, c => {
-      const r = Math.random() * 16 | 0; return (c === "x" ? r : (r & 3 | 8)).toString(16);
-    }) + Date.now());
+let gAutoRetryAt = 0;
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : "xxxx-xxxx-4xxx-yxxx".replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === "x" ? r : (r & 3 | 8)).toString(16); }) + Date.now());
 
 async function googleAutocomplete(q, sessionToken) {
   const r = await fetch("https://places.googleapis.com/v1/places:autocomplete", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": GOOGLE_KEY,
-      "X-Goog-FieldMask": "suggestions.placePrediction.placeId,suggestions.placePrediction.structuredFormat"
-    },
-    body: JSON.stringify({
-      input: q, sessionToken, languageCode: "en",
-      locationRestriction: { rectangle: KOLKATA_BOUNDS }
-    })
+    method: "POST", headers: { "Content-Type": "application/json", "X-Goog-Api-Key": GOOGLE_KEY, "X-Goog-FieldMask": "suggestions.placePrediction.placeId,suggestions.placePrediction.structuredFormat" },
+    body: JSON.stringify({ input: q, sessionToken, languageCode: "en", locationRestriction: { rectangle: KOLKATA_BOUNDS } })
   });
   if (!r.ok) throw new Error("autocomplete replied " + r.status);
-  return ((await r.json()).suggestions || [])
-    .map(x => x.placePrediction).filter(Boolean)
-    .map(pp => ({
-      placeId: pp.placeId,
-      main: (pp.structuredFormat && pp.structuredFormat.mainText && pp.structuredFormat.mainText.text) || "Unnamed place",
-      secondary: (pp.structuredFormat && pp.structuredFormat.secondaryText && pp.structuredFormat.secondaryText.text) || ""
-    })).slice(0, 5);
+  return ((await r.json()).suggestions || []).map(x => x.placePrediction).filter(Boolean).map(pp => ({ placeId: pp.placeId, main: (pp.structuredFormat && pp.structuredFormat.mainText && pp.structuredFormat.mainText.text) || "Unnamed place", secondary: (pp.structuredFormat && pp.structuredFormat.secondaryText && pp.structuredFormat.secondaryText.text) || "" })).slice(0, 5);
 }
 
 async function googlePlaceLocation(placeId, sessionToken) {
-  // location + displayName are Pro fields: closing the session this way makes
-  // every autocomplete keystroke in it free (Autocomplete Session Usage)
-  const r = await fetch("https://places.googleapis.com/v1/places/" + encodeURIComponent(placeId) +
-                        "?languageCode=en&sessionToken=" + encodeURIComponent(sessionToken), {
-    headers: { "X-Goog-Api-Key": GOOGLE_KEY, "X-Goog-FieldMask": "location,displayName" }
-  });
+  const r = await fetch("https://places.googleapis.com/v1/places/" + encodeURIComponent(placeId) + "?languageCode=en&sessionToken=" + encodeURIComponent(sessionToken), { headers: { "X-Goog-Api-Key": GOOGLE_KEY, "X-Goog-FieldMask": "location,displayName" } });
   if (!r.ok) throw new Error("place details replied " + r.status);
   const p = await r.json();
-  return { name: (p.displayName && p.displayName.text) || "Pinned place",
-           lat: p.location && p.location.latitude,
-           lon: p.location && p.location.longitude };
+  return { name: (p.displayName && p.displayName.text) || "Pinned place", lat: p.location && p.location.latitude, lon: p.location && p.location.longitude };
 }
+
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
 async function googlePlaces(q) {
   const r = await fetch("https://places.googleapis.com/v1/places:searchText", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": GOOGLE_KEY,
-      // fields kept to the Pro SKU: name, address, coordinates — nothing pricier
-      "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location"
-    },
-    body: JSON.stringify({
-      textQuery: q, pageSize: 5, languageCode: "en",
-      locationRestriction: { rectangle: KOLKATA_BOUNDS }
-    })
+    method: "POST", headers: { "Content-Type": "application/json", "X-Goog-Api-Key": GOOGLE_KEY, "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.location" },
+    body: JSON.stringify({ textQuery: q, pageSize: 5, languageCode: "en", locationRestriction: { rectangle: KOLKATA_BOUNDS } })
   });
   if (!r.ok) throw new Error("places replied " + r.status);
-  return ((await r.json()).places || []).map(p => ({
-    name: (p.displayName && p.displayName.text) ||
-          String(p.formattedAddress || "").split(",")[0].trim() || "Unnamed place",
-    detail: String(p.formattedAddress || "").split(",").slice(0, 3).join(",").trim(),
-    lat: p.location && p.location.latitude,
-    lon: p.location && p.location.longitude
-  })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+  return ((await r.json()).places || []).map(p => ({ name: (p.displayName && p.displayName.text) || String(p.formattedAddress || "").split(",")[0].trim() || "Unnamed place", detail: String(p.formattedAddress || "").split(",").slice(0, 3).join(",").trim(), lat: p.location && p.location.latitude, lon: p.location && p.location.longitude })).filter(p => isFinite(p.lat) && isFinite(p.lon));
 }
 
 async function nominatim(q) {
-  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5" +
-              "&countrycodes=in&bounded=1&viewbox=" + GEO_VIEWBOX +
-              "&accept-language=en&q=" + encodeURIComponent(q);
+  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=in&bounded=1&viewbox=" + GEO_VIEWBOX + "&accept-language=en&q=" + encodeURIComponent(q);
   const r = await fetch(url, { headers: { "Accept": "application/json" } });
   if (!r.ok) throw new Error("geocoder replied " + r.status);
-  return (await r.json()).map(p => ({
-    name: p.name || String(p.display_name || "").split(",")[0].trim() || "Unnamed place",
-    detail: String(p.display_name || "").split(",").slice(1, 4).join(",").trim(),
-    lat: parseFloat(p.lat), lon: parseFloat(p.lon)
-  })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+  return (await r.json()).map(p => ({ name: p.name || String(p.display_name || "").split(",")[0].trim() || "Unnamed place", detail: String(p.display_name || "").split(",").slice(1, 4).join(",").trim(), lat: parseFloat(p.lat), lon: parseFloat(p.lon) })).filter(p => isFinite(p.lat) && isFinite(p.lon));
 }
 
-// Google first (better with informal names); OSM if Google is unreachable,
-// unconfigured, over quota, or blocked by key restrictions.
 async function geocode(q) {
-  try {
-    const places = await googlePlaces(q);
-    lastGeoSource = "google";
-    return places;
-  } catch (err) {
-    console.warn("Google Places failed, falling back to OpenStreetMap:", err);
-  }
-  const places = await nominatim(q);
-  lastGeoSource = "osm";
-  return places;
+  try { const places = await googlePlaces(q); lastGeoSource = "google"; return places; } catch (err) { console.warn("Google Places failed:", err); }
+  const places = await nominatim(q); lastGeoSource = "osm"; return places;
 }
 
-function linkSummary(links) {
-  return links.map(l =>
-    `${NET.stops[l.id].name} (~${l.walkMin != null ? l.walkMin : l.min} min walk` +
-    (l.rickMin ? ` / ~${l.rickMin} min rickshaw` : "") + ")"
-  ).join(", ");
-}
+function linkSummary(links) { return links.map(l => `${NET.stops[l.id].name} (~${l.walkMin != null ? l.walkMin : l.min} min walk` + (l.rickMin ? ` / ~${l.rickMin} min rickshaw` : "") + ")").join(", "); }
 
 async function loadNetwork() {
-  try {
-    const r = await fetch("./network.json", { cache: "no-cache" });
-    if (r.ok) return { json: await r.json(), src: "network.json" };
-  } catch (e) { }
+  try { const r = await fetch("./network.json", { cache: "no-cache" }); if (r.ok) return { json: await r.json(), src: "network.json" }; } catch (e) { }
   return { json: DEFAULT_NETWORK, src: "built-in sample" };
 }
 
-// ---- tiny persistent store (pins + recents) ------------------------------
 const store = {
   get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
 };
 const K_PINS = "Shonjog.pins", K_RECENTS = "Shonjog.recents";
 
-// A journey endpoint as something we can save and rebuild later.
 function endpointInfo(side) {
   const id = document.getElementById(side).value;
   if (!id || !NET.stops[id]) return null;
   const myLocId = typeof LOC_ID !== "undefined" ? LOC_ID : "_loc";
-  if (id === myLocId) return null;                       // GPS points go stale — don't save
+  if (id === myLocId) return null;
   const s = NET.stops[id];
-  if (id === PLACE_IDS.from || id === PLACE_IDS.to)
-    return { virtual: true, name: s.name, lat: s.lat, lon: s.lon };
+  if (id === PLACE_IDS.from || id === PLACE_IDS.to) return { virtual: true, name: s.name, lat: s.lat, lon: s.lon };
   return { id, name: s.name };
 }
 const epKey = ep => ep.virtual ? `p:${ep.lat.toFixed(5)},${ep.lon.toFixed(5)}` : ep.id;
 const pairKey = pr => epKey(pr.from) + ">" + epKey(pr.to);
-const currentPair = () => {
-  const f = endpointInfo("from"), t = endpointInfo("to");
-  return f && t ? { from: f, to: t } : null;
-};
+const currentPair = () => { const f = endpointInfo("from"), t = endpointInfo("to"); return f && t ? { from: f, to: t } : null; };
 
 function applyEndpoint(side, ep) {
   const input = document.getElementById(side + "-input");
@@ -602,7 +441,6 @@ function applyEndpoint(side, ep) {
     const res = setPlaceNode(NET, pid, ep.name, ep.lat, ep.lon, {});
     if (!res.ok) { setLocStatus("Can't route there: " + res.reason); return false; }
     hidden.value = pid; input.value = ep.name; prevSel[side] = pid;
-    setLocStatus(`\u201c${ep.name}\u201d linked to: ` + linkSummary(res.links));
   } else {
     if (!NET.stops[ep.id]) { setLocStatus(`"${ep.name}" isn't in the current network data.`); return false; }
     hidden.value = ep.id; input.value = NET.stops[ep.id].name; prevSel[side] = ep.id;
@@ -612,7 +450,7 @@ function applyEndpoint(side, ep) {
 
 function pushRecent(pair) {
   const pins = store.get(K_PINS, []);
-  if (pins.some(p => pairKey(p) === pairKey(pair))) return;   // pinned already covers it
+  if (pins.some(p => pairKey(p) === pairKey(pair))) return;
   let rec = store.get(K_RECENTS, []).filter(p => pairKey(p) !== pairKey(pair));
   rec.unshift(pair);
   store.set(K_RECENTS, rec.slice(0, 5));
@@ -621,26 +459,13 @@ function pushRecent(pair) {
 function renderShortcuts() {
   const box = document.getElementById("shortcuts");
   const pins = store.get(K_PINS, []), rec = store.get(K_RECENTS, []);
-  const chip = (p, i, kind, ic) =>
-    `<span class="scut glass" role="button" tabindex="0" data-kind="${kind}" data-i="${i}">
-       <span class="ic">${ic}</span>
-       <span class="t">${esc(p.from.name)} → ${esc(p.to.name)}</span>
-       <span class="x" data-del="1" title="Remove" aria-label="Remove">×</span>
-     </span>`;
-  box.innerHTML =
-    pins.map((p, i) => chip(p, i, "pin", "★")).join("") +
-    rec.map((p, i) => chip(p, i, "rec", "🕐")).join("");
+  const chip = (p, i, kind, ic) => `<span class="scut glass" role="button" tabindex="0" data-kind="${kind}" data-i="${i}"><span class="ic">${ic}</span><span class="t">${esc(p.from.name)} → ${esc(p.to.name)}</span><span class="x" data-del="1" title="Remove" aria-label="Remove">×</span></span>`;
+  box.innerHTML = pins.map((p, i) => chip(p, i, "pin", "★")).join("") + rec.map((p, i) => chip(p, i, "rec", "🕐")).join("");
 }
 
-function runPair(pair) {
-  if (applyEndpoint("from", pair.from) && applyEndpoint("to", pair.to)) render();
-}
+function runPair(pair) { if (applyEndpoint("from", pair.from) && applyEndpoint("to", pair.to)) render(); }
 
-// ---- share + deep links ---------------------------------------------------
-const epParam = ep => ep.virtual
-  ? `p:${ep.lat.toFixed(5)},${ep.lon.toFixed(5)},${ep.name}`
-  : ep.id;
-
+const epParam = ep => ep.virtual ? `p:${ep.lat.toFixed(5)},${ep.lon.toFixed(5)},${ep.name}` : ep.id;
 function parseEpParam(v) {
   if (!v) return null;
   if (v.startsWith("p:")) {
@@ -655,10 +480,7 @@ function parseEpParam(v) {
 function updateURL(pair) {
   try {
     const u = new URL(location.href);
-    if (pair) {
-      u.searchParams.set("from", epParam(pair.from));
-      u.searchParams.set("to", epParam(pair.to));
-    } else { u.searchParams.delete("from"); u.searchParams.delete("to"); }
+    if (pair) { u.searchParams.set("from", epParam(pair.from)); u.searchParams.set("to", epParam(pair.to)); } else { u.searchParams.delete("from"); u.searchParams.delete("to"); }
     history.replaceState({ Shonjog: 1 }, "", u);
   } catch (e) { }
 }
@@ -667,14 +489,7 @@ function applyURLParams() {
   try {
     const u = new URL(location.href);
     if (!u.searchParams.has("from") && !u.searchParams.has("to")) return false;
-    // the marker survives reloads: params written by THIS tab's own planning are
-    // leftovers, so boot clean with placeholders — a pasted/shared link has no
-    // marker and still opens fully planned
-    if (history.state && history.state.Shonjog) {
-      u.searchParams.delete("from"); u.searchParams.delete("to");
-      history.replaceState(null, "", u);
-      return false;
-    }
+    if (history.state && history.state.Shonjog) { u.searchParams.delete("from"); u.searchParams.delete("to"); history.replaceState(null, "", u); return false; }
     const f = parseEpParam(u.searchParams.get("from"));
     const t = parseEpParam(u.searchParams.get("to"));
     if (f && t) { applyEndpoint("from", f); applyEndpoint("to", t); return true; }
@@ -685,31 +500,21 @@ function applyURLParams() {
 let toastTimer = null;
 function toast(msg) {
   const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
 }
 
 async function shareJourney() {
   const pair = currentPair(), r = currentRoutes[selectedIdx];
   if (!pair || !r) { toast("Plan a journey first"); return; }
   const modes = [...new Set(r.legs.filter(l => l.mode !== "walk").map(l => NET.modes[l.mode].label))];
-  const text = `${pair.from.name} → ${pair.to.name}: ~${r.totalMin} min, ₹${r.totalFare}` +
-               (modes.length ? ` via ${modes.join(" + ")}` : "") + " · Shonjog";
+  const text = `${pair.from.name} → ${pair.to.name}: ~${r.totalMin} min, ₹${r.totalFare}` + (modes.length ? ` via ${modes.join(" + ")}` : "") + " · Shonjog";
   const url = location.href;
-  if (navigator.share) {
-    try { await navigator.share({ title: "Shonjog journey", text, url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
-  }
-  try {
-    await navigator.clipboard.writeText(text + "\n" + url);
-    toast("Journey link copied");
-  } catch (e) { toast("Couldn't copy — share manually from the address bar"); }
+  if (navigator.share) { try { await navigator.share({ title: "Shonjog journey", text, url }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(text + "\n" + url); toast("Journey link copied"); } catch (e) { toast("Couldn't copy"); }
 }
 
-function isPinned(pair) {
-  return store.get(K_PINS, []).some(p => pairKey(p) === pairKey(pair));
-}
+function isPinned(pair) { return store.get(K_PINS, []).some(p => pairKey(p) === pairKey(pair)); }
 
 function refreshPinButton() {
   const btn = document.getElementById("pin");
@@ -725,300 +530,139 @@ function togglePin() {
   if (!pair) { toast("Plan a journey first"); return; }
   let pins = store.get(K_PINS, []);
   if (isPinned(pair)) {
-    pins = pins.filter(p => pairKey(p) !== pairKey(pair));
-    toast("Unpinned");
+    pins = pins.filter(p => pairKey(p) !== pairKey(pair)); toast("Unpinned");
   } else {
-    pins.unshift(pair);
-    pins = pins.slice(0, 6);
+    pins.unshift(pair); pins = pins.slice(0, 6);
     store.set(K_RECENTS, store.get(K_RECENTS, []).filter(p => pairKey(p) !== pairKey(pair)));
     toast("Pinned — it'll wait under the planner");
   }
-  store.set(K_PINS, pins);
-  refreshPinButton();
-  renderShortcuts();
+  store.set(K_PINS, pins); refreshPinButton(); renderShortcuts();
 }
 
-// ---- custom maps-style autocomplete ---------------------------------------
 function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
   const hidden = document.getElementById(hiddenId);
-  let debounceTimer, sessTok = null;
+  let debounceTimer;
 
   async function showSuggestions(query) {
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
-    
-    let html = `<div class="sugg-item" data-id="${myLocId}">
-                  <span class="sugg-name">📍 Use my current location</span>
-                </div>`;
-
+    let html = `<div class="sugg-item" data-id="${myLocId}"><span class="sugg-name">📍 Use my current location</span></div>`;
     const q = query.trim().toLowerCase();
     let localCount = 0;
 
-    // 1. INSTANT LOCAL SEARCH — tokenised: "christopher road government" still
-    // surfaces the Christopher Rd stop, ranked by how many words hit
     if (q !== "") {
-      const tokens = q.split(/\s+/).filter(w => w.length >= 3);
-      const scored = [];
-      for (const id in NET.stops) {
-        if (id === myLocId) continue;
-        const nameLower = NET.stops[id].name.toLowerCase();
-        let score = 0;
-        if (tokens.length) {
-          for (const w of tokens) if (nameLower.includes(w)) score++;
-        } else if (nameLower.includes(q)) score = 1;   // short queries: plain substring
-        if (score > 0) scored.push({ id, score,
-          starts: nameLower.startsWith(tokens[0] || q) ? 1 : 0 });
-      }
-      scored.sort((a, b) => b.score - a.score || b.starts - a.starts ||
-        NET.stops[a.id].name.localeCompare(NET.stops[b.id].name));
-
-      for (const hit of scored.slice(0, 9)) {
-        const stop = NET.stops[hit.id];
+      const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
+      for (const id of sortedIds) {
+        const stop = NET.stops[id];
         const nameLower = stop.name.toLowerCase();
-        const first = (tokens.find(w => nameLower.includes(w)) || q);
-        const matchIdx = nameLower.indexOf(first);
-        const highlightedName = matchIdx === -1 ? esc(stop.name) :
-          `${esc(stop.name.substring(0, matchIdx))}<b>${esc(stop.name.substring(matchIdx, matchIdx + first.length))}</b>${esc(stop.name.substring(matchIdx + first.length))}`;
-        const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
-        const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
+        const matchIdx = nameLower.indexOf(q);
 
-        html += `<div class="sugg-item" data-id="${hit.id}">
-                   <span class="sugg-name">${highlightedName}${localityHtml}</span>
-                 </div>`;
-        localCount++;
+        if (matchIdx !== -1) {
+          const beforeText = stop.name.substring(0, matchIdx);
+          const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
+          const afterText = stop.name.substring(matchIdx + q.length);
+          const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
+          const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
+          const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
+
+          html += `<div class="sugg-item" data-id="${id}"><span class="sugg-name">${highlightedName}${localityHtml}</span></div>`;
+          localCount++;
+        }
+        if (localCount > 8) break; 
       }
     }
 
-    if (localCount === 0 && q !== "") {
-       html = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No local stops found.</span></div>`;
-    }
-
-    // Append loading text if they typed enough for a map search
-    if (q.length >= 3) {
-      html += `<div id="${inputId}-g-loading" class="sugg-item">
-                 <span class="sugg-ward" style="text-transform:none;">Searching Google Maps...</span>
-               </div>`;
-    }
+    if (localCount === 0 && q !== "") { html = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No local stops found.</span></div>`; }
+    if (q.length >= 3) { html += `<div id="${inputId}-g-loading" class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Searching Google Maps...</span></div>`; }
     
-    list.innerHTML = html;
-    list.hidden = false;
+    list.innerHTML = html; list.hidden = false;
 
-    // 2. BACKGROUND GOOGLE SEARCH — debounced 400ms; local stops above stay instant.
-    // Live Autocomplete (session tokens, ~free) first; the one-shot Text Search ->
-    // OSM path becomes the automatic fallback if it ever fails.
     if (q.length >= 3) {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(async () => {
-        // Anti-race condition: abort if the user kept typing while we waited
+      try {
+        const places = await geocode(q);
         if (input.value.trim().toLowerCase() !== q) return;
-        try {
-          let gHtml = "";
-          let liveOK = false;
-          if (Date.now() >= gAutoRetryAt) {
-            try {
-              if (!sessTok) sessTok = uuid();
-              const sugg = await googleAutocomplete(q, sessTok);
-              if (input.value.trim().toLowerCase() !== q) return;
-              if (sugg.length) {
-                sugg.forEach(sg => {
-                  gHtml += `<div class="sugg-item" data-gpid="${esc(sg.placeId)}" data-gname="${esc(sg.main)}">
-                             <span class="sugg-name">🌍 ${esc(sg.main)}</span>
-                             <span class="sugg-ward" style="text-transform:none;">${esc(sg.secondary)}</span>
-                           </div>`;
-                });
-              } else {
-                gHtml += `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}"</div>`;
-              }
-              gHtml += `<div class="sugg-item sugg-attrib">Powered by Google</div>`;
-              liveOK = true;
-            } catch (err) {
-              console.warn("Live suggestions unavailable, using one-shot map search (retrying in 60s):", err);
-              gAutoRetryAt = Date.now() + 60000;
-            }
-          }
-          if (!liveOK) {
-            const places = await geocode(q);
-            if (input.value.trim().toLowerCase() !== q) return;
-            if (places && places.length > 0) {
-              places.forEach(p => {
-                gHtml += `<div class="sugg-item" data-place="1" data-lat="${p.lat}" data-lon="${p.lon}" data-name="${esc(p.name)}">
-                           <span class="sugg-name">🌍 ${esc(p.name)}</span>
-                           <span class="sugg-ward" style="text-transform:none;">${esc(p.detail)}</span>
-                         </div>`;
-              });
-            } else {
-              gHtml += lastGeoSource === "osm"
-                ? `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}" — Google search is unavailable right now (see the map panel), and the OpenStreetMap fallback needs near-exact names. Try the official name or a nearby landmark.</div>`
-                : `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}"</div>`;
-            }
-            gHtml += `<div class="sugg-item sugg-attrib">${lastGeoSource === "google" ? "Powered by Google" : "Limited search © OpenStreetMap"}</div>`;
-          }
-          const loadingMsg = document.getElementById(`${inputId}-g-loading`);
-          if (loadingMsg) loadingMsg.remove();
-          list.innerHTML += gHtml;
-        } catch (err) {
-           const loadingMsg = document.getElementById(`${inputId}-g-loading`);
-           if (loadingMsg) {
-               loadingMsg.innerHTML = `<span class="sugg-ward" style="text-transform:none; color:#d93838; font-weight:bold;">Map search failed — connection or key restrictions (console has details).</span>`;
-           }
+        const loadingMsg = document.getElementById(`${inputId}-g-loading`);
+        if (loadingMsg) loadingMsg.remove();
+
+        let gHtml = "";
+        if (places && places.length > 0) {
+          places.forEach(p => { gHtml += `<div class="sugg-item" data-place="1" data-lat="${p.lat}" data-lon="${p.lon}" data-name="${esc(p.name)}"><span class="sugg-name">🌍 ${esc(p.name)}</span><span class="sugg-ward" style="text-transform:none;">${esc(p.detail)}</span></div>`; });
+        } else {
+          gHtml += `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}"</div>`;
         }
-      }, 400);
+        gHtml += `<div class="sugg-item sugg-attrib">${lastGeoSource === "google" ? "Powered by Google" : "Search © OpenStreetMap"}</div>`;
+        list.innerHTML += gHtml;
+      } catch (err) {
+         const loadingMsg = document.getElementById(`${inputId}-g-loading`);
+         if (loadingMsg) { loadingMsg.innerHTML = `<span class="sugg-ward" style="text-transform:none; color:#d93838; font-weight:bold;">Map API Error (Check Console for 403)</span>`; }
+      }
     }
   }
 
-  // local stop matches render instantly; only the Google call inside is debounced
-  input.addEventListener("input", (e) => showSuggestions(e.target.value));
-  
-  input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
-  input.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
-    if (list.hidden) return;
-    const row = list.querySelector("[data-gpid]") || list.querySelector("[data-place]");
-    if (row) row.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+  input.addEventListener("input", (e) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 400); 
   });
-
+  input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
   list.addEventListener("mousedown", async (e) => {
     const item = e.target.closest(".sugg-item");
     if (!item) return;
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
-    if (item.dataset.gpid) {                    // a live Google suggestion
-      e.preventDefault();                       // keep focus; details are async
-      const tok = sessTok || uuid();
-      sessTok = null;                           // session ends with this pick
-      input.value = item.dataset.gname;
-      list.innerHTML = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Pinning "${esc(item.dataset.gname)}"…</span></div>`;
-      try {
-        const pl = await googlePlaceLocation(item.dataset.gpid, tok);
-        if (!isFinite(pl.lat) || !isFinite(pl.lon)) throw new Error("no coordinates");
-        const pid = PLACE_IDS[hiddenId];
-        const res = setPlaceNode(NET, pid, pl.name, pl.lat, pl.lon, {});
-        list.hidden = true;
-        if (!res.ok) { setLocStatus("Can't route there: " + res.reason); return; }
-        hidden.value = pid;
-        input.value = pl.name;
-        prevSel[hiddenId] = pid;
-        setLocStatus(`"${pl.name}" linked to: ` + linkSummary(res.links));
-        render();
-      } catch (err) {
-        list.hidden = true;
-        setLocStatus("Couldn't pin that place — try again, or use a nearby stop.");
-      }
-      return;
-    }
-
-    // Handle Google/OSM place click (one-shot Text Search / OSM fallback rows)
     if (item.dataset.place) {
       const pid = PLACE_IDS[hiddenId];
       const res = setPlaceNode(NET, pid, item.dataset.name, parseFloat(item.dataset.lat), parseFloat(item.dataset.lon), {});
       list.hidden = true;
-      
       if (!res.ok) { setLocStatus("Can't route there: " + res.reason); return; }
-      
-      hidden.value = pid;
-      input.value = item.dataset.name;
-      prevSel[hiddenId] = pid;
+      hidden.value = pid; input.value = item.dataset.name; prevSel[hiddenId] = pid;
       setLocStatus(`"${item.dataset.name}" linked to: ` + linkSummary(res.links));
-      render();
-      return;
+      render(); return;
     }
 
-    // Handle Local Stop / Location click
     if (!item.dataset.id) return;
-    const id = item.dataset.id;
-    hidden.value = id;
-    
-    if (id === myLocId) {
-      input.value = "📍 Locating...";
-      handleLocationPick(hiddenId, input);
-    } else {
-      input.value = NET.stops[id].name;
-      prevSel[hiddenId] = id;
-      render();
-    }
+    const id = item.dataset.id; hidden.value = id;
+    if (id === myLocId) { input.value = "📍 Locating..."; handleLocationPick(hiddenId, input); } 
+    else { input.value = NET.stops[id].name; prevSel[hiddenId] = id; render(); }
     list.hidden = true;
   });
-
   input.addEventListener("blur", () => {
      setTimeout(() => list.hidden = true, 150); 
      const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
-     if (hidden.value && hidden.value !== myLocId && NET.stops[hidden.value]) {
-         input.value = NET.stops[hidden.value].name;
-     }
+     if (hidden.value && hidden.value !== myLocId && NET.stops[hidden.value]) { input.value = NET.stops[hidden.value].name; }
   });
 }
 
-function initSearchFields() {
-  // fields start empty and instructive — the placeholders do the talking
-  // (explicit blanking also defeats the browser's own form-state restore)
-  for (const side of ["from", "to"]) {
-    document.getElementById(side).value = "";
-    document.getElementById(side + "-input").value = "";
-  }
-  setupAutocomplete("from-input", "from-list", "from");
-  setupAutocomplete("to-input", "to-list", "to");
-}
-
-function buildLegend() {
-  document.getElementById("legend").innerHTML = Object.keys(NET.modes).map(m =>
-    `<span class="lg"><span class="dot" style="background:${NET.modes[m].color}"></span>${NET.modes[m].label}</span>`
-  ).join("");
-}
-
-// ---- location handling -------------------------------------------------
 function getFix() {
   return new Promise((resolve, reject) => {
     if (lastFix && Date.now() - lastFix.at < 60000) return resolve(lastFix);
-    if (!("geolocation" in navigator))
-      return reject({ msg: "This browser doesn't offer location." });
-    if (!window.isSecureContext)
-      return reject({ msg: "Location needs HTTPS — it works on your hosted URL, not a local file." });
+    if (!("geolocation" in navigator)) return reject({ msg: "This browser doesn't offer location." });
+    if (!window.isSecureContext) return reject({ msg: "Location needs HTTPS — it works on your hosted URL, not a local file." });
     navigator.geolocation.getCurrentPosition(
       p => { lastFix = { lat: p.coords.latitude, lon: p.coords.longitude, at: Date.now() }; resolve(lastFix); },
-      err => reject({
-        msg: err.code === 1 ? "Location permission denied — allow it in browser settings, or pick a stop."
-           : "Couldn't get a location fix — try again, or pick a stop."
-      }),
+      err => reject({ msg: err.code === 1 ? "Location permission denied — allow it in browser settings, or pick a stop." : "Couldn't get a location fix — try again, or pick a stop." }),
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   });
 }
 
-function setLocStatus(text) {
-  const el = document.getElementById("locstatus");
-  el.hidden = !text;
-  el.textContent = text || "";
-}
+function setLocStatus(text) { const el = document.getElementById("locstatus"); el.hidden = !text; el.textContent = text || ""; }
 
 async function handleLocationPick(which, el) {
   setLocStatus("Getting your location…");
   try {
     const fix = await getFix();
     const res = setLocationNode(NET, fix.lat, fix.lon, {});
-    if (!res.ok) {
-      setLocStatus("Can't use location: " + res.reason);
-      el.value = prevSel[which];
-      render();
-      return;
-    }
+    if (!res.ok) { setLocStatus("Can't use location: " + res.reason); el.value = prevSel[which]; render(); return; }
     setLocStatus("Linked to nearest stops: " + linkSummary(res.links));
     render();
-  } catch (err) {
-    setLocStatus(err.msg);
-    el.value = prevSel[which];
-    render();
-  }
+  } catch (err) { setLocStatus(err.msg); el.value = prevSel[which]; render(); }
 }
 
-// ---- route cards ---------------------------------------------------------
 function legRow(l) {
   const wait = l.wait ? `<div class="leg-sub">incl. ~${l.wait} min wait</div>` : "";
   let suggestion = "";
-  if (l.mode === "walk" && l.min > 15) {
-    suggestion = `<div class="taxi-hint">Long walk (${l.min} min) — hailing a yellow taxi or rickshaw here is recommended.</div>`;
-  }
+  if (l.mode === "walk" && l.min > 15) { suggestion = `<div class="taxi-hint">Long walk (${l.min} min) — hailing a yellow taxi or rickshaw here is recommended.</div>`; }
   return `<div class="leg">
       <span class="tile" style="background:${l.color || '#98a0a8'}">${NET.modes[l.mode].icon}</span>
       <span class="linename">${l.line || "Walk"}</span>
@@ -1027,12 +671,7 @@ function legRow(l) {
     </div>${wait}${suggestion}`;
 }
 
-function arriveAt(totalMin) {
-  try {
-    return new Date(Date.now() + totalMin * 60000)
-      .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  } catch (e) { return ""; }
-}
+function arriveAt(totalMin) { try { return new Date(Date.now() + totalMin * 60000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } }
 
 function card(r, i) {
   const changes = r.boardings - 1;
@@ -1040,21 +679,16 @@ function card(r, i) {
   const chips = r.labels.map(t => `<span class="chip">${t}</span>`).join("");
   const segs = r.legs.map(l => `<span style="flex:${l.min};background:${l.color}" title="${l.line}"></span>`).join("");
   
-  const approx = (r.approxMin || r.approxFare)
-    ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
+  const approx = (r.approxMin || r.approxFare) ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
   const eta = arriveAt(r.totalMin);
 
-  // late night bus warning (now using the pale beige ribbon style)
+  // late night bus warning
   const hr = new Date().getHours();
   const isNight = hr >= 22 || hr <= 4;
   const hasBus = r.legs.some(l => l.mode === "bus");
-  const nightWarn = (isNight && hasBus) 
-    ? `<div class="taxi-hint" style="margin-bottom:8px; display:block;">⚠️ Buses are highly infrequent at this hour. Expect delays.</div>` 
-    : "";
+  const nightWarn = (isNight && hasBus) ? `<div class="taxi-hint" style="margin-bottom:8px; display:block;">⚠️ Buses are highly infrequent at this hour. Expect delays.</div>` : "";
 
-  return `<article class="card glass${i === selectedIdx ? " sel" : ""}" data-idx="${i}"
-        tabindex="0" role="button" aria-pressed="${i === selectedIdx}"
-        style="animation-delay:${i * 70}ms">
+  return `<article class="card glass${i === selectedIdx ? " sel" : ""}" data-idx="${i}" tabindex="0" role="button" aria-pressed="${i === selectedIdx}" style="animation-delay:${i * 70}ms">
       <div class="chiprow">${chips}<span class="chev">▾</span></div>
       ${nightWarn}
       <div class="totals">
@@ -1064,464 +698,196 @@ function card(r, i) {
       </div>
       <div class="sub">${changes === 0 ? "no changes" : changes + (changes > 1 ? " changes" : " change")}${walkMin ? ` · ~${walkMin} min walking` : ""}</div>
       <div class="tl">${segs}</div>
-      <div class="details"><div>
-        <div class="legs">${r.legs.map(legRow).join("")}</div>${approx}
-      </div></div>
+      <div class="details"><div><div class="legs">${r.legs.map(legRow).join("")}</div>${approx}</div></div>
     </article>`;
 }
 
-function renderCards() {
-  document.getElementById("results").innerHTML =
-    currentRoutes.map(card).join("");
-}
+function renderCards() { document.getElementById("results").innerHTML = currentRoutes.map(card).join(""); }
 
 function selectCard(i) {
   if (!currentRoutes[i]) return;
-  selectedIdx = i;
-  renderCards();
-  renderMap(currentRoutes[i]);
+  selectedIdx = i; renderCards(); renderMap(currentRoutes[i]);
+  if (navigator.vibrate) navigator.vibrate(10); 
 }
 
-// ---- Google map ------------------------------------------------------------
 const SEPIA_STYLE = [
-  { elementType: "geometry", stylers: [{ color: "#ece1c8" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#6b5b44" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#f3ead7" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#dccfae" }] },
-  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#c9b78f" }] },
-  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#d4b98a" }] },
-  { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
-  { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#b39b74" }] },
-  { featureType: "transit.station", stylers: [{ visibility: "simplified" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#a8977a" }] },
-  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#5f5240" }] },
-  { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#e7dcc2" }] },
-  { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#b8a682" }] }
+  { elementType: "geometry", stylers: [{ color: "#ece1c8" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#6b5b44" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#f3ead7" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#dccfae" }] }, { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#c9b78f" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#d4b98a" }] }, { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+  { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#b39b74" }] }, { featureType: "transit.station", stylers: [{ visibility: "simplified" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#a8977a" }] }, { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#5f5240" }] },
+  { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#e7dcc2" }] }, { featureType: "administrative", elementType: "geometry.stroke", stylers: [{ color: "#b8a682" }] }
 ];
 const KOLKATA_CENTER = { lat: 22.572, lng: 88.363 };
 let gmap = null, gOverlays = [], pendingRoute = null, mapsRequested = false;
 
-function mapNote(text) {
-  const n = document.getElementById("mapnote");
-  n.hidden = !text;
-  n.textContent = text || "";
-}
+function mapNote(text) { const n = document.getElementById("mapnote"); n.hidden = !text; n.textContent = text || ""; }
 
 function loadGoogleMaps() {
   if (mapsRequested || gmap) return;
   if (navigator.onLine === false) { mapNote("Map needs a connection — route details above still work."); return; }
-  mapsRequested = true;
-  mapNote("Loading Google Maps…");
+  mapsRequested = true; mapNote("Loading Google Maps…");
   window.__gmapsInit = initGMap;
-  window.gm_authFailure = () => {
-    // Google injects its own grey error panel into the map div; clear it so the
-    // themed note below is the only message on screen
-    setTimeout(() => { const m = document.getElementById("map"); if (m) m.innerHTML = ""; }, 80);
-    mapNote("Google Maps refused this key. Press F12 \u2014 the console names the exact error. " +
-            "Usual suspects: the key's API restrictions are missing \u201cMaps JavaScript API\u201d " +
-            "(enabling the API on the project is a separate switch from allowing it on the key); " +
-            "the key's website restriction doesn't cover this address; or the account " +
-            "verification Google is reviewing hasn't cleared yet.");
-  };
+  window.gm_authFailure = () => { setTimeout(() => { const m = document.getElementById("map"); if (m) m.innerHTML = ""; }, 80); mapNote("Google Maps API error — check console."); };
   const sc = document.createElement("script");
   sc.src = "https://maps.googleapis.com/maps/api/js?key=" + GOOGLE_KEY + "&v=weekly&loading=async&callback=__gmapsInit";
-  sc.async = true;
-  sc.onerror = () => { mapsRequested = false; mapNote("Couldn't load Google Maps — check your connection."); };
+  sc.async = true; sc.onerror = () => { mapsRequested = false; mapNote("Couldn't load Google Maps — check your connection."); };
   document.head.appendChild(sc);
 }
 
 function initGMap() {
-  gmap = new google.maps.Map(document.getElementById("map"), {
-    // listen for right-click / long-press to drop a community pin
+  gmap = new google.maps.Map(document.getElementById("map"), { center: KOLKATA_CENTER, zoom: 11, styles: SEPIA_STYLE, mapTypeControl: false, streetViewControl: false, fullscreenControl: true, gestureHandling: "cooperative" });
   gmap.addListener("contextmenu", (e) => {
-    const lat = e.latLng.lat();
-    const lon = e.latLng.lng();
-    
-    // basic browser prompt for the name. you can replace this with a beautiful modal later.
+    const lat = e.latLng.lat(); const lon = e.latLng.lng();
     const stopName = prompt("suggest a new transit stop here:\nwhat is the name of this stop?");
-    
-    if (stopName && stopName.trim() !== "") {
-      // call the firebase function we just built
-      if (window.suggestStop) {
-        window.suggestStop(lat, lon, stopName.trim());
-      }
-    }
+    if (stopName && stopName.trim() !== "") { if (window.suggestStop) { window.suggestStop(lat, lon, stopName.trim()); } }
   });
-    center: KOLKATA_CENTER, zoom: 11, styles: SEPIA_STYLE,
-    mapTypeControl: false, streetViewControl: false, fullscreenControl: true,
-    gestureHandling: "cooperative"
-  });
-  mapNote("");
-  drawRoute(pendingRoute);
+  mapNote(""); drawRoute(pendingRoute);
 }
 
 function clearOverlays() { for (const o of gOverlays) o.setMap(null); gOverlays = []; }
-
-const toLL = id => {
-  const st = NET.stops[id];
-  return st && typeof st.lat === "number" && typeof st.lon === "number"
-    ? { lat: st.lat, lng: st.lon } : null;
-};
+const toLL = id => { const st = NET.stops[id]; return st && typeof st.lat === "number" && typeof st.lon === "number" ? { lat: st.lat, lng: st.lon } : null; };
 
 function drawRoute(route) {
-  if (!gmap) return;
-  clearOverlays();
+  if (!gmap) return; clearOverlays();
   if (!route) { gmap.setCenter(KOLKATA_CENTER); gmap.setZoom(11); return; }
-
-  const bounds = new google.maps.LatLngBounds();
-  let drew = 0;
+  const bounds = new google.maps.LatLngBounds(); let drew = 0;
   for (const l of route.legs) {
-    const a = toLL(l.from), b = toLL(l.to);
-    if (!a || !b) continue;
+    const a = toLL(l.from), b = toLL(l.to); if (!a || !b) continue;
     const walk = l.mode === "walk";
-    gOverlays.push(new google.maps.Polyline({
-      map: gmap, path: [a, b], geodesic: false,
-      strokeColor: l.color || "#7c3327",
-      strokeOpacity: walk ? 0 : 0.95,
-      strokeWeight: 5,
-      icons: walk ? [{ icon: { path: "M 0,-1 0,1", strokeOpacity: .9, strokeColor: l.color || "#98a0a8", scale: 3 }, offset: "0", repeat: "13px" }] : null,
-      zIndex: 5
-    }));
-    bounds.extend(a); bounds.extend(b);
-    drew++;
+    gOverlays.push(new google.maps.Polyline({ map: gmap, path: [a, b], geodesic: false, strokeColor: l.color || "#7c3327", strokeOpacity: walk ? 0 : 0.95, strokeWeight: 5, icons: walk ? [{ icon: { path: "M 0,-1 0,1", strokeOpacity: .9, strokeColor: l.color || "#98a0a8", scale: 3 }, offset: "0", repeat: "13px" }] : null, zIndex: 5 }));
+    bounds.extend(a); bounds.extend(b); drew++;
   }
   if (!drew) { mapNote("This route's stops have no coordinates yet — add lat/lon in network.json."); return; }
   mapNote("");
-
   const first = route.legs[0], last = route.legs[route.legs.length - 1];
-  const mk = (pos, label, title) => pos && gOverlays.push(new google.maps.Marker({
-    map: gmap, position: pos, title,
-    label: { text: label, color: "#fbf6ea", fontWeight: "700", fontSize: "12px" }
-  }));
-  mk(toLL(first.from), "A", NET.stops[first.from].name);
-  mk(toLL(last.to), "B", NET.stops[last.to].name);
+  const mk = (pos, label, title) => pos && gOverlays.push(new google.maps.Marker({ map: gmap, position: pos, title, label: { text: label, color: "#fbf6ea", fontWeight: "700", fontSize: "12px" } }));
+  mk(toLL(first.from), "A", NET.stops[first.from].name); mk(toLL(last.to), "B", NET.stops[last.to].name);
   for (let i = 1; i < route.legs.length; i++) {
-    const pos = toLL(route.legs[i].from);
-    if (!pos) continue;
-    gOverlays.push(new google.maps.Marker({
-      map: gmap, position: pos, title: NET.stops[route.legs[i].from].name,
-      icon: { path: google.maps.SymbolPath.CIRCLE, scale: 5.5, fillColor: "#fbf6ea",
-              fillOpacity: 1, strokeColor: "#241b11", strokeWeight: 2 },
-      zIndex: 6
-    }));
+    const pos = toLL(route.legs[i].from); if (!pos) continue;
+    gOverlays.push(new google.maps.Marker({ map: gmap, position: pos, title: NET.stops[route.legs[i].from].name, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 5.5, fillColor: "#fbf6ea", fillOpacity: 1, strokeColor: "#241b11", strokeWeight: 2 }, zIndex: 6 }));
   }
   gmap.fitBounds(bounds, { top: 48, bottom: 48, left: 48, right: 48 });
 }
 
-function renderMap(route) {
-  pendingRoute = route;
-  if (!gmap) { loadGoogleMaps(); return; }
-  drawRoute(route);
-}
+function renderMap(route) { pendingRoute = route; if (!gmap) { loadGoogleMaps(); return; } drawRoute(route); }
 
-// ---- main render ----------------------------------------------------------
 function render() {
-  const from = document.getElementById("from").value;
-  const to = document.getElementById("to").value;
-  const out = document.getElementById("results");
-  const reshead = document.getElementById("reshead");
+  const from = document.getElementById("from").value, to = document.getElementById("to").value;
+  const out = document.getElementById("results"), reshead = document.getElementById("reshead");
   const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
   let stale = false;
   if (from !== myLocId && to !== myLocId && NET.stops[myLocId]) { clearLocationNode(NET); stale = true; }
-  for (const side in PLACE_IDS) {
-    const pid = PLACE_IDS[side];
-    if (from !== pid && to !== pid && NET.stops[pid]) { clearPlaceNode(NET, pid); stale = true; }
-  }
+  for (const side in PLACE_IDS) { const pid = PLACE_IDS[side]; if (from !== pid && to !== pid && NET.stops[pid]) { clearPlaceNode(NET, pid); stale = true; } }
   if (stale) setLocStatus("");
 
-  currentRoutes = []; selectedIdx = 0;
-  reshead.hidden = true;
-  document.getElementById("sorters").hidden = true;
-
-  if (!from && !to) {
-    out.innerHTML = `<p class="msg">Type where you're starting and where you're headed — stops, addresses and landmarks all work.</p>`;
-    renderMap(null);
-    return;
-  }
-  if (!from || !to) {
-    out.innerHTML = `<p class="msg">${!from ? "Now the starting point —" : "Now the destination —"} type a stop, an address or a landmark.</p>`;
-    renderMap(null);
-    return;
-  }
-  if (from === to) {
-    out.innerHTML = `<p class="msg">${from === myLocId
-      ? "You're already there. Pick a stop for the other end."
-      : "Pick two different stops to plan a journey."}</p>`;
-    renderMap(null);
-    updateURL(null);
-    return;
-  }
-  if (!NET.stops[from] || !NET.stops[to]) {
-    out.innerHTML = `<p class="msg">Waiting for your location…</p>`;
-    renderMap(null);
-    return;
-  }
+  currentRoutes = []; selectedIdx = 0; reshead.hidden = true; document.getElementById("sorters").hidden = true;
+  if (!from && !to) { out.innerHTML = `<p class="msg">Type where you're starting and where you're headed — stops, addresses and landmarks all work.</p>`; renderMap(null); return; }
+  if (!from || !to) { out.innerHTML = `<p class="msg">${!from ? "Now the starting point —" : "Now the destination —"} type a stop, an address or a landmark.</p>`; renderMap(null); return; }
+  if (from === to) { out.innerHTML = `<p class="msg">${from === myLocId ? "You're already there. Pick a stop for the other end." : "Pick two different stops to plan a journey."}</p>`; renderMap(null); updateURL(null); return; }
+  if (!NET.stops[from] || !NET.stops[to]) { out.innerHTML = `<p class="msg">Waiting for your location…</p>`; renderMap(null); return; }
+  
   currentRoutes = planAll(NET, from, to);
-  if (!currentRoutes.length) {
-    out.innerHTML = `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
-    renderMap(null);
-    updateURL(null);
-    return;
-  }
-  renderCards();
-  renderMap(currentRoutes[0]);
-  reshead.hidden = false;
+  if (!currentRoutes.length) { out.innerHTML = `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`; renderMap(null); updateURL(null); return; }
+  
+  renderCards(); renderMap(currentRoutes[0]); reshead.hidden = false;
   document.getElementById("sorters").hidden = false;
   document.getElementById("sticky-pill").innerHTML = `📍 ${NET.stops[from].name} &nbsp;→&nbsp; 🏁 ${NET.stops[to].name}`;
   refreshPinButton();
 
   const pair = currentPair();
-  if (pair) {
-    pushRecent(pair);
-    renderShortcuts();
-    updateURL(pair);
-  } else {
-    updateURL(null);        // journeys from "My location" aren't linkable
-  }
+  if (pair) { pushRecent(pair); renderShortcuts(); updateURL(pair); } else { updateURL(null); }
 }
 
 function swapStops() {
   const from = document.getElementById("from"), to = document.getElementById("to");
   const fromIn = document.getElementById("from-input"), toIn = document.getElementById("to-input");
-
   const t = from.value; from.value = to.value; to.value = t;
   const tName = fromIn.value; fromIn.value = toIn.value; toIn.value = tName;
-
   const p = prevSel.from; prevSel.from = prevSel.to; prevSel.to = p;
+  if (navigator.vibrate) navigator.vibrate(10);
   render();
 }
 
-// ---- install prompt + offline state ---------------------------------------
-let installEvt = null;
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  installEvt = e;
-  document.getElementById("install").hidden = false;
-});
-window.addEventListener("appinstalled", () => {
-  installEvt = null;
-  document.getElementById("install").hidden = true;
-  toast("Installed — Shonjog is on your home screen");
-});
-
-function setOnlineState() {
-  document.getElementById("offline").hidden = navigator.onLine !== false;
+function initSearchFields() {
+  for (const side of ["from", "to"]) { document.getElementById(side).value = ""; document.getElementById(side + "-input").value = ""; }
+  setupAutocomplete("from-input", "from-list", "from"); setupAutocomplete("to-input", "to-list", "to");
 }
+
+function buildLegend() { document.getElementById("legend").innerHTML = Object.keys(NET.modes).map(m => `<span class="lg"><span class="dot" style="background:${NET.modes[m].color}"></span>${NET.modes[m].label}</span>`).join(""); }
+
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; document.getElementById("install").hidden = false; });
+window.addEventListener("appinstalled", () => { installEvt = null; document.getElementById("install").hidden = true; toast("Installed — Shonjog is on your home screen"); });
+function setOnlineState() { document.getElementById("offline").hidden = navigator.onLine !== false; }
 
 document.addEventListener("DOMContentLoaded", async () => {
   const { json, src } = await loadNetwork();
   const issues = validateNetwork(json);
   NET = buildNetwork(json);
-
   const stopCount = Object.keys(NET.stops).length;
   const v = NET.meta.version ? "v" + NET.meta.version + " · " : "";
   const upd = NET.meta.updated ? " · updated " + NET.meta.updated : "";
-  document.getElementById("datainfo").textContent =
-    `Network ${v}${stopCount} stops · ${NET.links} links${upd} · loaded from ${src}. Timings and fares are indicative.`;
-
+  document.getElementById("datainfo").textContent = `Network ${v}${stopCount} stops · ${NET.links} links${upd} · loaded from ${src}. Timings and fares are indicative.`;
+  
   const warn = document.getElementById("warn");
-  if (issues.length) {
-    warn.hidden = false;
-    warn.textContent = `Data check — ${issues.length} issue${issues.length > 1 ? "s" : ""} in network data, e.g. ${issues[0]}. ` +
-      `${NET.skipped ? NET.skipped + " link(s) skipped. " : ""}Full list in the browser console.`;
-    console.warn("shonjog network data issues:\n- " + issues.join("\n- "));
-  }
+  if (issues.length) { warn.hidden = false; warn.textContent = `Data check — ${issues.length} issue${issues.length > 1 ? "s" : ""} in network data. Full list in console.`; console.warn("shonjog issues:\n- " + issues.join("\n- ")); }
 
-  // --- Theme Initializer ---
   const isDark = localStorage.getItem("theme") === "dark";
   if (isDark) document.documentElement.classList.add("dark");
   document.getElementById("theme-toggle").textContent = isDark ? "☀️" : "🌙";
-
   document.getElementById("theme-toggle").addEventListener("click", (e) => {
     const isNowDark = document.documentElement.classList.toggle("dark");
-    localStorage.setItem("theme", isNowDark ? "dark" : "light");
-    e.target.textContent = isNowDark ? "☀️" : "🌙";
+    localStorage.setItem("theme", isNowDark ? "dark" : "light"); e.target.textContent = isNowDark ? "☀️" : "🌙";
   });
 
-  // --- Sticky Scroll Pill ---
   window.addEventListener("scroll", () => {
     const pill = document.getElementById("sticky-pill");
-    if (window.scrollY > 280 && currentRoutes.length > 0) {
-      pill.classList.add("visible");
-    } else {
-      pill.classList.remove("visible");
-    }
+    if (window.scrollY > 280 && currentRoutes.length > 0) { pill.classList.add("visible"); } else { pill.classList.remove("visible"); }
   });
 
-  // --- Sorter Logic ---
   let currentSort = "fast";
   const sorterBox = document.getElementById("sorters");
-  
   sorterBox.addEventListener("click", e => {
     if (!e.target.dataset.sort) return;
-    
-    // Update active button CSS
     sorterBox.querySelectorAll(".scut").forEach(btn => btn.classList.remove("active"));
-    e.target.classList.add("active");
-    
-    currentSort = e.target.dataset.sort;
-    
-    // Mathematically sort the generated routes
-    if (currentSort === "cheap") {
-       currentRoutes.sort((a,b) => a.totalFare - b.totalFare || a.totalMin - b.totalMin);
-    } else if (currentSort === "walk") {
-       const getWalk = r => r.legs.filter(l => l.mode === 'walk').reduce((sum, l) => sum + l.min, 0);
-       currentRoutes.sort((a,b) => getWalk(a) - getWalk(b) || a.totalMin - b.totalMin);
-    } else {
-       currentRoutes.sort((a,b) => a.totalMin - b.totalMin); // default fast
-    }
-    
-    selectedIdx = 0; // reset selection to the top card
-    renderCards();
-    renderMap(currentRoutes[0]);
+    e.target.classList.add("active"); currentSort = e.target.dataset.sort;
+    if (currentSort === "cheap") { currentRoutes.sort((a,b) => a.totalFare - b.totalFare || a.totalMin - b.totalMin); } 
+    else if (currentSort === "walk") { const getWalk = r => r.legs.filter(l => l.mode === 'walk').reduce((sum, l) => sum + l.min, 0); currentRoutes.sort((a,b) => getWalk(a) - getWalk(b) || a.totalMin - b.totalMin); } 
+    else { currentRoutes.sort((a,b) => a.totalMin - b.totalMin); }
+    selectedIdx = 0; renderCards(); renderMap(currentRoutes[0]);
   });
-  window.suggestStop = async function(lat, lon, stopName) {
-  if (!window.currentUser) {
-    alert("you must sign in to suggest or verify a transit stop.");
-    return;
-  }
 
-  const uid = window.currentUser.uid;
-  const stopsRef = collection(db, "pending_stops");
-  
-  // ~10 meters is roughly 0.00009 degrees of latitude.
-  // we pad it slightly to 0.0001 to cast a net.
-  const latDelta = 0.0001; 
-  
-  // 1. query the database for anything roughly in this latitude band
-  const q = query(stopsRef, 
-    where("lat", ">=", lat - latDelta), 
-    where("lat", "<=", lat + latDelta)
-  );
-
-  try {
-    const snapshot = await getDocs(q);
-    let matchedDoc = null;
-
-    // 2. check the exact physical distance of the results
-    snapshot.forEach((document) => {
-      const data = document.data();
-      const distance = getDistanceMeters(lat, lon, data.lat, data.lon);
-      
-      // if we find a pending stop within 10 meters, it's a cluster match
-      if (distance <= 10) {
-        matchedDoc = { id: document.id, ...data };
-      }
-    });
-
-    if (matchedDoc) {
-      // 3a. CLUSTER MATCH: add an upvote instead of a new pin
-      if (matchedDoc.upvotes.includes(uid)) {
-        alert("you have already verified this stop!");
-        return;
-      }
-      
-      const docRef = doc(db, "pending_stops", matchedDoc.id);
-      await updateDoc(docRef, {
-        upvotes: arrayUnion(uid)
-      });
-      alert(`verification added! this stop now has ${matchedDoc.upvotes.length + 1} confirmations.`);
-      
-    } else {
-      // 3b. NO MATCH: create a brand new pending stop
-      await addDoc(stopsRef, {
-        name: stopName,
-        lat: lat,
-        lon: lon,
-        createdBy: uid,
-        upvotes: [uid], // you automatically upvote your own submission
-        downvotes: [],
-        timestamp: new Date()
-      });
-      alert("new stop suggested! it will go live once 9 more people verify it.");
-    }
-    
-  } catch (err) {
-    console.error("error suggesting stop:", err);
-    alert("failed to connect to the community database.");
-  }
-};
-  initSearchFields();
-  buildLegend();
-  renderShortcuts();
-  setOnlineState();
-  applyURLParams();          // shared links land planned
-
+  initSearchFields(); buildLegend(); renderShortcuts(); setOnlineState(); applyURLParams();
   document.getElementById("go").addEventListener("click", render);
   document.getElementById("swap").addEventListener("click", swapStops);
   document.getElementById("share").addEventListener("click", shareJourney);
   document.getElementById("pin").addEventListener("click", togglePin);
-  document.getElementById("install").addEventListener("click", async () => {
-    if (!installEvt) return;
-    installEvt.prompt();
-    await installEvt.userChoice.catch(() => {});
-    installEvt = null;
-    document.getElementById("install").hidden = true;
-  });
+  document.getElementById("install").addEventListener("click", async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice.catch(() => {}); installEvt = null; document.getElementById("install").hidden = true; });
   window.addEventListener("online", () => { setOnlineState(); loadGoogleMaps(); });
   window.addEventListener("offline", setOnlineState);
 
-  const views = { plan: document.getElementById("view-plan"),
-                  about: document.getElementById("view-about"),
-                  careers: document.getElementById("view-careers") };
-  document.querySelectorAll(".tab[data-view]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const target = btn.dataset.view;
-      for (const v in views) views[v].hidden = v !== target;
-      document.querySelectorAll(".tab").forEach(t2 => t2.classList.toggle("active", t2 === btn));
-    });
-  });
+  const views = { plan: document.getElementById("view-plan"), about: document.getElementById("view-about"), careers: document.getElementById("view-careers") };
+  document.querySelectorAll(".tab[data-view]").forEach(btn => { btn.addEventListener("click", () => { const target = btn.dataset.view; for (const v in views) views[v].hidden = v !== target; document.querySelectorAll(".tab").forEach(t2 => t2.classList.toggle("active", t2 === btn)); }); });
 
   const shortcuts = document.getElementById("shortcuts");
-  shortcuts.addEventListener("click", e => {
-    const chipEl = e.target.closest(".scut");
-    if (!chipEl) return;
-    const kind = chipEl.dataset.kind, i = +chipEl.dataset.i;
-    const key = kind === "pin" ? K_PINS : K_RECENTS;
-    const arr = store.get(key, []);
-    if (!arr[i]) return;
-    if (e.target.closest("[data-del]")) {
-      arr.splice(i, 1);
-      store.set(key, arr);
-      renderShortcuts();
-      refreshPinButton();
-      return;
-    }
-    runPair(arr[i]);
-  });
-  shortcuts.addEventListener("keydown", e => {
-    const chipEl = e.target.closest(".scut");
-    if (chipEl && (e.key === "Enter" || e.key === " ")) {
-      e.preventDefault();
-      chipEl.click();
-    }
-  });
-
+  shortcuts.addEventListener("click", e => { const chipEl = e.target.closest(".scut"); if (!chipEl) return; const kind = chipEl.dataset.kind, i = +chipEl.dataset.i; const key = kind === "pin" ? K_PINS : K_RECENTS; const arr = store.get(key, []); if (!arr[i]) return; if (e.target.closest("[data-del]")) { arr.splice(i, 1); store.set(key, arr); renderShortcuts(); refreshPinButton(); return; } runPair(arr[i]); });
+  shortcuts.addEventListener("keydown", e => { const chipEl = e.target.closest(".scut"); if (chipEl && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); chipEl.click(); } });
   const results = document.getElementById("results");
-  results.addEventListener("click", e => {
-    const c = e.target.closest(".card");
-    if (c) selectCard(+c.dataset.idx);
-  });
-  results.addEventListener("keydown", e => {
-    const c = e.target.closest(".card");
-    if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); selectCard(+c.dataset.idx); }
-  });
-
+  results.addEventListener("click", e => { const c = e.target.closest(".card"); if (c) selectCard(+c.dataset.idx); });
+  results.addEventListener("keydown", e => { const c = e.target.closest(".card"); if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); selectCard(+c.dataset.idx); } });
+  
   render();
-
-  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0)
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) navigator.serviceWorker.register("./sw.js").catch(() => {});
 });
 </script>
+
 <script type="module">
-  // import modern firebase v10 tools from the cdn
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
   import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, arrayUnion, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-  // replace this with your actual keys from the firebase console
   const firebaseConfig = {
     apiKey: "AIzaSyAYSTlGhWgak3ZuEkjwi_bnfkfa1uYqpy8",
     authDomain: "sanjog-52f21.firebaseapp.com",
@@ -1531,17 +897,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     appId: "1:956545006676:web:ff12acd0538d3be69d41c1"
   };
 
-  // initialize firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  const db = getFirestore(app); // initialize the database
-  const authBtn = document.getElementById("auth-btn");
-  
-  // global state for your other scripts to check if someone can drop a pin
-  window.currentUser = null; 
+  const db = getFirestore(app);
 
-  // listen for login/logout changes
+  const authBtn = document.getElementById("auth-btn");
+  window.currentUser = null;
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       window.currentUser = user;
@@ -1549,8 +912,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       authBtn.style.background = "var(--surface)";
       authBtn.style.color = "var(--ink)";
       authBtn.style.borderColor = "var(--hair)";
-      // optional: you can trigger your existing toast here
-      // toast(`welcome, ${user.displayName.split(' ')[0]}`);
     } else {
       window.currentUser = null;
       authBtn.textContent = "sign in";
@@ -1560,27 +921,49 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // handle the button click
   authBtn.addEventListener("click", () => {
-    if (window.currentUser) {
-      signOut(auth).catch((error) => console.error("sign out error:", error));
-    } else {
-      signInWithPopup(auth, provider).catch((error) => {
-        console.error("sign in error:", error);
-      });
-    }
+    if (window.currentUser) { signOut(auth).catch((error) => console.error("sign out error:", error)); } 
+    else { signInWithPopup(auth, provider).catch((error) => console.error("sign in error:", error)); }
   });
- // calculates physical distance between two gps coordinates in meters
-function getDistanceMeters(lat1, lon1, lat2, lon2) {
-  const R = 6371e3; // earth radius in meters
-  const rad = Math.PI / 180;
-  const dLat = (lat2 - lat1) * rad;
-  const dLon = (lon2 - lon1) * rad;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
-}
+
+  function getDistanceMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const rad = Math.PI / 180;
+    const dLat = (lat2 - lat1) * rad;
+    const dLon = (lon2 - lon1) * rad;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+  }
+
+  window.suggestStop = async function(lat, lon, stopName) {
+    if (!window.currentUser) { alert("you must sign in to suggest or verify a transit stop."); return; }
+
+    const uid = window.currentUser.uid;
+    const stopsRef = collection(db, "pending_stops");
+    const latDelta = 0.0001; 
+    
+    const q = query(stopsRef, where("lat", ">=", lat - latDelta), where("lat", "<=", lat + latDelta));
+    try {
+      const snapshot = await getDocs(q);
+      let matchedDoc = null;
+
+      snapshot.forEach((document) => {
+        const data = document.data();
+        const distance = getDistanceMeters(lat, lon, data.lat, data.lon);
+        if (distance <= 10) matchedDoc = { id: document.id, ...data };
+      });
+
+      if (matchedDoc) {
+        if (matchedDoc.upvotes.includes(uid)) { alert("you have already verified this stop!"); return; }
+        const docRef = doc(db, "pending_stops", matchedDoc.id);
+        await updateDoc(docRef, { upvotes: arrayUnion(uid) });
+        alert(`verification added! this stop now has ${matchedDoc.upvotes.length + 1} confirmations.`);
+      } else {
+        await addDoc(stopsRef, { name: stopName, lat: lat, lon: lon, createdBy: uid, upvotes: [uid], downvotes: [], timestamp: new Date() });
+        alert("new stop suggested! it will go live once 9 more people verify it.");
+      }
+    } catch (err) { console.error("error suggesting stop:", err); alert("failed to connect to the community database. check console for firebase index links."); }
+  };
 </script>
 </body>
 </html>
