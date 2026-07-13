@@ -15,7 +15,9 @@
   --maroon:#7c3327; --maroon-deep:#5f2419;
   --accent:#e6a817; --accent-deep:#c9900d;
   --paper:#f3ead7; --surface:#fbf6ea; --muted:#7a6a52;
+  --glass:rgba(251,246,234,.88);
   --hair:rgba(72,54,30,.2); --map-bg:#241b11;
+  --shadow:0 10px 30px rgba(43,32,20,.14);
   --sans:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,sans-serif;
   --serif:Georgia,"Iowan Old Style","Palatino Linotype","Times New Roman",serif;
 }
@@ -28,33 +30,37 @@ body{color:var(--ink);font-family:var(--sans);line-height:1.45;
     url("bg-howrah-sketch.jpg") center / cover no-repeat,
     var(--paper);
   background-attachment:fixed}
-.wrap{max-width:680px;margin:0 auto;padding:0 16px 56px;position:relative;z-index:1}
+.wrap{max-width:960px;margin:0 auto;padding:0 14px 44px;position:relative;z-index:1}
 .microlabel{font-size:11px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted)}
-
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(9px) saturate(1.05);
+  backdrop-filter:blur(9px) saturate(1.05)}
 
 /* map app autocomplete styles */
 .autocomplete { position: relative; }
 .autocomplete input {
-  width: 100%; padding: 11px 10px; font: inherit; border: 1px solid var(--hair);
-  border-radius: 7px; background: var(--surface); color: var(--ink);
+  width: 100%; height: 46px; padding: 0 12px; font: inherit; font-size: 15px;
+  border: 1px solid var(--hair); border-radius: 11px;
+  background: var(--surface); color: var(--ink);
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
 .autocomplete input:focus {
-  outline: 2px solid var(--maroon); border-color: var(--maroon);
+  outline: none; border-color: var(--maroon);
+  box-shadow: 0 0 0 3px rgba(124,51,39,.16);
 }
 .sugg-list {
-  position: absolute; top: 100%; left: 0; right: 0; background: var(--surface);
-  border: 1px solid var(--maroon); border-radius: 7px; margin-top: 4px;
-  max-height: 240px; overflow-y: auto; z-index: 100;
-  box-shadow: 0 8px 24px rgba(43,32,20,0.18);
+  position: absolute; top: 100%; left: 0; right: 0;
+  border: 1px solid var(--hair); border-radius: 12px; margin-top: 6px;
+  max-height: 280px; overflow-y: auto; z-index: 100;
+  box-shadow: var(--shadow);
 }
 .sugg-item {
-  padding: 10px 12px; cursor: pointer; border-bottom: 1px solid var(--paper);
+  padding: 10px 13px; cursor: pointer; border-bottom: 1px solid rgba(72,54,30,.09);
   display: flex; flex-direction: column; gap: 2px;
 }
 .sugg-item:last-child { border-bottom: none; }
 .sugg-item:hover { background: var(--paper); }
-.sugg-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.sugg-name { font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .sugg-ward { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .sugg-geo { border-top: 1px dashed var(--hair); }
 .sugg-attrib { font-size: 10px; color: var(--muted); cursor: default; text-align: right; padding: 6px 12px; }
@@ -62,121 +68,186 @@ body{color:var(--ink);font-family:var(--sans);line-height:1.45;
 /* kolkata taxi hint styling */
 .taxi-hint {
   font-size: 11.5px; font-weight: 600; color: #6f5106; background: #f6e0a6;
-  border: 1px solid #d9b13c; border-radius: 6px; padding: 5px 10px;
-  margin: 4px 0 6px 29px; display: inline-block;
+  border: 1px solid #d9b13c; border-radius: 8px; padding: 5px 10px;
+  margin: 4px 0 6px 30px; display: inline-block;
 }
 
 /* masthead */
 header{background:var(--header);color:#f6efdf;border-bottom:4px solid var(--accent);
-  position:relative;z-index:1}
-.mast{max-width:680px;margin:0 auto;padding:30px 16px 20px}
-.mast h1{font-family:var(--serif);font-size:clamp(34px,8vw,52px);font-weight:700;
+  position:relative;z-index:2}
+.mast{max-width:960px;margin:0 auto;padding:20px 14px 14px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.mast h1{font-family:var(--serif);font-size:clamp(30px,6vw,44px);font-weight:700;
   letter-spacing:.01em;line-height:1}
-.mast h1 .bn{color:#cdbb96;font-weight:400;font-size:.55em;vertical-align:middle;margin-left:12px}
-.tag{margin-top:9px;font-family:var(--serif);font-style:italic;font-size:16px;color:#cfc0a1}
-.ticker{margin-top:14px;padding-top:12px;border-top:1px solid rgba(246,239,223,.18);
-  font-size:12.5px;color:#9a8a6b;letter-spacing:.08em}
+.mast h1 .bn{color:#cdbb96;font-weight:400;font-size:.55em;vertical-align:middle;margin-left:10px}
+.tag{margin-top:6px;font-family:var(--serif);font-style:italic;font-size:15px;color:#cfc0a1}
+.mastside{display:flex;align-items:center;gap:10px;padding-bottom:4px}
+.ticker{font-size:12px;color:#9a8a6b;letter-spacing:.08em;text-align:right}
+.pill{border:1px solid rgba(246,239,223,.4);color:#f6efdf;background:transparent;
+  border-radius:99px;padding:8px 15px;font:inherit;font-size:11.5px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;
+  transition:background .15s ease,color .15s ease}
+.pill:hover{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+.offline{background:var(--maroon-deep);color:#f6efdf;text-align:center;
+  font-size:12px;letter-spacing:.04em;padding:6px 12px;position:relative;z-index:2}
 
 /* planner */
-.panel{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
-  padding:16px;margin-top:-22px;box-shadow:0 8px 22px rgba(43,32,20,.12)}
+.panel{border:1px solid var(--hair);border-radius:16px;
+  padding:14px;margin-top:-20px;box-shadow:var(--shadow);position:relative;z-index:3}
 .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-.field{flex:1 1 180px}
-label{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-select{width:100%;padding:11px 10px;font:inherit;border:1px solid var(--hair);
-  border-radius:7px;background:var(--surface);color:var(--ink)}
-#swap{flex:0 0 auto;height:44px;width:44px;border:1px solid var(--hair);
-  border-radius:7px;background:var(--surface);color:var(--ink);cursor:pointer;
-  display:flex;align-items:center;justify-content:center}
+.field{flex:1 1 200px;min-width:0}
+label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);margin:0 2px 6px}
+#swap{flex:0 0 auto;height:46px;width:46px;border:1px solid var(--hair);
+  border-radius:11px;background:var(--surface);color:var(--ink);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s ease,border-color .15s ease,color .15s ease}
 #swap:hover{border-color:var(--maroon);color:var(--maroon)}
-#go{flex:1 1 100%;margin-top:2px;padding:13px;border:0;border-radius:7px;
+#swap:active{transform:rotate(180deg)}
+#go{flex:1 1 100%;height:46px;padding:0 24px;border:0;border-radius:11px;
   background:var(--accent);color:var(--ink);font-family:var(--sans);font-size:13px;
-  font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+  font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 4px 14px rgba(230,168,23,.35);
+  transition:background .15s ease,transform .1s ease,box-shadow .15s ease}
 #go:hover{background:var(--accent-deep)}
-.note{margin:14px 2px 0;font-size:12.5px;color:var(--muted)}
+#go:active{transform:scale(.985)}
+@media (min-width:760px){
+  .row{flex-wrap:nowrap}
+  #go{flex:0 0 auto}
+}
+.note{margin:12px 3px 0;font-size:12px;color:var(--muted)}
 .warn{margin-top:14px;padding:11px 13px;border:1px solid var(--hair);
-  border-left:3px solid var(--accent);border-radius:8px;background:var(--surface);
+  border-left:3px solid var(--accent);border-radius:10px;background:var(--glass);
   font-size:13px;color:var(--ink)}
 
+/* shortcuts: pinned + recent journeys */
+.shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.scut{display:inline-flex;align-items:center;gap:7px;max-width:100%;
+  border:1px solid var(--hair);border-radius:99px;padding:7px 7px 7px 12px;
+  font-size:12.5px;color:var(--ink);cursor:pointer;box-shadow:0 2px 8px rgba(43,32,20,.08);
+  transition:border-color .15s ease,transform .1s ease}
+.scut:hover{border-color:var(--maroon)}
+.scut:active{transform:scale(.98)}
+.scut .ic{color:var(--maroon);font-size:11px}
+.scut .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:52vw}
+.scut .x{width:18px;height:18px;border-radius:99px;display:inline-flex;align-items:center;
+  justify-content:center;color:var(--muted);font-size:13px;line-height:1}
+.scut .x:hover{background:var(--paper);color:var(--maroon)}
+
+/* results header: share + pin */
+.reshead{display:flex;align-items:center;gap:8px;margin:22px 3px 10px}
+.reshead .microlabel{margin-right:auto}
+.gbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--hair);
+  border-radius:99px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;
+  color:var(--ink);cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.gbtn:hover{border-color:var(--maroon);color:var(--maroon)}
+.gbtn.on{background:var(--maroon);border-color:var(--maroon);color:#fbf6ea}
+
 /* route cards */
-#results{margin-top:20px;display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
-  padding:14px 16px;animation:rise .35s ease both;cursor:pointer}
-.card.sel{border-color:var(--maroon);box-shadow:0 0 0 1px var(--maroon)}
+#results{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:720px){#results{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}}
+.card{border:1px solid var(--hair);border-radius:16px;
+  padding:14px 16px;animation:rise .35s ease both;cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+  align-self:start}
+.card:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.card.sel{border-color:var(--maroon);box-shadow:0 0 0 1px var(--maroon),var(--shadow)}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
-.chip{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+.chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;align-items:center}
+.chip{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
   border:1px solid var(--hair);border-radius:99px;padding:3px 10px;color:var(--muted)}
 .chip:first-child{background:var(--maroon);border-color:var(--maroon);color:#fbf6ea}
-.totals{display:flex;align-items:baseline;gap:16px;font-variant-numeric:tabular-nums}
-.stat{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.chev{margin-left:auto;color:var(--muted);transition:transform .25s ease;font-size:12px}
+.card.sel .chev{transform:rotate(180deg)}
+.totals{display:flex;align-items:baseline;gap:14px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.stat{font-size:27px;font-weight:700;letter-spacing:-.01em}
 .stat em{font-style:normal;font-size:13px;font-weight:400;color:var(--muted);margin-left:3px}
-.chg{margin-left:auto;font-size:12.5px;color:var(--muted)}
-.tl{display:flex;gap:2px;height:10px;margin:12px 0 12px}
-.tl span{border-radius:2px;min-width:8px}
-.legs{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--hair);padding-top:12px}
-.leg{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:14px}
-.tile{width:20px;height:20px;border-radius:4px;color:#fff;flex:0 0 auto;
+.arr{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap}
+.sub{margin-top:2px;font-size:12px;color:var(--muted)}
+.tl{display:flex;gap:3px;height:8px;margin:12px 0 0}
+.tl span{border-radius:99px;min-width:8px}
+.details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.card.sel .details{grid-template-rows:1fr}
+.details>div{overflow:hidden}
+.legs{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--hair);
+  padding-top:12px;margin-top:12px}
+.leg{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:13.5px}
+.tile{width:22px;height:22px;border-radius:7px;color:#fff;flex:0 0 auto;
   display:inline-flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:700}
 .linename{font-weight:600;font-size:13px;white-space:nowrap}
 .path{flex:1 1 auto;color:var(--muted)}
 .nums{font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
-.leg-sub{font-size:11.5px;color:var(--muted);margin:-4px 0 0 29px}
+.leg-sub{font-size:11.5px;color:var(--muted);margin:-4px 0 0 30px}
 .approx{margin-top:10px;font-size:11.5px;color:var(--muted)}
 .msg{padding:14px 4px;color:var(--muted)}
 
 /* network map */
 .maphead{display:flex;justify-content:space-between;align-items:baseline;
-  gap:10px;margin:26px 0 10px}
+  gap:10px;margin:24px 3px 10px}
 .maphint{font-size:12px;color:var(--muted)}
 .mapwrap{background:var(--map-bg);border:1px solid rgba(246,239,223,.1);
-  border-radius:10px;padding:10px}
+  border-radius:16px;padding:10px;box-shadow:var(--shadow)}
 .mapwrap svg{display:block;width:100%;height:auto;font-family:var(--sans)}
 .mapmsg{color:#b3a488;font-size:13px;padding:14px}
 
 /* legend + footer */
-.legend{margin-top:20px;display:flex;flex-wrap:wrap;gap:7px}
-.lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);
-  border:1px solid var(--hair);border-radius:99px;padding:4px 10px;background:var(--surface)}
-.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
-footer{margin-top:28px;font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--muted)}
+.legend{margin-top:16px;display:flex;flex-wrap:wrap;gap:7px}
+.lg{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);
+  border:1px solid var(--hair);border-radius:99px;padding:4px 11px;background:var(--glass)}
+.dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--muted)}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);
+  background:var(--header);color:#f6efdf;padding:10px 18px;border-radius:99px;
+  font-size:13px;opacity:0;pointer-events:none;z-index:200;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);transition:opacity .25s ease,transform .25s ease}
+#toast.show{opacity:1;transform:translateX(-50%)}
 
 :focus-visible{outline:2px solid var(--maroon);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.card{animation:none}}
+@media (prefers-reduced-motion:reduce){
+  .card{animation:none}
+  *{transition:none!important}
+}
 </style>
 </head>
 <body>
 <header>
   <div class="mast">
-    <h1>shonjog<span class="bn">সংযোগ</span></h1>
-    <p class="tag">kolkata, untangled</p>
-    <p class="ticker">বাস · ট্রাম · মেট্রো · অটো · ফেরি · রিকশা</p>
+    <div>
+      <h1>shonjog<span class="bn">সংযোগ</span></h1>
+      <p class="tag">kolkata, untangled</p>
+    </div>
+    <div class="mastside">
+      <p class="ticker">বাস · ট্রাম · মেট্রো<br>অটো · ফেরি · রিকশা</p>
+      <button id="install" class="pill" hidden>Install app</button>
+    </div>
   </div>
 </header>
+<div id="offline" class="offline" hidden>Offline — running on saved map data. Search still works; map search doesn't.</div>
 
 <main class="wrap">
-  <section class="panel" aria-label="Journey planner">
+  <section class="panel glass" aria-label="Journey planner">
     <div class="row">
       <div class="field">
         <label for="from-input">From</label>
         <div class="autocomplete">
-          <input type="text" id="from-input" autocomplete="off" placeholder="Search a stop...">
-          <div id="from-list" class="sugg-list" hidden></div>
+          <input type="text" id="from-input" autocomplete="off" placeholder="Stop, address, landmark…">
+          <div id="from-list" class="sugg-list glass" hidden></div>
         </div>
         <input type="hidden" id="from">
       </div>
-      
+
       <button id="swap" aria-label="Swap from and to">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v14"/><path d="M3 7l4-4 4 4"/><path d="M17 21V7"/><path d="M13 17l4 4 4-4"/></svg>
       </button>
-      
+
       <div class="field">
         <label for="to-input">To</label>
         <div class="autocomplete">
-          <input type="text" id="to-input" autocomplete="off" placeholder="Search a stop...">
-          <div id="to-list" class="sugg-list" hidden></div>
+          <input type="text" id="to-input" autocomplete="off" placeholder="Stop, address, landmark…">
+          <div id="to-list" class="sugg-list glass" hidden></div>
         </div>
         <input type="hidden" id="to">
       </div>
@@ -186,8 +257,15 @@ footer{margin-top:28px;font-family:var(--serif);font-style:italic;font-size:12.5
     <p class="note" id="locstatus" hidden></p>
   </section>
 
+  <div id="shortcuts" class="shortcuts" aria-label="Pinned and recent journeys"></div>
+
   <div id="warn" class="warn" hidden></div>
 
+  <div id="reshead" class="reshead" hidden>
+    <span class="microlabel">Routes</span>
+    <button id="pin" class="gbtn" aria-pressed="false">☆ Pin</button>
+    <button id="share" class="gbtn">Share</button>
+  </div>
   <section id="results" aria-live="polite"></section>
 
   <section aria-label="Network map">
@@ -202,6 +280,8 @@ footer{margin-top:28px;font-family:var(--serif);font-style:italic;font-size:12.5
 
   <footer>shonjog is a community demo: one interface tying together Kolkata's buses, trams, metro, autos, ferries and rickshaws. Network data lives in network.json — add your ward.</footer>
 </main>
+
+<div id="toast" role="status"></div>
 
 <script src="engine.js"></script>
 <script>
@@ -308,6 +388,166 @@ async function loadNetwork() {
   return { json: DEFAULT_NETWORK, src: "built-in sample" };
 }
 
+// ---- tiny persistent store (pins + recents) ------------------------------
+const store = {
+  get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+};
+const K_PINS = "sanjog.pins", K_RECENTS = "sanjog.recents";
+
+// A journey endpoint as something we can save and rebuild later.
+function endpointInfo(side) {
+  const id = document.getElementById(side).value;
+  if (!id || !NET.stops[id]) return null;
+  const myLocId = typeof LOC_ID !== "undefined" ? LOC_ID : "_loc";
+  if (id === myLocId) return null;                       // GPS points go stale — don't save
+  const s = NET.stops[id];
+  if (id === PLACE_IDS.from || id === PLACE_IDS.to)
+    return { virtual: true, name: s.name, lat: s.lat, lon: s.lon };
+  return { id, name: s.name };
+}
+const epKey = ep => ep.virtual ? `p:${ep.lat.toFixed(5)},${ep.lon.toFixed(5)}` : ep.id;
+const pairKey = pr => epKey(pr.from) + ">" + epKey(pr.to);
+const currentPair = () => {
+  const f = endpointInfo("from"), t = endpointInfo("to");
+  return f && t ? { from: f, to: t } : null;
+};
+
+function applyEndpoint(side, ep) {
+  const input = document.getElementById(side + "-input");
+  const hidden = document.getElementById(side);
+  if (ep.virtual) {
+    const pid = PLACE_IDS[side];
+    const res = setPlaceNode(NET, pid, ep.name, ep.lat, ep.lon, {});
+    if (!res.ok) { setLocStatus("Can't route there: " + res.reason); return false; }
+    hidden.value = pid; input.value = ep.name; prevSel[side] = pid;
+    setLocStatus(`\u201c${ep.name}\u201d linked to: ` + linkSummary(res.links));
+  } else {
+    if (!NET.stops[ep.id]) { setLocStatus(`"${ep.name}" isn't in the current network data.`); return false; }
+    hidden.value = ep.id; input.value = NET.stops[ep.id].name; prevSel[side] = ep.id;
+  }
+  return true;
+}
+
+function pushRecent(pair) {
+  const pins = store.get(K_PINS, []);
+  if (pins.some(p => pairKey(p) === pairKey(pair))) return;   // pinned already covers it
+  let rec = store.get(K_RECENTS, []).filter(p => pairKey(p) !== pairKey(pair));
+  rec.unshift(pair);
+  store.set(K_RECENTS, rec.slice(0, 5));
+}
+
+function renderShortcuts() {
+  const box = document.getElementById("shortcuts");
+  const pins = store.get(K_PINS, []), rec = store.get(K_RECENTS, []);
+  const chip = (p, i, kind, ic) =>
+    `<span class="scut glass" role="button" tabindex="0" data-kind="${kind}" data-i="${i}">
+       <span class="ic">${ic}</span>
+       <span class="t">${esc(p.from.name)} → ${esc(p.to.name)}</span>
+       <span class="x" data-del="1" title="Remove" aria-label="Remove">×</span>
+     </span>`;
+  box.innerHTML =
+    pins.map((p, i) => chip(p, i, "pin", "★")).join("") +
+    rec.map((p, i) => chip(p, i, "rec", "🕐")).join("");
+}
+
+function runPair(pair) {
+  if (applyEndpoint("from", pair.from) && applyEndpoint("to", pair.to)) render();
+}
+
+// ---- share + deep links ---------------------------------------------------
+const epParam = ep => ep.virtual
+  ? `p:${ep.lat.toFixed(5)},${ep.lon.toFixed(5)},${ep.name}`
+  : ep.id;
+
+function parseEpParam(v) {
+  if (!v) return null;
+  if (v.startsWith("p:")) {
+    const parts = v.slice(2).split(",");
+    const lat = parseFloat(parts[0]), lon = parseFloat(parts[1]);
+    const name = parts.slice(2).join(",").trim() || "Shared place";
+    return isFinite(lat) && isFinite(lon) ? { virtual: true, name, lat, lon } : null;
+  }
+  return NET.stops[v] ? { id: v, name: NET.stops[v].name } : null;
+}
+
+function updateURL(pair) {
+  try {
+    const u = new URL(location.href);
+    if (pair) {
+      u.searchParams.set("from", epParam(pair.from));
+      u.searchParams.set("to", epParam(pair.to));
+    } else { u.searchParams.delete("from"); u.searchParams.delete("to"); }
+    history.replaceState(null, "", u);
+  } catch (e) { }
+}
+
+function applyURLParams() {
+  try {
+    const u = new URL(location.href);
+    const f = parseEpParam(u.searchParams.get("from"));
+    const t = parseEpParam(u.searchParams.get("to"));
+    if (f && t) { applyEndpoint("from", f); applyEndpoint("to", t); return true; }
+  } catch (e) { }
+  return false;
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+async function shareJourney() {
+  const pair = currentPair(), r = currentRoutes[selectedIdx];
+  if (!pair || !r) { toast("Plan a journey first"); return; }
+  const modes = [...new Set(r.legs.filter(l => l.mode !== "walk").map(l => NET.modes[l.mode].label))];
+  const text = `${pair.from.name} → ${pair.to.name}: ~${r.totalMin} min, ₹${r.totalFare}` +
+               (modes.length ? ` via ${modes.join(" + ")}` : "") + " · SANJOG";
+  const url = location.href;
+  if (navigator.share) {
+    try { await navigator.share({ title: "SANJOG journey", text, url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  try {
+    await navigator.clipboard.writeText(text + "\n" + url);
+    toast("Journey link copied");
+  } catch (e) { toast("Couldn't copy — share manually from the address bar"); }
+}
+
+function isPinned(pair) {
+  return store.get(K_PINS, []).some(p => pairKey(p) === pairKey(pair));
+}
+
+function refreshPinButton() {
+  const btn = document.getElementById("pin");
+  const pair = currentPair();
+  const on = !!pair && isPinned(pair);
+  btn.classList.toggle("on", on);
+  btn.setAttribute("aria-pressed", String(on));
+  btn.innerHTML = on ? "★ Pinned" : "☆ Pin";
+}
+
+function togglePin() {
+  const pair = currentPair();
+  if (!pair) { toast("Plan a journey first"); return; }
+  let pins = store.get(K_PINS, []);
+  if (isPinned(pair)) {
+    pins = pins.filter(p => pairKey(p) !== pairKey(pair));
+    toast("Unpinned");
+  } else {
+    pins.unshift(pair);
+    pins = pins.slice(0, 6);
+    store.set(K_RECENTS, store.get(K_RECENTS, []).filter(p => pairKey(p) !== pairKey(pair)));
+    toast("Pinned — it'll wait under the planner");
+  }
+  store.set(K_PINS, pins);
+  refreshPinButton();
+  renderShortcuts();
+}
+
 // ---- custom maps-style autocomplete ---------------------------------------
 function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
@@ -316,7 +556,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
 
   function showSuggestions(query) {
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
-    
+
     let html = `<div class="sugg-item" data-id="${myLocId}">
                   <span class="sugg-name">📍 Use my current location</span>
                 </div>`;
@@ -330,13 +570,13 @@ function setupAutocomplete(inputId, listId, hiddenId) {
       const stop = NET.stops[id];
       const nameLower = stop.name.toLowerCase();
       const matchIdx = nameLower.indexOf(q);
-      
+
       if (matchIdx !== -1) {
         // split the string to bold the exact characters the user typed
         const beforeText = stop.name.substring(0, matchIdx);
         const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
         const afterText = stop.name.substring(matchIdx + q.length);
-        
+
         const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
         const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
         const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
@@ -346,7 +586,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
                  </div>`;
         count++;
       }
-      if (count > 25) break; 
+      if (count > 25) break;
     }
 
     if (count === 0 && q !== "") {
@@ -429,7 +669,7 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   });
 
   input.addEventListener("blur", () => {
-     setTimeout(() => list.hidden = true, 150); 
+     setTimeout(() => list.hidden = true, 150);
      const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
      if (hidden.value && hidden.value !== myLocId && NET.stops[hidden.value]) {
          input.value = NET.stops[hidden.value].name;
@@ -456,7 +696,7 @@ function initSearchFields() {
   setupAutocomplete("from-input", "from-list", "from");
   setupAutocomplete("to-input", "to-list", "to");
 }
-  
+
 function buildLegend() {
   document.getElementById("legend").innerHTML = Object.keys(NET.modes).map(m =>
     `<span class="lg"><span class="dot" style="background:${NET.modes[m].color}"></span>${NET.modes[m].label}</span>`
@@ -523,24 +763,36 @@ function legRow(l) {
     </div>${wait}${suggestion}`;
 }
 
+function arriveAt(totalMin) {
+  try {
+    return new Date(Date.now() + totalMin * 60000)
+      .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  } catch (e) { return ""; }
+}
+
 function card(r, i) {
   const changes = r.boardings - 1;
+  const walkMin = r.legs.filter(l => l.mode === "walk").reduce((s, l) => s + l.min, 0);
   const chips = r.labels.map(t => `<span class="chip">${t}</span>`).join("");
   const segs = r.legs.map(l =>
     `<span style="flex:${l.min};background:${l.color}" title="${l.line}"></span>`).join("");
   const approx = (r.approxMin || r.approxFare)
     ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
-  return `<article class="card${i === selectedIdx ? " sel" : ""}" data-idx="${i}"
+  const eta = arriveAt(r.totalMin);
+  return `<article class="card glass${i === selectedIdx ? " sel" : ""}" data-idx="${i}"
         tabindex="0" role="button" aria-pressed="${i === selectedIdx}"
         style="animation-delay:${i * 70}ms">
-      <div class="chiprow">${chips}</div>
+      <div class="chiprow">${chips}<span class="chev">▾</span></div>
       <div class="totals">
         <span class="stat">${r.approxMin ? "~" : ""}${r.totalMin}<em>min</em></span>
         <span class="stat">${r.approxFare ? "~" : ""}₹${r.totalFare}</span>
-        <span class="chg">${changes === 0 ? "no changes" : changes + (changes > 1 ? " changes" : " change")}</span>
+        ${eta ? `<span class="arr">arrive ~${eta}</span>` : ""}
       </div>
+      <div class="sub">${changes === 0 ? "no changes" : changes + (changes > 1 ? " changes" : " change")}${walkMin ? ` · ~${walkMin} min walking` : ""}</div>
       <div class="tl">${segs}</div>
-      <div class="legs">${r.legs.map(legRow).join("")}</div>${approx}
+      <div class="details"><div>
+        <div class="legs">${r.legs.map(legRow).join("")}</div>${approx}
+      </div></div>
     </article>`;
 }
 
@@ -663,6 +915,7 @@ function render() {
   const from = document.getElementById("from").value;
   const to = document.getElementById("to").value;
   const out = document.getElementById("results");
+  const reshead = document.getElementById("reshead");
   const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
 
   let stale = false;
@@ -674,12 +927,14 @@ function render() {
   if (stale) setLocStatus("");
 
   currentRoutes = []; selectedIdx = 0;
+  reshead.hidden = true;
 
   if (from === to) {
     out.innerHTML = `<p class="msg">${from === myLocId
       ? "You're already there. Pick a stop for the other end."
       : "Pick two different stops to plan a journey."}</p>`;
     renderMap(null);
+    updateURL(null);
     return;
   }
   if (!NET.stops[from] || !NET.stops[to]) {
@@ -691,10 +946,22 @@ function render() {
   if (!currentRoutes.length) {
     out.innerHTML = `<p class="msg">No route found between these stops yet — that's a gap in the network data waiting for a contributor.</p>`;
     renderMap(null);
+    updateURL(null);
     return;
   }
   renderCards();
   renderMap(currentRoutes[0]);
+  reshead.hidden = false;
+  refreshPinButton();
+
+  const pair = currentPair();
+  if (pair) {
+    pushRecent(pair);
+    renderShortcuts();
+    updateURL(pair);
+  } else {
+    updateURL(null);        // journeys from "My location" aren't linkable
+  }
 }
 
 function swapStops() {
@@ -706,6 +973,23 @@ function swapStops() {
 
   const p = prevSel.from; prevSel.from = prevSel.to; prevSel.to = p;
   render();
+}
+
+// ---- install prompt + offline state ---------------------------------------
+let installEvt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  installEvt = e;
+  document.getElementById("install").hidden = false;
+});
+window.addEventListener("appinstalled", () => {
+  installEvt = null;
+  document.getElementById("install").hidden = true;
+  toast("Installed — SANJOG is on your home screen");
+});
+
+function setOnlineState() {
+  document.getElementById("offline").hidden = navigator.onLine !== false;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -729,10 +1013,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   initSearchFields();
   buildLegend();
-  
+  renderShortcuts();
+  setOnlineState();
+  applyURLParams();          // shared links land planned
+
   document.getElementById("go").addEventListener("click", render);
   document.getElementById("swap").addEventListener("click", swapStops);
-  
+  document.getElementById("share").addEventListener("click", shareJourney);
+  document.getElementById("pin").addEventListener("click", togglePin);
+  document.getElementById("install").addEventListener("click", async () => {
+    if (!installEvt) return;
+    installEvt.prompt();
+    await installEvt.userChoice.catch(() => {});
+    installEvt = null;
+    document.getElementById("install").hidden = true;
+  });
+  window.addEventListener("online", setOnlineState);
+  window.addEventListener("offline", setOnlineState);
+
+  const shortcuts = document.getElementById("shortcuts");
+  shortcuts.addEventListener("click", e => {
+    const chipEl = e.target.closest(".scut");
+    if (!chipEl) return;
+    const kind = chipEl.dataset.kind, i = +chipEl.dataset.i;
+    const key = kind === "pin" ? K_PINS : K_RECENTS;
+    const arr = store.get(key, []);
+    if (!arr[i]) return;
+    if (e.target.closest("[data-del]")) {
+      arr.splice(i, 1);
+      store.set(key, arr);
+      renderShortcuts();
+      refreshPinButton();
+      return;
+    }
+    runPair(arr[i]);
+  });
+  shortcuts.addEventListener("keydown", e => {
+    const chipEl = e.target.closest(".scut");
+    if (chipEl && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      chipEl.click();
+    }
+  });
+
   const results = document.getElementById("results");
   results.addEventListener("click", e => {
     const c = e.target.closest(".card");
