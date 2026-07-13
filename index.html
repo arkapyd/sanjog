@@ -378,19 +378,19 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
 <main class="wrap view" id="view-about" hidden>
   <article class="content glass">
     <h2>About us</h2>
-    <p>SANJOG (সংযোগ — "connection") is a community-built journey planner for Kolkata.
+    <p>Shonjog (সংযোগ — "connection") is a community-built journey planner for Kolkata.
     It answers one question the city asks a thousand times a day: <em>from here to there,
     which mix of metro, bus, tram, ferry, auto, local train, rickshaw and plain walking
     actually makes sense — and roughly what will it cost?</em></p>
     <p>Nobody owns the knowledge of how this city moves; it lives with the people who ride
-    it. So all of SANJOG's network knowledge sits in a single open data file that anyone
+    it. So all of Shonjog's network knowledge sits in a single open data file that anyone
     can edit — a ward at a time, a bus route at a time. Timings and fares are indicative,
     marked with a ~ where they're typical estimates rather than measured fact, because
     that's the honest state of the data.</p>
     <p>The app itself is a small, fast web app that installs to your phone and keeps
     working offline once you've visited. Address search is powered by Google; the network
     itself is powered by neighbours.</p>
-    <p class="fineprint">SANJOG is an independent community project. It is not affiliated
+    <p class="fineprint">Shonjog is an independent community project. It is not affiliated
     with WBTC, Metro Railway, Indian Railways or any transport operator. [Edit this page:
     add your story, your team, your contact.]</p>
   </article>
@@ -399,7 +399,7 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
 <main class="wrap view" id="view-careers" hidden>
   <article class="content glass">
     <h2>Careers</h2>
-    <p>SANJOG is community-built, which means our "openings" are ways to leave your mark
+    <p>Shonjog is community-built, which means our "openings" are ways to leave your mark
     on how a city of fifteen million gets around. These are volunteer roles today —
     the pay is gratitude, a credit line, and better commutes for everyone.</p>
     <h3>Ward Data Captain</h3>
@@ -424,7 +424,7 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
 <script src="engine.js"></script>
 <script>
 const DEFAULT_NETWORK = {
-  "name": "shonjog Kolkata sample network",
+  "name": "Shonjog Kolkata sample network",
   "version": "0.4.0",
   "updated": "2026-07-11",
   "modes": {
@@ -573,7 +573,7 @@ const store = {
   get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
 };
-const K_PINS = "sanjog.pins", K_RECENTS = "sanjog.recents";
+const K_PINS = "Shonjog.pins", K_RECENTS = "Shonjog.recents";
 
 // A journey endpoint as something we can save and rebuild later.
 function endpointInfo(side) {
@@ -658,7 +658,7 @@ function updateURL(pair) {
       u.searchParams.set("from", epParam(pair.from));
       u.searchParams.set("to", epParam(pair.to));
     } else { u.searchParams.delete("from"); u.searchParams.delete("to"); }
-    history.replaceState({ sanjog: 1 }, "", u);
+    history.replaceState({ Shonjog: 1 }, "", u);
   } catch (e) { }
 }
 
@@ -669,7 +669,7 @@ function applyURLParams() {
     // the marker survives reloads: params written by THIS tab's own planning are
     // leftovers, so boot clean with placeholders — a pasted/shared link has no
     // marker and still opens fully planned
-    if (history.state && history.state.sanjog) {
+    if (history.state && history.state.Shonjog) {
       u.searchParams.delete("from"); u.searchParams.delete("to");
       history.replaceState(null, "", u);
       return false;
@@ -695,10 +695,10 @@ async function shareJourney() {
   if (!pair || !r) { toast("Plan a journey first"); return; }
   const modes = [...new Set(r.legs.filter(l => l.mode !== "walk").map(l => NET.modes[l.mode].label))];
   const text = `${pair.from.name} → ${pair.to.name}: ~${r.totalMin} min, ₹${r.totalFare}` +
-               (modes.length ? ` via ${modes.join(" + ")}` : "") + " · SANJOG";
+               (modes.length ? ` via ${modes.join(" + ")}` : "") + " · Shonjog";
   const url = location.href;
   if (navigator.share) {
-    try { await navigator.share({ title: "SANJOG journey", text, url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.share({ title: "Shonjog journey", text, url }); return; } catch (e) { if (e && e.name === "AbortError") return; }
   }
   try {
     await navigator.clipboard.writeText(text + "\n" + url);
@@ -1287,7 +1287,7 @@ window.addEventListener("beforeinstallprompt", e => {
 window.addEventListener("appinstalled", () => {
   installEvt = null;
   document.getElementById("install").hidden = true;
-  toast("Installed — SANJOG is on your home screen");
+  toast("Installed — Shonjog is on your home screen");
 });
 
 function setOnlineState() {
