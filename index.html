@@ -300,6 +300,7 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
     <div class="mastside">
       <p class="ticker">বাস · ট্রাম · মেট্রো<br>অটো · ফেরি · রিকশা</p>
       <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">🌙</button>
+      <button id="auth-btn" class="pill" style="background: var(--maroon); border-color: var(--maroon); color: #fff;">sign in</button>
       <button id="install" class="pill" hidden>Install app</button>
     </div>
   </div>
@@ -1434,5 +1435,53 @@ document.addEventListener("DOMContentLoaded", async () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
 });
 </script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYSTlGhWgak3ZuEkjwi_bnfkfa1uYqpy8",
+    authDomain: "sanjog-52f21.firebaseapp.com",
+    projectId: "sanjog-52f21",
+    storageBucket: "sanjog-52f21.firebasestorage.app",
+    messagingSenderId: "956545006676",
+    appId: "1:956545006676:web:ff12acd0538d3be69d41c1",
+    measurementId: "G-5W0CY95QYC"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  const authBtn = document.getElementById("auth-btn");
+  
+  // global state for your other scripts to check if someone can drop a pin
+  window.currentUser = null; 
+
+  // listen for login/logout changes
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      window.currentUser = user;
+      authBtn.textContent = "sign out";
+      authBtn.style.background = "var(--surface)";
+      authBtn.style.color = "var(--ink)";
+      authBtn.style.borderColor = "var(--hair)";
+      // optional: you can trigger your existing toast here
+      // toast(`welcome, ${user.displayName.split(' ')[0]}`);
+    } else {
+      window.currentUser = null;
+      authBtn.textContent = "sign in";
+      authBtn.style.background = "var(--maroon)";
+      authBtn.style.color = "#fff";
+      authBtn.style.borderColor = "var(--maroon)";
+    }
+</script>            
 </body>
 </html>
