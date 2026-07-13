@@ -72,11 +72,21 @@ html.dark {
 }
 html.dark body { background-blend-mode: overlay; }
 body { transition: background-color 0.3s ease, color 0.3s ease; }
-.theme-btn { padding: 6px 12px; font-size: 14px; background: transparent; border: 1px solid var(--hair); border-radius: 99px; cursor: pointer; color: var(--ink); }
 
-/* sticky scroll pill */
+/* fix garish white browser-default buttons */
+.gbtn, .scut, .theme-btn { 
+  background: var(--surface); color: var(--ink); 
+  border: 1px solid var(--hair); transition: all 0.2s ease;
+}
+#go { color: #2b2014 !important; }
+.theme-btn { padding: 6px 12px; font-size: 14px; border-radius: 99px; cursor: pointer; }
+.scut.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
+
+/* sticky scroll pill (the ribbon) - forced to pale beige in dark mode */
+html.dark #sticky-pill { background: #f3ead7; color: #2b2014; border-color: #d9ccb4; }
 #sticky-pill {
   position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
+  background: var(--glass);
   padding: 8px 18px; border-radius: 99px; border: 1px solid var(--hair);
   z-index: 999; font-size: 12.5px; font-weight: 600; box-shadow: var(--shadow);
   transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
@@ -85,8 +95,6 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
 
 /* sorters */
 .sorters { display: flex; gap: 8px; margin: 0 4px 16px; }
-.sorters .scut.active { background: var(--maroon); border-color: var(--maroon); color: #fff; }
-
 /* kolkata taxi hint styling */
 .taxi-hint {
   font-size: 11.5px; font-weight: 600; color: #6f5106; background: #f6e0a6;
@@ -826,18 +834,18 @@ function card(r, i) {
   const changes = r.boardings - 1;
   const walkMin = r.legs.filter(l => l.mode === "walk").reduce((s, l) => s + l.min, 0);
   const chips = r.labels.map(t => `<span class="chip">${t}</span>`).join("");
-  const segs = r.legs.map(l =>
-    `<span style="flex:${l.min};background:${l.color}" title="${l.line}"></span>`).join("");
+  const segs = r.legs.map(l => `<span style="flex:${l.min};background:${l.color}" title="${l.line}"></span>`).join("");
+  
   const approx = (r.approxMin || r.approxFare)
     ? `<div class="approx">~ marks typical estimates — exact data pending for that stretch.</div>` : "";
   const eta = arriveAt(r.totalMin);
 
-  // Late night bus warning
+  // late night bus warning (now using the pale beige ribbon style)
   const hr = new Date().getHours();
   const isNight = hr >= 22 || hr <= 4;
   const hasBus = r.legs.some(l => l.mode === "bus");
   const nightWarn = (isNight && hasBus) 
-    ? `<div class="taxi-hint" style="background:var(--maroon-deep); color:#fff; border:none; margin-bottom:8px;">⚠️ Buses are highly infrequent at this hour. Expect delays.</div>` 
+    ? `<div class="taxi-hint" style="margin-bottom:8px; display:block;">⚠️ Buses are highly infrequent at this hour. Expect delays.</div>` 
     : "";
 
   return `<article class="card glass${i === selectedIdx ? " sel" : ""}" data-idx="${i}"
@@ -845,10 +853,6 @@ function card(r, i) {
         style="animation-delay:${i * 70}ms">
       <div class="chiprow">${chips}<span class="chev">▾</span></div>
       ${nightWarn}
-      <div class="totals">
-        tabindex="0" role="button" aria-pressed="${i === selectedIdx}"
-        style="animation-delay:${i * 70}ms">
-      <div class="chiprow">${chips}<span class="chev">▾</span></div>
       <div class="totals">
         <span class="stat">${r.approxMin ? "~" : ""}${r.totalMin}<em>min</em></span>
         <span class="stat">${r.approxFare ? "~" : ""}₹${r.totalFare}</span>
