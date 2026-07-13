@@ -1436,27 +1436,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 </script>
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  // import modern firebase v10 tools from the cdn
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  // replace this with your actual keys from the firebase console
   const firebaseConfig = {
     apiKey: "AIzaSyAYSTlGhWgak3ZuEkjwi_bnfkfa1uYqpy8",
     authDomain: "sanjog-52f21.firebaseapp.com",
     projectId: "sanjog-52f21",
     storageBucket: "sanjog-52f21.firebasestorage.app",
     messagingSenderId: "956545006676",
-    appId: "1:956545006676:web:ff12acd0538d3be69d41c1",
-    measurementId: "G-5W0CY95QYC"
+    appId: "1:956545006676:web:ff12acd0538d3be69d41c1"
   };
 
-  // Initialize Firebase
+  // initialize firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
@@ -1482,6 +1477,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       authBtn.style.color = "#fff";
       authBtn.style.borderColor = "var(--maroon)";
     }
-</script>            
+  });
+
+  // handle the button click
+  authBtn.addEventListener("click", () => {
+    if (window.currentUser) {
+      signOut(auth).catch((error) => console.error("sign out error:", error));
+    } else {
+      signInWithPopup(auth, provider).catch((error) => {
+        console.error("sign in error:", error);
+      });
+    }
+  });
+</script>
 </body>
 </html>
