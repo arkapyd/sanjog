@@ -13,7 +13,7 @@
 <meta property="og:title" content="shonjog · kolkata, untangled">
 <meta property="og:description" content="One interface for Kolkata's buses, trams, metro, autos, ferries and rickshaws.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://arkapyd.github.io/sanjog/">
+<meta property="og:url" content="https://arkapyd.github.io//">
 <meta property="og:image" content="https://arkapyd.github.io/sanjog/social-preview.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://arkapyd.github.io/sanjog/social-preview.png">
@@ -1133,6 +1133,21 @@ function loadGoogleMaps() {
 
 function initGMap() {
   gmap = new google.maps.Map(document.getElementById("map"), {
+    // listen for right-click / long-press to drop a community pin
+  gmap.addListener("contextmenu", (e) => {
+    const lat = e.latLng.lat();
+    const lon = e.latLng.lng();
+    
+    // basic browser prompt for the name. you can replace this with a beautiful modal later.
+    const stopName = prompt("suggest a new transit stop here:\nwhat is the name of this stop?");
+    
+    if (stopName && stopName.trim() !== "") {
+      // call the firebase function we just built
+      if (window.suggestStop) {
+        window.suggestStop(lat, lon, stopName.trim());
+      }
+    }
+  });
     center: KOLKATA_CENTER, zoom: 11, styles: SEPIA_STYLE,
     mapTypeControl: false, streetViewControl: false, fullscreenControl: true,
     gestureHandling: "cooperative"
@@ -1362,7 +1377,72 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderCards();
     renderMap(currentRoutes[0]);
   });
+  window.suggestStop = async function(lat, lon, stopName) {
+  if (!window.currentUser) {
+    alert("you must sign in to suggest or verify a transit stop.");
+    return;
+  }
 
+  const uid = window.currentUser.uid;
+  const stopsRef = collection(db, "pending_stops");
+  
+  // ~10 meters is roughly 0.00009 degrees of latitude.
+  // we pad it slightly to 0.0001 to cast a net.
+  const latDelta = 0.0001; 
+  
+  // 1. query the database for anything roughly in this latitude band
+  const q = query(stopsRef, 
+    where("lat", ">=", lat - latDelta), 
+    where("lat", "<=", lat + latDelta)
+  );
+
+  try {
+    const snapshot = await getDocs(q);
+    let matchedDoc = null;
+
+    // 2. check the exact physical distance of the results
+    snapshot.forEach((document) => {
+      const data = document.data();
+      const distance = getDistanceMeters(lat, lon, data.lat, data.lon);
+      
+      // if we find a pending stop within 10 meters, it's a cluster match
+      if (distance <= 10) {
+        matchedDoc = { id: document.id, ...data };
+      }
+    });
+
+    if (matchedDoc) {
+      // 3a. CLUSTER MATCH: add an upvote instead of a new pin
+      if (matchedDoc.upvotes.includes(uid)) {
+        alert("you have already verified this stop!");
+        return;
+      }
+      
+      const docRef = doc(db, "pending_stops", matchedDoc.id);
+      await updateDoc(docRef, {
+        upvotes: arrayUnion(uid)
+      });
+      alert(`verification added! this stop now has ${matchedDoc.upvotes.length + 1} confirmations.`);
+      
+    } else {
+      // 3b. NO MATCH: create a brand new pending stop
+      await addDoc(stopsRef, {
+        name: stopName,
+        lat: lat,
+        lon: lon,
+        createdBy: uid,
+        upvotes: [uid], // you automatically upvote your own submission
+        downvotes: [],
+        timestamp: new Date()
+      });
+      alert("new stop suggested! it will go live once 9 more people verify it.");
+    }
+    
+  } catch (err) {
+    console.error("error suggesting stop:", err);
+    alert("failed to connect to the community database.");
+  }
+};
   initSearchFields();
   buildLegend();
   renderShortcuts();
@@ -1439,6 +1519,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // import modern firebase v10 tools from the cdn
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, arrayUnion, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
   // replace this with your actual keys from the firebase console
   const firebaseConfig = {
@@ -1454,7 +1535,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-
+  const db = getFirestore(app); // initialize the database
   const authBtn = document.getElementById("auth-btn");
   
   // global state for your other scripts to check if someone can drop a pin
@@ -1489,6 +1570,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     }
   });
+ // calculates physical distance between two gps coordinates in meters
+function getDistanceMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // earth radius in meters
+  const rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad;
+  const dLon = (lon2 - lon1) * rad;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
 </script>
 </body>
 </html>
