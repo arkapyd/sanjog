@@ -228,7 +228,7 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
 </style>
 </head>
 <body>
-<div id="sticky-pill" class="glass">📍 From → To</div>
+<div id="sticky-pill" class="glass"> From → To</div>
 
 <header>
   <div class="mast">
@@ -291,9 +291,9 @@ footer{margin-top:26px;font-family:var(--serif);font-style:italic;font-size:12.5
   </div>
   
   <div id="sorters" class="sorters" hidden>
-    <button class="scut active" data-sort="fast">⚡ Fastest</button>
-    <button class="scut" data-sort="cheap">🪙 Cheapest</button>
-    <button class="scut" data-sort="walk">🚶 Least Walk</button>
+    <button class="scut active" data-sort="fast"> Fastest</button>
+    <button class="scut" data-sort="cheap"> Cheapest</button>
+    <button class="scut" data-sort="walk"> Least Walk</button>
   </div>
 
   <section id="results" aria-live="polite"></section>
@@ -443,8 +443,8 @@ function pushRecent(pair) {
 function renderShortcuts() {
   const box = document.getElementById("shortcuts");
   const pins = store.get(K_PINS, []), rec = store.get(K_RECENTS, []);
-  const chip = (p, i, kind, ic) => `<span class="scut glass" role="button" tabindex="0" data-kind="${kind}" data-i="${i}"><span class="ic">${ic}</span><span class="t">${esc(p.from.name)} → ${esc(p.to.name)}</span><span class="x" data-del="1" title="Remove" aria-label="Remove">×</span></span>`;
-  box.innerHTML = pins.map((p, i) => chip(p, i, "pin", "★")).join("") + rec.map((p, i) => chip(p, i, "rec", "🕐")).join("");
+  const chip = (p, i, kind, label) => `<span class="scut glass" role="button" tabindex="0" data-kind="${kind}" data-i="${i}">${label ? `<span class="ic" style="font-weight:700;">${label}</span>` : ''}<span class="t">${esc(p.from.name)} → ${esc(p.to.name)}</span><span class="x" data-del="1" title="Remove" aria-label="Remove">×</span></span>`;
+box.innerHTML = pins.map((p, i) => chip(p, i, "pin", "PINNED")).join("") + rec.map((p, i) => chip(p, i, "rec", "")).join("");
 }
 
 function runPair(pair) { if (applyEndpoint("from", pair.from) && applyEndpoint("to", pair.to)) render(); }
@@ -658,12 +658,31 @@ function legRow(l) {
   const wait = l.wait ? `<div class="leg-sub">incl. ~${l.wait} min wait</div>` : "";
   let suggestion = "";
   if (l.mode === "walk" && l.min > 15) { suggestion = `<div class="taxi-hint">Long walk (${l.min} min) — hailing a yellow taxi or rickshaw here is recommended.</div>`; }
+  
+  let altHtml = "";
+  if (l.mode !== "walk" && NET.rawEdges) {
+     const alts = NET.rawEdges.filter(e => ((e.from === l.from && e.to === l.to) || (e.from === l.to && e.to === l.from)) && e.mode !== l.mode && e.mode !== "walk");
+     const seenModes = new Set();
+     alts.forEach(a => {
+        if (!seenModes.has(a.mode)) {
+           seenModes.add(a.mode);
+           const modeDef = NET.modes[a.mode];
+           altHtml += `<div class="leg" style="opacity:0.8; margin-top:4px; transform-origin:left; transform:scale(0.95);">
+              <span class="tile" style="background:${modeDef.color}">${modeDef.icon}</span>
+              <span class="linename">Or ${modeDef.label}</span>
+              <span class="path" style="flex:1 1 auto;"></span>
+              <span class="nums">${a.minApprox ? "~" : ""}${a.min} min · ${a.fare ? (a.fareApprox ? "~₹" : "₹") + a.fare : "free"}</span>
+            </div>`;
+        }
+     });
+  }
+
   return `<div class="leg">
       <span class="tile" style="background:${l.color || '#98a0a8'}">${NET.modes[l.mode].icon}</span>
       <span class="linename">${l.line || "Walk"}</span>
       <span class="path">${NET.stops[l.from].name} → ${NET.stops[l.to].name}</span>
       <span class="nums">${l.minApprox ? "~" : ""}${l.min + (l.wait || 0)} min · ${l.fare ? (l.fareApprox ? "~₹" : "₹") + l.fare : "free"}</span>
-    </div>${wait}${suggestion}`;
+    </div>${wait}${altHtml}${suggestion}`;
 }
 
 function arriveAt(totalMin) { try { return new Date(Date.now() + totalMin * 60000).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); } catch (e) { return ""; } }
@@ -821,6 +840,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const { json, src } = await loadNetwork();
   const issues = validateNetwork(json);
   NET = buildNetwork(json);
+  NET.rawEdges = json.edges || []; // expose edges to the renderer for alternatives
   const stopCount = Object.keys(NET.stops).length;
   const v = NET.meta.version ? "v" + NET.meta.version + " · " : "";
   const upd = NET.meta.updated ? " · updated " + NET.meta.updated : "";
