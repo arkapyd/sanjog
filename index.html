@@ -209,7 +209,8 @@ label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-t
 .maphint{font-size:12px;color:var(--muted)}
 .mapwrap{background:var(--map-bg);border:1px solid rgba(246,239,223,.1);border-radius:16px;padding:6px;box-shadow:var(--shadow);position:relative}
 #map{height:min(460px,58vh);border-radius:12px;overflow:hidden}
-.mapmsg{color:#b3a488;font-size:13px;line-height:1.55;padding:24px;position:absolute;inset:6px;display:flex;align-items:center;justify-content:center;text-align:center;margin:0}
+.mapmsg{color:#b3a488;font-size:13px;line-height:1.55;padding:24px;position:absolute;inset:6px;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;pointer-events:none}
+.mapmsg[hidden]{display:none!important}
 .mapmsg::before{content:"";position:absolute;inset:0;background:var(--map-bg);z-index:-1;border-radius:12px}
 
 /* legend + footer */
@@ -749,17 +750,17 @@ function drawRoute(route) {
   for (const l of route.legs) {
     const a = toLL(l.from), b = toLL(l.to); if (!a || !b) continue;
     const walk = l.mode === "walk";
-    gOverlays.push(new google.maps.Polyline({ map: gmap, path: [a, b], geodesic: false, strokeColor: l.color || "#7c3327", strokeOpacity: walk ? 0 : 0.95, strokeWeight: 5, icons: walk ? [{ icon: { path: "M 0,-1 0,1", strokeOpacity: .9, strokeColor: l.color || "#98a0a8", scale: 3 }, offset: "0", repeat: "13px" }] : null, zIndex: 5 }));
+    gOverlays.push(new google.maps.Polyline({ map: gmap, path: [a, b], geodesic: false, strokeColor: l.color || "#7c3327", strokeOpacity: walk ? 0 : 0.95, strokeWeight: 5, clickable: false, icons: walk ? [{ icon: { path: "M 0,-1 0,1", strokeOpacity: .9, strokeColor: l.color || "#98a0a8", scale: 3 }, offset: "0", repeat: "13px" }] : null, zIndex: 5 }));
     bounds.extend(a); bounds.extend(b); drew++;
   }
   if (!drew) { mapNote("This route's stops have no coordinates yet — add lat/lon in network.json."); return; }
   mapNote("");
   const first = route.legs[0], last = route.legs[route.legs.length - 1];
-  const mk = (pos, label, title) => pos && gOverlays.push(new google.maps.Marker({ map: gmap, position: pos, title, label: { text: label, color: "#fbf6ea", fontWeight: "700", fontSize: "12px" } }));
+  const mk = (pos, label, title) => pos && gOverlays.push(new google.maps.Marker({ map: gmap, position: pos, title, clickable: false, label: { text: label, color: "#fbf6ea", fontWeight: "700", fontSize: "12px" } }));
   mk(toLL(first.from), "A", NET.stops[first.from].name); mk(toLL(last.to), "B", NET.stops[last.to].name);
   for (let i = 1; i < route.legs.length; i++) {
     const pos = toLL(route.legs[i].from); if (!pos) continue;
-    gOverlays.push(new google.maps.Marker({ map: gmap, position: pos, title: NET.stops[route.legs[i].from].name, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 5.5, fillColor: "#fbf6ea", fillOpacity: 1, strokeColor: "#241b11", strokeWeight: 2 }, zIndex: 6 }));
+    gOverlays.push(new google.maps.Marker({ map: gmap, position: pos, title: NET.stops[route.legs[i].from].name, clickable: false, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 5.5, fillColor: "#fbf6ea", fillOpacity: 1, strokeColor: "#241b11", strokeWeight: 2 }, zIndex: 6 }));
   }
   gmap.fitBounds(bounds, { top: 48, bottom: 48, left: 48, right: 48 });
 }
