@@ -395,11 +395,26 @@ async function googlePlaces(q) {
   return ((await r.json()).places || []).map(p => ({ name: (p.displayName && p.displayName.text) || String(p.formattedAddress || "").split(",")[0].trim() || "Unnamed place", detail: String(p.formattedAddress || "").split(",").slice(0, 3).join(",").trim(), lat: p.location && p.location.latitude, lon: p.location && p.location.longitude })).filter(p => isFinite(p.lat) && isFinite(p.lon));
 }
 
+const mapNominatim = arr => arr.map(p => ({ name: p.name || String(p.display_name || "").split(",")[0].trim() || "Unnamed place", detail: String(p.display_name || "").split(",").slice(1, 4).join(",").trim(), lat: parseFloat(p.lat), lon: parseFloat(p.lon) })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+
 async function nominatim(q) {
-  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=in&bounded=1&viewbox=" + GEO_VIEWBOX + "&accept-language=en&q=" + encodeURIComponent(q);
-  const r = await fetch(url, { headers: { "Accept": "application/json" } });
-  if (!r.ok) throw new Error("geocoder replied " + r.status);
-  return (await r.json()).map(p => ({ name: p.name || String(p.display_name || "").split(",")[0].trim() || "Unnamed place", detail: String(p.display_name || "").split(",").slice(1, 4).join(",").trim(), lat: parseFloat(p.lat), lon: parseFloat(p.lon) })).filter(p => isFinite(p.lat) && isFinite(p.lon));
+  // OSM wants near-exact names, so climb a ladder: exact inside the Kolkata box,
+  // then the box as a bias only, then with ", Kolkata" appended. The waits
+  // between rungs respect Nominatim's 1-request/second policy.
+  const base = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=in&accept-language=en";
+  const tries = [
+    base + "&bounded=1&viewbox=" + GEO_VIEWBOX + "&q=" + encodeURIComponent(q),
+    base + "&viewbox=" + GEO_VIEWBOX + "&q=" + encodeURIComponent(q),
+    base + "&viewbox=" + GEO_VIEWBOX + "&q=" + encodeURIComponent(q + ", Kolkata")
+  ];
+  for (let i = 0; i < tries.length; i++) {
+    if (i) await new Promise(r => setTimeout(r, 450));
+    const r = await fetch(tries[i], { headers: { "Accept": "application/json" } });
+    if (!r.ok) throw new Error("geocoder replied " + r.status);
+    const out = mapNominatim(await r.json());
+    if (out.length) return out;
+  }
+  return [];
 }
 
 async function geocode(q) {
@@ -543,72 +558,142 @@ function setupAutocomplete(inputId, listId, hiddenId) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
   const hidden = document.getElementById(hiddenId);
-  let debounceTimer;
+  let debounceTimer, sessTok = null;
 
-  async function showSuggestions(query) {
+  function showSuggestions(query) {
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
     let html = `<div class="sugg-item" data-id="${myLocId}"><span class="sugg-name">📍 Use my current location</span></div>`;
     const q = query.trim().toLowerCase();
-    let localCount = 0;
 
+    // 1. INSTANT LOCAL SEARCH — tokenised + tiered: stops matching most words sit
+    // above Google; one-word grazes drop below the Google results
+    const tokens = q.split(/\s+/).filter(w => w.length >= 3);
+    const strongNeed = Math.min(2, Math.max(tokens.length, 1));
+    let strongHtml = "", weakHtml = "", strongN = 0, weakN = 0;
     if (q !== "") {
-      const sortedIds = Object.keys(NET.stops).filter(id => id !== myLocId).sort((a,b) => NET.stops[a].name.localeCompare(NET.stops[b].name));
-      for (const id of sortedIds) {
+      const stopRow = (id) => {
         const stop = NET.stops[id];
         const nameLower = stop.name.toLowerCase();
-        const matchIdx = nameLower.indexOf(q);
-
-        if (matchIdx !== -1) {
-          const beforeText = stop.name.substring(0, matchIdx);
-          const matchedText = stop.name.substring(matchIdx, matchIdx + q.length);
-          const afterText = stop.name.substring(matchIdx + q.length);
-          const highlightedName = `${beforeText}<b>${matchedText}</b>${afterText}`;
-          const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
-          const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
-
-          html += `<div class="sugg-item" data-id="${id}"><span class="sugg-name">${highlightedName}${localityHtml}</span></div>`;
-          localCount++;
-        }
-        if (localCount > 8) break; 
+        const first = (tokens.find(w => nameLower.includes(w)) || q);
+        const matchIdx = nameLower.indexOf(first);
+        const highlightedName = matchIdx === -1 ? esc(stop.name) :
+          `${esc(stop.name.substring(0, matchIdx))}<b>${esc(stop.name.substring(matchIdx, matchIdx + first.length))}</b>${esc(stop.name.substring(matchIdx + first.length))}`;
+        const locality = stop.ward && stop.ward !== "Kolkata" ? stop.ward : "";
+        const localityHtml = locality ? `<span style="font-weight:400; color:var(--muted); font-size:12px; margin-left:6px;">· ${locality}</span>` : "";
+        return `<div class="sugg-item" data-id="${id}"><span class="sugg-name">${highlightedName}${localityHtml}</span></div>`;
+      };
+      const scored = [];
+      for (const id in NET.stops) {
+        if (id === myLocId) continue;
+        const nameLower = NET.stops[id].name.toLowerCase();
+        let score = 0;
+        if (tokens.length) { for (const w of tokens) if (nameLower.includes(w)) score++; }
+        else if (nameLower.includes(q)) score = 1;
+        if (score > 0) scored.push({ id, score, exact: nameLower.startsWith(q) ? 1 : 0,
+          starts: nameLower.startsWith(tokens[0] || q) ? 1 : 0 });
       }
+      scored.sort((a, b) => b.score - a.score || b.exact - a.exact || b.starts - a.starts ||
+        NET.stops[a.id].name.localeCompare(NET.stops[b.id].name));
+      for (const hit of scored) {
+        const strong = hit.exact || hit.score >= strongNeed;
+        if (strong && strongN < 6) { strongHtml += stopRow(hit.id); strongN++; }
+        else if (!strong && weakN < 3) { weakHtml += stopRow(hit.id); weakN++; }
+        if (strongN >= 6 && weakN >= 3) break;
+      }
+      html += strongHtml;
     }
-
-    if (localCount === 0 && q !== "") { html = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No local stops found.</span></div>`; }
+    if (!strongN && !weakN && q !== "") { html += `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">No local stops found.</span></div>`; }
     if (q.length >= 3) { html += `<div id="${inputId}-g-loading" class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Searching Google Maps...</span></div>`; }
-    
-    list.innerHTML = html; list.hidden = false;
 
+    const preHtml = html;                 // my-location + strong locals (+ note + loading slot)
+    list.innerHTML = preHtml + weakHtml;  // weak grazes wait below the loading slot
+    list.hidden = false;
+
+    // 2. BACKGROUND GOOGLE SEARCH — 400ms debounce; live Autocomplete (session
+    // tokens, ~free) first, your Text Search -> OSM flow as the automatic fallback
     if (q.length >= 3) {
-      try {
-        const places = await geocode(q);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(async () => {
         if (input.value.trim().toLowerCase() !== q) return;
-        const loadingMsg = document.getElementById(`${inputId}-g-loading`);
-        if (loadingMsg) loadingMsg.remove();
-
-        let gHtml = "";
-        if (places && places.length > 0) {
-          places.forEach(p => { gHtml += `<div class="sugg-item" data-place="1" data-lat="${p.lat}" data-lon="${p.lon}" data-name="${esc(p.name)}"><span class="sugg-name">🌍 ${esc(p.name)}</span><span class="sugg-ward" style="text-transform:none;">${esc(p.detail)}</span></div>`; });
-        } else {
-          gHtml += `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}"</div>`;
+        try {
+          let gRows = "", credit = "";
+          let liveOK = false;
+          if (Date.now() >= gAutoRetryAt) {
+            try {
+              if (!sessTok) sessTok = uuid();
+              const sugg = await googleAutocomplete(q, sessTok);
+              if (input.value.trim().toLowerCase() !== q) return;
+              if (sugg.length) {
+                sugg.forEach(sg => { gRows += `<div class="sugg-item" data-gpid="${esc(sg.placeId)}" data-gname="${esc(sg.main)}"><span class="sugg-name">🌍 ${esc(sg.main)}</span><span class="sugg-ward" style="text-transform:none;">${esc(sg.secondary)}</span></div>`; });
+              } else {
+                gRows += `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}"</div>`;
+              }
+              credit = `<div class="sugg-item sugg-attrib">Powered by Google</div>`;
+              liveOK = true;
+            } catch (err) {
+              console.warn("Live suggestions unavailable, using one-shot map search (retrying in 60s):", err);
+              gAutoRetryAt = Date.now() + 60000;
+            }
+          }
+          if (!liveOK) {
+            const places = await geocode(q);
+            if (input.value.trim().toLowerCase() !== q) return;
+            if (places && places.length > 0) {
+              places.forEach(pl => { gRows += `<div class="sugg-item" data-place="1" data-lat="${pl.lat}" data-lon="${pl.lon}" data-name="${esc(pl.name)}"><span class="sugg-name">🌍 ${esc(pl.name)}</span><span class="sugg-ward" style="text-transform:none;">${esc(pl.detail)}</span></div>`; });
+            } else {
+              gRows += lastGeoSource === "osm"
+                ? `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}" — Google search is unavailable right now (see the map panel), and the OpenStreetMap fallback needs near-exact names. Try the official name or a nearby landmark.</div>`
+                : `<div class="sugg-item sugg-attrib">Nothing found for "${esc(q)}"</div>`;
+            }
+            credit = `<div class="sugg-item sugg-attrib">${lastGeoSource === "google" ? "Powered by Google" : "Limited search © OpenStreetMap"}</div>`;
+          }
+          // final order: my-location · strong locals · Google · weak grazes · credit
+          list.innerHTML = preHtml.replace(/<div id="[^"]*-g-loading".*?<\/div>/s, "") + gRows + weakHtml + credit;
+        } catch (err) {
+           const loadingMsg = document.getElementById(`${inputId}-g-loading`);
+           if (loadingMsg) { loadingMsg.innerHTML = `<span class="sugg-ward" style="text-transform:none; color:#d93838; font-weight:bold;">Map search failed — connection or key restrictions (console has details).</span>`; }
         }
-        gHtml += `<div class="sugg-item sugg-attrib">${lastGeoSource === "google" ? "Powered by Google" : "Search © OpenStreetMap"}</div>`;
-        list.innerHTML += gHtml;
-      } catch (err) {
-         const loadingMsg = document.getElementById(`${inputId}-g-loading`);
-         if (loadingMsg) { loadingMsg.innerHTML = `<span class="sugg-ward" style="text-transform:none; color:#d93838; font-weight:bold;">Map API Error (Check Console for 403)</span>`; }
-      }
+      }, 400);
     }
   }
 
-  input.addEventListener("input", (e) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => showSuggestions(e.target.value), 400); 
-  });
+  // local stop matches render instantly; only the Google call inside is debounced
+  input.addEventListener("input", (e) => showSuggestions(e.target.value));
   input.addEventListener("focus", () => { input.select(); showSuggestions(input.value); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    if (list.hidden) return;
+    const row = list.querySelector("[data-gpid]") || list.querySelector("[data-place]");
+    if (row) row.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+  });
   list.addEventListener("mousedown", async (e) => {
     const item = e.target.closest(".sugg-item");
     if (!item) return;
     const myLocId = typeof LOC_ID !== 'undefined' ? LOC_ID : "_loc";
+
+    if (item.dataset.gpid) {
+      e.preventDefault();
+      const tok = sessTok || uuid();
+      sessTok = null;
+      input.value = item.dataset.gname;
+      list.innerHTML = `<div class="sugg-item"><span class="sugg-ward" style="text-transform:none;">Pinning "${esc(item.dataset.gname)}"…</span></div>`;
+      try {
+        const pl = await googlePlaceLocation(item.dataset.gpid, tok);
+        if (!isFinite(pl.lat) || !isFinite(pl.lon)) throw new Error("no coordinates");
+        const pid = PLACE_IDS[hiddenId];
+        const res = setPlaceNode(NET, pid, pl.name, pl.lat, pl.lon, {});
+        list.hidden = true;
+        if (!res.ok) { setLocStatus("Can't route there: " + res.reason); return; }
+        hidden.value = pid; input.value = pl.name; prevSel[hiddenId] = pid;
+        setLocStatus(`"${pl.name}" linked to: ` + linkSummary(res.links));
+        render();
+      } catch (err) {
+        list.hidden = true;
+        setLocStatus("Couldn't pin that place — try again, or use a nearby stop.");
+      }
+      return;
+    }
 
     if (item.dataset.place) {
       const pid = PLACE_IDS[hiddenId];
