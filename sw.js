@@ -1,5 +1,5 @@
 // SANJOG service worker
-const CACHE = "sanjog-v13";
+const CACHE = "sanjog-v14";
 const SHELL = ["./", "./index.html", "./engine.js", "./network.json",
                "./manifest.webmanifest", "./bg-howrah-sketch.jpg",
                "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png"];
