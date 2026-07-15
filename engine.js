@@ -4,8 +4,8 @@
 function haversineMeters(aLat, aLon, bLat, bLon) {
   const R = 6371000, toRad = d => d * Math.PI / 180;
   const dLat = toRad(bLat - aLat), dLon = toRad(bLon - aLon);
-  const s = Math.sin(dLat / 2) ** 2 +
-            Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLon / 2) ** 2;
+  const s = Math.pow(Math.sin(dLat / 2), 2) +
+            Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.pow(Math.sin(dLon / 2), 2);
   return 2 * R * Math.asin(Math.sqrt(s));
 }
 
@@ -26,6 +26,10 @@ function validateNetwork(net) {
       ids.add(s.id);
     }
     if (!s.name) issues.push(`stop "${s.id || "#" + (i + 1)}" is missing a "name"`);
+    const hasLat = s.lat != null, hasLon = s.lon != null;
+    if (hasLat !== hasLon) issues.push(`stop "${s.id}" has only one of lat/lon — provide both or neither`);
+    if (hasLat && (typeof s.lat !== "number" || Math.abs(s.lat) > 90)) issues.push(`stop "${s.id}": "lat" must be a number between -90 and 90`);
+    if (hasLon && (typeof s.lon !== "number" || Math.abs(s.lon) > 180)) issues.push(`stop "${s.id}": "lon" must be a number between -180 and 180`);
   });
 
   return issues;
@@ -43,10 +47,8 @@ function buildNetwork(json) {
   for (const id in stops) adj[id] = [];
   let links = 0, skipped = 0;
 
-  // Approximate speeds in meters per minute (e.g. bus 15km/h = 250m/min)
   const speeds = { metro: 400, tram: 150, bus: 250, ferry: 200, auto: 300, rickshaw: 130, train: 500, walk: 75 };
 
-  // 1. Build documented edges
   for (const e of json.edges || []) {
     const md = modes[e.mode];
     if (!md || !stops[e.from] || !stops[e.to] || e.from === e.to) { skipped++; continue; }
@@ -77,8 +79,6 @@ function buildNetwork(json) {
     links++;
   }
 
-  // 2. Synthesize walk edges between ANY stops within 800m of each other
-  // This allows the engine to jump between parallel lines naturally (like Zeeshan to 4 No Bridge).
   const stopKeys = Object.keys(stops);
   for (let i = 0; i < stopKeys.length; i++) {
     const s1 = stops[stopKeys[i]];
@@ -89,19 +89,20 @@ function buildNetwork(json) {
       if (!s2.lat) continue;
       
       const streetMeters = haversineMeters(s1.lat, s1.lon, s2.lat, s2.lon) * 1.3;
-      if (streetMeters <= 800) { 
+      if (streetMeters <= 500) { 
         const walkMin = Math.max(1, Math.round(streetMeters / speeds.walk));
+        const walkColor = (modes.walk && modes.walk.color) ? modes.walk.color : "#98a0a8";
         const wEdgeBase = { 
-          mode: "walk", line: "Walk", color: modes.walk?.color || "#98a0a8", 
+          mode: "walk", line: "Walk", color: walkColor, 
           min: walkMin, fare: 0, minApprox: true, fareApprox: false, key: "walk|Walk" 
         };
         
         if (!adj[stopKeys[i]].find(e => e.to === stopKeys[j] && e.mode === "walk")) {
-          adj[stopKeys[i]].push({ to: stopKeys[j], ...wEdgeBase });
+          adj[stopKeys[i]].push(Object.assign({}, wEdgeBase, { to: stopKeys[j] }));
           links++;
         }
         if (!adj[stopKeys[j]].find(e => e.to === stopKeys[i] && e.mode === "walk")) {
-          adj[stopKeys[j]].push({ to: stopKeys[i], ...wEdgeBase });
+          adj[stopKeys[j]].push(Object.assign({}, wEdgeBase, { to: stopKeys[i] }));
           links++;
         }
       }
@@ -112,26 +113,64 @@ function buildNetwork(json) {
            modes, stops, adj, links, skipped };
 }
 
-// True multi-criteria, stateful Dijkstra tracking lines and boardings.
+// Binary MinHeap to prevent O(V^2) browser locking on large graphs
+class MinHeap {
+  constructor(scoreFn) { this.data = []; this.scoreFn = scoreFn; }
+  push(val) {
+    this.data.push(val);
+    let i = this.data.length - 1;
+    while (i > 0) {
+      const p = Math.floor((i - 1) / 2);
+      if (this.scoreFn(this.data[i]) >= this.scoreFn(this.data[p])) break;
+      const tmp = this.data[i]; this.data[i] = this.data[p]; this.data[p] = tmp;
+      i = p;
+    }
+  }
+  pop() {
+    if (this.data.length === 0) return null;
+    const top = this.data[0];
+    const bottom = this.data.pop();
+    if (this.data.length > 0) {
+      this.data[0] = bottom;
+      let i = 0, len = this.data.length;
+      while (true) {
+        let left = 2 * i + 1, right = 2 * i + 2, min = i;
+        if (left < len && this.scoreFn(this.data[left]) < this.scoreFn(this.data[min])) min = left;
+        if (right < len && this.scoreFn(this.data[right]) < this.scoreFn(this.data[min])) min = right;
+        if (min === i) break;
+        const tmp = this.data[i]; this.data[i] = this.data[min]; this.data[min] = tmp;
+        i = min;
+      }
+    }
+    return top;
+  }
+  get length() { return this.data.length; }
+}
+
 function plan(NET, src, dst, pref) {
   const start = src + "@walk";
   const best = { [start]: { t: 0, fare: 0, walk: 0, board: 0, prev: null, edge: null } };
-  const queue = [start];
 
-  // LOCAL LOGIC HEURISTICS:
-  // We use a 1.5x walk multiplier. 20 mins walk = 30 penalty points. 
-  // We use a 5 point board penalty. This acts as "transfer friction" so the engine 
-  // doesn't hop between 4 buses just to save 2 minutes, but gladly does 2 buses to save 40 mins.
   const score = s => 
       pref === "cheapest" ? (s.fare * 100) + s.t + (s.walk * 2.0) + (s.board * 10)
     : pref === "walk"     ? (s.walk * 100) + s.t + (s.fare * 5)
-    : s.t + (s.walk * 1.5) + (s.board * 5) + (s.fare * 0.1); // fastest
+    : s.t + (s.walk * 1.5) + (s.board * 5) + (s.fare * 0.1);
+
+  const queue = new MinHeap(x => score(best[x]));
+  queue.push(start);
+  let goal = null;
 
   while (queue.length) {
-    queue.sort((x, y) => score(best[x]) - score(best[y]));
-    const state = queue.shift();
+    const state = queue.pop();
     const [node, lastVeh] = state.split("@");
     const cur = best[state];
+
+    // O(1) early exit: Because we are pulling from a sorted heap, the first 
+    // time we extract our destination, it mathematically has to be the optimal path.
+    if (node === dst) {
+      goal = state;
+      break;
+    }
 
     for (const e of NET.adj[node] || []) {
       const isWalk = e.mode === "walk";
@@ -139,8 +178,8 @@ function plan(NET, src, dst, pref) {
       const boarding = !isWalk && (e.key !== lastVeh);
       
       const next = {
-        t: cur.t + e.min + (boarding ? NET.modes[e.mode].wait : 0),
-        fare: cur.fare + (boarding ? e.fare : 0), 
+        t: cur.t + e.min + (boarding ? (NET.modes[e.mode].wait || 0) : 0),
+        fare: cur.fare + (boarding ? (e.fare || 0) : 0), 
         walk: cur.walk + (isWalk ? e.min : 0),
         board: cur.board + (boarding ? 1 : 0),
         prev: state, 
@@ -150,15 +189,8 @@ function plan(NET, src, dst, pref) {
       const nextState = e.to + "@" + nextVeh;
       if (!(nextState in best) || score(next) < score(best[nextState])) {
         best[nextState] = next;
-        if (!queue.includes(nextState)) queue.push(nextState);
+        queue.push(nextState);
       }
-    }
-  }
-
-  let goal = null;
-  for (const s in best) {
-    if (s.split("@")[0] === dst) {
-      if (!goal || score(best[s]) < score(best[goal])) goal = s;
     }
   }
   
@@ -186,7 +218,7 @@ function plan(NET, src, dst, pref) {
           key: e.key, mode: e.mode, line: e.line, color: e.color,
           from: e.from, to: e.to, min: e.min, fare: e.mode === "walk" ? 0 : e.fare,
           minApprox: e.minApprox, fareApprox: e.fareApprox,
-          wait: e.mode === "walk" ? 0 : NET.modes[e.mode].wait 
+          wait: e.mode === "walk" ? 0 : (NET.modes[e.mode].wait || 0) 
       });
     }
   }
@@ -223,11 +255,10 @@ function planAll(NET, src, dst) {
   return out;
 }
 
-// ---- Virtual place support ---------------------------------------------
 const LOC_ID = "_myloc";
-const WALK_M_PER_MIN = 75;     // ~4.5 km/h
-const RICK_M_PER_MIN = 130;    // ~7.8 km/h 
-const RICKSHAW_MAX_M = 3000;   // rickshaws act as short taxis
+const WALK_M_PER_MIN = 75;    
+const RICK_M_PER_MIN = 130;    
+const RICKSHAW_MAX_M = 3000;   
 const RICKSHAW_MIN_FARE = 25;  
 const RICKSHAW_PER_KM = 40;    
 const ROUTE_FACTOR = 1.3;
@@ -276,8 +307,8 @@ function clearPlaceNode(NET, id) {
 function clearLocationNode(NET) { clearPlaceNode(NET, LOC_ID); }
 
 function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
-  const maxLinks     = opts.maxLinks     || 6;     // grab up to 6 nodes to ensure we hit arterial roads
-  const linkRadiusM  = opts.linkRadiusM  || 1500;  // bumped to 1.5km to easily link user to CIT road / major corridors
+  const maxLinks     = opts.maxLinks     || 6;     
+  const linkRadiusM  = opts.linkRadiusM  || 1500;  
   const giveUpM      = opts.giveUpM      || 30000; 
   const rickshawMaxM = opts.rickshawMaxM || RICKSHAW_MAX_M;
 
@@ -309,10 +340,11 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
   
   for (const c of picked) {
     const walkMin = Math.max(1, Math.round(c.d * ROUTE_FACTOR / WALK_M_PER_MIN));
-    const walk = { mode: "walk", line: "Walk", color: NET.modes.walk.color,
+    const walkColor = (NET.modes.walk && NET.modes.walk.color) ? NET.modes.walk.color : "#98a0a8";
+    const walk = { mode: "walk", line: "Walk", color: walkColor,
                    min: walkMin, fare: 0, minApprox: true, fareApprox: false, key: "walk|Walk" };
-    NET.adj[id].push({ to: c.id, ...walk });
-    NET.adj[c.id].push({ to: id, ...walk });
+    NET.adj[id].push(Object.assign({}, walk, { to: c.id }));
+    NET.adj[c.id].push(Object.assign({}, walk, { to: id }));
 
     let rickMin = null;
     const streetM = c.d * ROUTE_FACTOR;
@@ -323,8 +355,8 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
       const rick = { mode: "rickshaw", line: md.label, color: md.color,
                      min: rickMin, fare, minApprox: true, fareApprox: true,
                      key: "rickshaw|" + md.label };
-      NET.adj[id].push({ to: c.id, ...rick });
-      NET.adj[c.id].push({ to: id, ...rick });
+      NET.adj[id].push(Object.assign({}, rick, { to: c.id }));
+      NET.adj[c.id].push(Object.assign({}, rick, { to: id }));
     }
     links.push({ id: c.id, min: walkMin, walkMin, rickMin, distM: Math.round(c.d) });
   }
@@ -332,4 +364,10 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
 }
 
 function setLocationNode(NET, lat, lon, opts = {}) {
-  return setPlaceNode(NET, LOC_ID, "
+  return setPlaceNode(NET, LOC_ID, "My location", lat, lon, opts);
+}
+
+if (typeof module !== "undefined" && module.exports)
+  module.exports = { validateNetwork, buildNetwork, plan, planAll, haversineMeters,
+                     directRickshaw, rickshawFare,
+                     setPlaceNode, clearPlaceNode, setLocationNode, clearLocationNode, LOC_ID };
