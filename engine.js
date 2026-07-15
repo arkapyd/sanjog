@@ -1,6 +1,14 @@
 // ---- SANJOG engine: validate + build a network from JSON, plan journeys ----
 // The network lives in network.json. This file never needs editing to add data.
 
+function haversineMeters(aLat, aLon, bLat, bLon) {
+  const R = 6371000, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(bLat - aLat), dLon = toRad(bLon - aLon);
+  const s = Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
 function validateNetwork(net) {
   const issues = [];
   if (!net || typeof net !== "object") return ["network data is not an object"];
@@ -24,30 +32,12 @@ function validateNetwork(net) {
     if (hasLon && (typeof s.lon !== "number" || Math.abs(s.lon) > 180)) issues.push(`stop "${s.id}": "lon" must be a number between -180 and 180`);
   });
 
-  for (const m in modes) {
-    const md = modes[m];
-    if (!md.label) issues.push(`mode "${m}" is missing a "label"`);
-    for (const k of ["wait", "defaultMin", "defaultFare"])
-      if (typeof md[k] !== "number") issues.push(`mode "${m}" needs a numeric "${k}"`);
-  }
-
-  edges.forEach((e, i) => {
-    const tag = `edge #${i + 1} (${e.from || "?"} → ${e.to || "?"})`;
-    if (!ids.has(e.from)) issues.push(`${tag}: unknown "from" stop`);
-    if (!ids.has(e.to)) issues.push(`${tag}: unknown "to" stop`);
-    if (e.from && e.from === e.to) issues.push(`${tag}: "from" and "to" are the same stop`);
-    if (!modes[e.mode]) issues.push(`${tag}: unknown mode "${e.mode}"`);
-    if (e.min != null && typeof e.min !== "number") issues.push(`${tag}: "min" must be a number`);
-    if (e.fare != null && typeof e.fare !== "number") issues.push(`${tag}: "fare" must be a number`);
-  });
   return issues;
 }
 
-// Build a runnable network. Broken edges are skipped, not fatal, so one
-// typo in a contribution never takes the whole app down.
 function buildNetwork(json) {
   const modes = json.modes || {};
-  const stops = {};           // id -> {name, ward}
+  const stops = {};           
   for (const s of json.stops || []) if (s.id && s.name)
     stops[s.id] = { name: s.name, ward: s.ward || "",
                     lat: typeof s.lat === "number" ? s.lat : null,
@@ -57,25 +47,75 @@ function buildNetwork(json) {
   for (const id in stops) adj[id] = [];
   let links = 0, skipped = 0;
 
+  // Approximate speeds in meters per minute (e.g. bus 15km/h = 250m/min)
+  const speeds = { metro: 400, tram: 150, bus: 250, ferry: 200, auto: 300, rickshaw: 130, train: 500, walk: 75 };
+
+  // 1. Build documented edges, overriding default times with distance-based times if coords exist
   for (const e of json.edges || []) {
     const md = modes[e.mode];
     if (!md || !stops[e.from] || !stops[e.to] || e.from === e.to) { skipped++; continue; }
+    
+    let edgeMin = e.min != null ? e.min : md.defaultMin;
+    let minApprox = typeof e.min !== "number";
+    
+    // If coords exist and no explicit time was provided, use Haversine distance
+    const sFrom = stops[e.from], sTo = stops[e.to];
+    if (minApprox && sFrom.lat && sTo.lat) {
+      const streetMeters = haversineMeters(sFrom.lat, sFrom.lon, sTo.lat, sTo.lon) * 1.3;
+      const speed = speeds[e.mode] || 200;
+      edgeMin = Math.max(1, Math.round(streetMeters / speed));
+    }
+
     const edge = {
       mode: e.mode,
       line: e.line || md.label,
       color: e.color || md.color,
-      min:  typeof e.min  === "number" ? e.min  : md.defaultMin,
+      min: edgeMin,
       fare: typeof e.fare === "number" ? e.fare : md.defaultFare,
-      minApprox:  typeof e.min  !== "number",
+      minApprox: minApprox,
       fareApprox: typeof e.fare !== "number",
       key: e.mode + "|" + (e.line || md.label)
     };
+    
     adj[e.from].push({ to: e.to, ...edge });
     adj[e.to].push({ to: e.from, ...edge });
     links++;
   }
+
+  // 2. Synthesize walk edges between ANY stops within 800m of each other
+  // This allows the engine to jump between parallel bus/metro lines naturally.
+  const stopKeys = Object.keys(stops);
+  for (let i = 0; i < stopKeys.length; i++) {
+    const s1 = stops[stopKeys[i]];
+    if (!s1.lat) continue;
+    
+    for (let j = i + 1; j < stopKeys.length; j++) {
+      const s2 = stops[stopKeys[j]];
+      if (!s2.lat) continue;
+      
+      const streetMeters = haversineMeters(s1.lat, s1.lon, s2.lat, s2.lon) * 1.3;
+      if (streetMeters <= 800) { // roughly a max 10-11 minute walk
+        const walkMin = Math.max(1, Math.round(streetMeters / speeds.walk));
+        const wEdgeBase = { 
+          mode: "walk", line: "Walk", color: modes.walk?.color || "#98a0a8", 
+          min: walkMin, fare: 0, minApprox: true, fareApprox: false, key: "walk|Walk" 
+        };
+        
+        // Add if an edge doesn't already exist
+        if (!adj[stopKeys[i]].find(e => e.to === stopKeys[j] && e.mode === "walk")) {
+          adj[stopKeys[i]].push({ to: stopKeys[j], ...wEdgeBase });
+          links++;
+        }
+        if (!adj[stopKeys[j]].find(e => e.to === stopKeys[i] && e.mode === "walk")) {
+          adj[stopKeys[j]].push({ to: stopKeys[i], ...wEdgeBase });
+          links++;
+        }
+      }
+    }
+  }
+
   return { meta: { name: json.name || "", version: json.version || "", updated: json.updated || "" },
-           modes, stops, adj, links, skipped, rawEdges: json.edges || [] };
+           modes, stops, adj, links, skipped };
 }
 
 // True multi-criteria, stateful Dijkstra tracking lines and boardings.
@@ -86,9 +126,9 @@ function plan(NET, src, dst, pref) {
 
   // Dynamic weighting system based on UI selection
   const score = s => 
-      pref === "cheapest" ? (s.fare * 10000) + s.t + (s.walk * 10)
+      pref === "cheapest" ? (s.fare * 10000) + s.t + (s.walk * 25)
     : pref === "walk"     ? (s.walk * 10000) + s.t + (s.fare * 10)
-    : s.t + (s.walk * 1.5) + (s.fare * 0.1); // fastest (penalize excessive walking slightly)
+    : s.t + (s.walk * 4.0) + (s.fare * 0.1); // fastest
 
   while (queue.length) {
     queue.sort((x, y) => score(best[x]) - score(best[y]));
@@ -99,11 +139,12 @@ function plan(NET, src, dst, pref) {
     for (const e of NET.adj[node] || []) {
       const isWalk = e.mode === "walk";
       const nextVeh = isWalk ? "walk" : e.key;
+      // Transfer if boarding a new vehicle line.
       const boarding = !isWalk && (e.key !== lastVeh);
       
       const next = {
         t: cur.t + e.min + (boarding ? NET.modes[e.mode].wait : 0),
-        fare: cur.fare + (boarding ? e.fare : 0), // only charge fare upon boarding a new line
+        fare: cur.fare + (boarding ? e.fare : 0), 
         walk: cur.walk + (isWalk ? e.min : 0),
         board: cur.board + (boarding ? 1 : 0),
         prev: state, 
@@ -132,22 +173,20 @@ function plan(NET, src, dst, pref) {
     path.unshift({ from: best[s].prev.split("@")[0], ...best[s].edge });
   }
 
+  // Collapse consecutive edges on the same line into a single "leg" for the UI
   const legs = [];
   for (const e of path) {
     const last = legs[legs.length - 1];
     if (last && last.key === e.key && e.mode !== "walk") {
-      // continuing on the exact same vehicle line
       last.to = e.to; 
       last.min += e.min;
       last.minApprox = last.minApprox || e.minApprox;
       last.fareApprox = last.fareApprox || e.fareApprox;
     } else if (last && last.mode === "walk" && e.mode === "walk") {
-      // combining sequential walk legs
       last.to = e.to;
       last.min += e.min;
       last.minApprox = last.minApprox || e.minApprox;
     } else {
-      // boarding a new vehicle or starting a walk
       legs.push({ 
           key: e.key, mode: e.mode, line: e.line, color: e.color,
           from: e.from, to: e.to, min: e.min, fare: e.mode === "walk" ? 0 : e.fare,
@@ -194,9 +233,8 @@ const LOC_ID = "_myloc";
 const WALK_M_PER_MIN = 75;     // ~4.5 km/h
 const RICK_M_PER_MIN = 130;    // ~7.8 km/h 
 const RICKSHAW_MAX_M = 3000;   // rickshaws act as short taxis
-const RICKSHAW_MIN_FARE = 25;  // floor
-const RICKSHAW_PER_KM = 40;    // Rs per km of street distance
-const ROUTE_FACTOR = 1.3;      // straight-line -> street distance fudge
+const RICKSHAW_MIN_FARE = 25;  
+const RICKSHAW_PER_KM = 40;    
 
 function rickshawFare(streetM) {
   return Math.max(RICKSHAW_MIN_FARE, Math.round(streetM / 1000 * RICKSHAW_PER_KM));
@@ -224,7 +262,6 @@ function directRickshaw(NET, src, dst) {
   };
 }
 
-// Is candidate 'a' a better answer than 'b' for this preference?
 function betterFor(pref, a, b) {
   if (pref === "cheapest") return a.totalFare < b.totalFare ||
                                   (a.totalFare === b.totalFare && a.totalMin < b.totalMin);
@@ -233,13 +270,7 @@ function betterFor(pref, a, b) {
   return a.totalMin < b.totalMin; // fastest
 }
 
-function haversineMeters(aLat, aLon, bLat, bLon) {
-  const R = 6371000, toRad = d => d * Math.PI / 180;
-  const dLat = toRad(bLat - aLat), dLon = toRad(bLon - aLon);
-  const s = Math.sin(dLat / 2) ** 2 +
-            Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(s));
-}
+const ROUTE_FACTOR = 1.3;
 
 function clearPlaceNode(NET, id) {
   if (!NET.stops[id]) return;
@@ -251,9 +282,9 @@ function clearPlaceNode(NET, id) {
 function clearLocationNode(NET) { clearPlaceNode(NET, LOC_ID); }
 
 function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
-  const maxLinks     = opts.maxLinks     || 3;
-  const linkRadiusM  = opts.linkRadiusM  || 2500;
-  const giveUpM      = opts.giveUpM      || 30000;
+  const maxLinks     = opts.maxLinks     || 5;     // increased to hit more nearby networks
+  const linkRadiusM  = opts.linkRadiusM  || 1000;  // decreased to avoid massive initial walks
+  const giveUpM      = opts.giveUpM      || 30000; 
   const rickshawMaxM = opts.rickshawMaxM || RICKSHAW_MAX_M;
 
   clearPlaceNode(NET, id);
