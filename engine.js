@@ -75,18 +75,20 @@ function buildNetwork(json) {
     links++;
   }
   return { meta: { name: json.name || "", version: json.version || "", updated: json.updated || "" },
-           modes, stops, adj, links, skipped };
+           modes, stops, adj, links, skipped, rawEdges: json.edges || [] };
 }
 
-// Multi-criteria Dijkstra over states (node @ last vehicle boarded).
+// True multi-criteria, stateful Dijkstra tracking lines and boardings.
 function plan(NET, src, dst, pref) {
-  const start = src + "@";
-  const best = { [start]: { t: 0, fare: 0, board: 0, prev: null, edge: null } };
+  const start = src + "@walk";
+  const best = { [start]: { t: 0, fare: 0, walk: 0, board: 0, prev: null, edge: null } };
   const queue = [start];
 
-  const score = s => pref === "cheapest" ? s.fare * 10000 + s.t
-                   : pref === "easiest"  ? s.board * 1000000 + s.t
-                   : s.t;
+  // Dynamic weighting system based on UI selection
+  const score = s => 
+      pref === "cheapest" ? (s.fare * 10000) + s.t + (s.walk * 10)
+    : pref === "walk"     ? (s.walk * 10000) + s.t + (s.fare * 10)
+    : s.t + (s.walk * 1.5) + (s.fare * 0.1); // fastest (penalize excessive walking slightly)
 
   while (queue.length) {
     queue.sort((x, y) => score(best[x]) - score(best[y]));
@@ -95,14 +97,20 @@ function plan(NET, src, dst, pref) {
     const cur = best[state];
 
     for (const e of NET.adj[node] || []) {
-      const boarding = e.mode !== "walk" && e.key !== lastVeh;
+      const isWalk = e.mode === "walk";
+      const nextVeh = isWalk ? "walk" : e.key;
+      const boarding = !isWalk && (e.key !== lastVeh);
+      
       const next = {
         t: cur.t + e.min + (boarding ? NET.modes[e.mode].wait : 0),
-        fare: cur.fare + e.fare,
+        fare: cur.fare + (boarding ? e.fare : 0), // only charge fare upon boarding a new line
+        walk: cur.walk + (isWalk ? e.min : 0),
         board: cur.board + (boarding ? 1 : 0),
-        prev: state, edge: e
+        prev: state, 
+        edge: e
       };
-      const nextState = e.to + "@" + (e.mode === "walk" ? lastVeh : e.key);
+      
+      const nextState = e.to + "@" + nextVeh;
       if (!(nextState in best) || score(next) < score(best[nextState])) {
         best[nextState] = next;
         if (!queue.includes(nextState)) queue.push(nextState);
@@ -111,26 +119,41 @@ function plan(NET, src, dst, pref) {
   }
 
   let goal = null;
-  for (const s in best)
-    if (s.split("@")[0] === dst && (!goal || score(best[s]) < score(best[goal]))) goal = s;
+  for (const s in best) {
+    if (s.split("@")[0] === dst) {
+      if (!goal || score(best[s]) < score(best[goal])) goal = s;
+    }
+  }
+  
   if (!goal || goal === start) return null;
 
   const path = [];
-  for (let s = goal; best[s].prev; s = best[s].prev)
+  for (let s = goal; best[s].prev; s = best[s].prev) {
     path.unshift({ from: best[s].prev.split("@")[0], ...best[s].edge });
+  }
 
   const legs = [];
   for (const e of path) {
     const last = legs[legs.length - 1];
-    if (last && last.key === e.key) {
-      last.to = e.to; last.min += e.min; last.fare += e.fare;
+    if (last && last.key === e.key && e.mode !== "walk") {
+      // continuing on the exact same vehicle line
+      last.to = e.to; 
+      last.min += e.min;
       last.minApprox = last.minApprox || e.minApprox;
       last.fareApprox = last.fareApprox || e.fareApprox;
+    } else if (last && last.mode === "walk" && e.mode === "walk") {
+      // combining sequential walk legs
+      last.to = e.to;
+      last.min += e.min;
+      last.minApprox = last.minApprox || e.minApprox;
     } else {
-      legs.push({ key: e.key, mode: e.mode, line: e.line, color: e.color,
-                  from: e.from, to: e.to, min: e.min, fare: e.fare,
-                  minApprox: e.minApprox, fareApprox: e.fareApprox,
-                  wait: e.mode === "walk" ? 0 : NET.modes[e.mode].wait });
+      // boarding a new vehicle or starting a walk
+      legs.push({ 
+          key: e.key, mode: e.mode, line: e.line, color: e.color,
+          from: e.from, to: e.to, min: e.min, fare: e.mode === "walk" ? 0 : e.fare,
+          minApprox: e.minApprox, fareApprox: e.fareApprox,
+          wait: e.mode === "walk" ? 0 : NET.modes[e.mode].wait 
+      });
     }
   }
 
@@ -138,6 +161,7 @@ function plan(NET, src, dst, pref) {
     legs, path,
     totalMin:  legs.reduce((s, l) => s + l.min + l.wait, 0),
     totalFare: legs.reduce((s, l) => s + l.fare, 0),
+    totalWalk: legs.filter(l => l.mode === "walk").reduce((s, l) => s + l.min, 0),
     boardings: legs.filter(l => l.mode !== "walk").length,
     approxMin:  legs.some(l => l.minApprox),
     approxFare: legs.some(l => l.fareApprox),
@@ -146,9 +170,10 @@ function plan(NET, src, dst, pref) {
 }
 
 function planAll(NET, src, dst) {
-  const prefs = [["fastest", "Fastest"], ["cheapest", "Cheapest"], ["easiest", "Fewest changes"]];
+  const prefs = [["fastest", "Fastest"], ["cheapest", "Cheapest"], ["walk", "Least Walk"]];
   const direct = directRickshaw(NET, src, dst);
   const out = [];
+  
   for (const [pref, label] of prefs) {
     let r = plan(NET, src, dst, pref);
     if (direct && (!r || betterFor(pref, direct, r))) r = direct;
@@ -157,34 +182,26 @@ function planAll(NET, src, dst) {
     if (dup) dup.labels.push(label);
     else out.push({ ...r, labels: [label] });
   }
-  // within range but beaten on every preference: still worth suggesting —
-  // nobody juggles three vehicles for a hop a rickshaw covers in one.
+  
   if (direct && !out.some(o => o.sig === direct.sig))
     out.push({ ...direct, labels: ["Rickshaw direct"] });
+    
   return out;
 }
 
 // ---- Virtual place support ---------------------------------------------
-// "My location" and typed map places become temporary stops joined to
-// nearby coordinate-bearing stops by walk links — plus rickshaw links for
-// hops under RICKSHAW_MAX_M, so the planner can weigh both. Pure data
-// injection: the planner itself needs no changes.
-
 const LOC_ID = "_myloc";
 const WALK_M_PER_MIN = 75;     // ~4.5 km/h
-const RICK_M_PER_MIN = 130;    // ~7.8 km/h — cycle-rickshaw pace
-const RICKSHAW_MAX_M = 3000;   // rickshaws act as short taxis: up to ~3 km of street
-const RICKSHAW_MIN_FARE = 25;  // floor — what a ~200 m hop costs
-const RICKSHAW_PER_KM = 40;    // Rs per km of street distance -> ~Rs120 for a 3 km ride
+const RICK_M_PER_MIN = 130;    // ~7.8 km/h 
+const RICKSHAW_MAX_M = 3000;   // rickshaws act as short taxis
+const RICKSHAW_MIN_FARE = 25;  // floor
+const RICKSHAW_PER_KM = 40;    // Rs per km of street distance
 const ROUTE_FACTOR = 1.3;      // straight-line -> street distance fudge
 
 function rickshawFare(streetM) {
   return Math.max(RICKSHAW_MIN_FARE, Math.round(streetM / 1000 * RICKSHAW_PER_KM));
 }
 
-// A rickshaw hailed door to door — Kolkata's short-hop taxi. Returns a
-// route-shaped candidate for planAll to weigh against transit, or null
-// when the ride would exceed RICKSHAW_MAX_M of street distance.
 function directRickshaw(NET, src, dst) {
   const md = NET.modes.rickshaw, a = NET.stops[src], b = NET.stops[dst];
   if (!md || !a || !b) return null;
@@ -201,19 +218,19 @@ function directRickshaw(NET, src, dst) {
     legs: [leg],
     path: [{ from: src, to: dst, mode: "rickshaw", line: md.label, color: md.color,
              min, fare, minApprox: true, fareApprox: true, key: leg.key }],
-    totalMin: min + md.wait, totalFare: fare, boardings: 1,
+    totalMin: min + md.wait, totalFare: fare, totalWalk: 0, boardings: 1,
     approxMin: true, approxFare: true,
     sig: leg.key + ">" + dst
   };
 }
 
-// Is candidate a better answer than b for this preference?
+// Is candidate 'a' a better answer than 'b' for this preference?
 function betterFor(pref, a, b) {
   if (pref === "cheapest") return a.totalFare < b.totalFare ||
                                   (a.totalFare === b.totalFare && a.totalMin < b.totalMin);
-  if (pref === "easiest")  return a.boardings < b.boardings ||
-                                  (a.boardings === b.boardings && a.totalMin < b.totalMin);
-  return a.totalMin < b.totalMin;
+  if (pref === "walk")     return (a.totalWalk || 0) < (b.totalWalk || 0) ||
+                                  ((a.totalWalk || 0) === (b.totalWalk || 0) && a.totalMin < b.totalMin);
+  return a.totalMin < b.totalMin; // fastest
 }
 
 function haversineMeters(aLat, aLon, bLat, bLon) {
@@ -234,9 +251,9 @@ function clearPlaceNode(NET, id) {
 function clearLocationNode(NET) { clearPlaceNode(NET, LOC_ID); }
 
 function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
-  const maxLinks     = opts.maxLinks     || 3;      // link to up to this many stops
-  const linkRadiusM  = opts.linkRadiusM  || 2500;   // within this radius
-  const giveUpM      = opts.giveUpM      || 30000;  // beyond this: not our city
+  const maxLinks     = opts.maxLinks     || 3;
+  const linkRadiusM  = opts.linkRadiusM  || 2500;
+  const giveUpM      = opts.giveUpM      || 30000;
   const rickshawMaxM = opts.rickshawMaxM || RICKSHAW_MAX_M;
 
   clearPlaceNode(NET, id);
@@ -245,7 +262,7 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
 
   const cands = [];
   for (const sid in NET.stops) {
-    if (sid[0] === "_") continue;                   // never chain virtual nodes together
+    if (sid[0] === "_") continue;
     const s = NET.stops[sid];
     if (typeof s.lat === "number" && typeof s.lon === "number")
       cands.push({ id: sid, d: haversineMeters(lat, lon, s.lat, s.lon) });
@@ -259,11 +276,12 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
                                 `(nearest stop: ${NET.stops[cands[0].id].name}).` };
 
   let picked = cands.filter(c => c.d <= linkRadiusM).slice(0, maxLinks);
-  if (!picked.length) picked = [cands[0]];   // far-ish but reachable: link the nearest
+  if (!picked.length) picked = [cands[0]];
 
   NET.stops[id] = { name, ward: "", lat, lon };
   NET.adj[id] = [];
   const links = [];
+  
   for (const c of picked) {
     const walkMin = Math.max(1, Math.round(c.d * ROUTE_FACTOR / WALK_M_PER_MIN));
     const walk = { mode: "walk", line: "Walk", color: NET.modes.walk.color,
@@ -271,7 +289,6 @@ function setPlaceNode(NET, id, name, lat, lon, opts = {}) {
     NET.adj[id].push({ to: c.id, ...walk });
     NET.adj[c.id].push({ to: id, ...walk });
 
-    // short hop: also offer a rickshaw for the same gap, planner picks
     let rickMin = null;
     const streetM = c.d * ROUTE_FACTOR;
     if (NET.modes.rickshaw && streetM <= rickshawMaxM) {
